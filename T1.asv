@@ -1,0 +1,24 @@
+%% LOAD PARAMETERS
+
+double radiusEarth = 6378; 
+double gravParamEarth = 398 600;
+
+double r0Debris = 
+double v0Debris = 
+double hDebris = norm(cross(r0Debris, v0Debris));
+double iDebris = 0;
+double raDebris = 0;
+double eDebris = 0.2;
+double perDebris = 0;
+double thetaDebris = 0;
+
+%% ORBIT SIMULATION
+
+r0 = r0Debris;
+r = ( h^2 / mu ) * 1 / ( 1 + ( h^2 / ( gravParamEarth * 
+
+double angleDiff = 0.1;
+
+
+
+
