@@ -2,10 +2,10 @@
 
 % All parameters based on km and s
 
-radiusEarth = 6378; 
-gravParamEarth = 398600;
+rEarth = 6378; 
+muEarth = 398600;
 
-r0Debris = [2000 + radiusEarth, 0, 0];
+r0Debris = [2000 + rEarth, 0, 0];
 v0Debris = [0, 8, 0];
 hDebris = 0;
 iDebris = 0;
@@ -13,14 +13,15 @@ raDebris = 0;
 eDebris = 0.5;
 perDebris = 0;
 thetaDebris = 0;
+orbitTypeDebris = "prograde"; % Alt: retrograde
 
 
-%% (PRELIMINARY) TWO BODY SIMULATION
+%% TWO BODY SIMULATION
 
 r0 = r0Debris;
 v0 = v0Debris;
 h = norm(cross(r0, v0));
-mu = gravParamEarth;
+mu = muEarth;
 e = eDebris;
 
 angleDiff = 1;
@@ -31,8 +32,8 @@ rEarthX = zeros( numPoints );
 rEarthY = zeros( numPoints );
 
 for counter = [1 : numPoints]
-    rEarthX( counter ) = radiusEarth * cosd( theta );
-    rEarthY( counter ) = radiusEarth * sind( theta );
+    rEarthX( counter ) = rEarth * cosd( theta );
+    rEarthY( counter ) = rEarth * sind( theta );
     theta = theta + angleDiff;
 end
 
@@ -51,63 +52,69 @@ hold off;
 
 %% ORBIT DETERMINATION
  
-% 1. Calculate r 1 and r 2 using Equation 5.24.
-% 2. Choose either a prograde or a retrograde trajectory and calculate ? ? using Equation 5.26.
-% 3. Calculate A in Equation 5.35.
-% 4. By iteration, using Equations 5.40, 5.43 and 5.45, solve Equation 5.39 for z . The sign of z tells us
-% whether the orbit is a hyperbola (z < 0), parabola ( z = 0) or ellipse ( z > 0).
-% 5. Calculate y using Equation 5.38.
-% 6. Calculate the Lagrange f , g and g functions using Equations 5.46.
-% 7. Calculate v 1 and v 2 from Equations 5.28 and 5.29.
-% 8. Use r 1 and v 1 (or r 2 and v 2 ) in Algorithm 4.2 to obtain the orbital elements.
+% Program calculates thruster momentum and angle required to reach posEnd
+% given posStart, vStart, deltaTime and massSatellite. Assumes thruster
+% points in opposite direction of vStart.
 
 
-startPosition = [5000, 10000, 2100];
-endPosition = [-14600, 2500, 7000];
-deltaT = 3600;
+posStart = [5000, 10000, 2100];
+vStart = [-1.9925, 1.9254, 3.2456];
+posEnd = [-14600, 2500, 7000];
+deltaTime = 3600;
 
-r1 = norm( startPosition );
-r2 = norm( endPosition );
+massSatellite = 1.3;
+
+rStart = norm( posStart );
+rEnd = norm( posEnd );
 
 
-deltaTheta = acosd( dot( startPosition, endPosition ) / (r1 * r2) );
+deltaTheta = acosd( dot( posStart, posEnd ) / (rStart * rEnd) );
 
-vecNorm = cross( startPosition, endPosition );
-% Prograde trajectory
-if vecNorm(3) < 0
-    % % Retrograde trajectory
-    % if ~( cross( r1, r2 )(3) < 0 )
+wOrbit = cross( posStart, posEnd );
+if ((wOrbit(3) < 0 && orbitTypeDebris == "prograde") || (~(wOrbit(3) < 0 ) && orbitTypeDebris == "retrograde"))
     deltaTheta = 360 - deltaTheta;
 end
 
-
-A = sind( deltaTheta ) * sqrt( (r1 * r2) / (1 - cosd( deltaTheta ) ) );
+A = sind( deltaTheta ) * sqrt( (rStart * rEnd) / (1 - cosd( deltaTheta ) ) );
 
 % TODO: Find first estimate expression
 z0 = 1; 
-z1 = newtonStep( z0, r1, r2, A, mu, deltaT );
+z1 = newtonStep( z0, rStart, rEnd, A, mu, deltaTime );
 
 tolerance = 0.00001;
 while abs( z1 - z0 ) > tolerance
 
     z0 = z1;
-    z1 = newtonStep( z0, r1, r2, A, mu, deltaT );
+    z1 = newtonStep( z0, rStart, rEnd, A, mu, deltaTime );
 
 end
 
 z = z1;
 
-% Calculating Lagrange constants
-f = 1 - (y( z, r1, r2, A ) / r1);
-g = A * sqrt( y( z, r1, r2, A ) / mu);
-df = (sqrt( mu ) / (r1 * r2)) * sqrt( y( z, r1, r2, A ) / C( z ) ) * (z * S( z ) - 1);
-dg = 1 - (y( z, r1, r2, A ) / r2);
 
+% Calculating Lagrange constants
+f = 1 - (y( z, rStart, rEnd, A ) / rStart);
+g = A * sqrt( y( z, rStart, rEnd, A ) / mu);
+df = (sqrt( mu ) / (rStart * rEnd)) * sqrt( y( z, rStart, rEnd, A ) / C( z ) ) * (z * S( z ) - 1);
+dg = 1 - (y( z, rStart, rEnd, A ) / rEnd);
 
 % Calculating required velocity in startPosition to arrive at endPosition
 % in deltaT seconds
-v2 = (1 / g) * (dg * endPosition - startPosition)
+vRequired = (1 / g) * (posEnd - f * posStart)
 
+% Change in velocity required
+deltaV = vStart - vRequired;
+
+% Momentum that thruster must provide
+deltaH = deltaV * massSatellite
+
+fThruster = norm( deltaH ) % Newtons
+
+% Theta defined as angle in XY plane
+thetaThruster = acosd( dot( vStart(1:2) , vRequired(1:2) ) / (norm( vStart(1:2) ) * norm( vRequired(1:2) ))) 
+
+% Phi defined as angle in ZX plane
+phiThruster = acosd( dot( vStart(1,3) , vRequired(1,3) ) / (norm( vStart(1,3) ) * norm( vRequired(1,3) )))
 
 
 function z1 = newtonStep( z0, r1, r2, A, mu, deltaT )
