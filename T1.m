@@ -54,7 +54,7 @@ hold off;
  
 % Program calculates thruster momentum and angle required to reach posEnd
 % given posStart, vStart, deltaTime and massSatellite. Assumes thruster
-% points in opposite direction of vStart.
+% points in opposite direction of vStart, and operates for tThrust seconds.
 
 
 posStart = [5000, 10000, 2100];
@@ -63,6 +63,7 @@ posEnd = [-14600, 2500, 7000];
 deltaTime = 3600;
 
 massSatellite = 1.3;
+tThrust = 0.1;
 
 rStart = norm( posStart );
 rEnd = norm( posEnd );
@@ -108,7 +109,7 @@ deltaV = vStart - vRequired;
 % Momentum that thruster must provide
 deltaH = deltaV * massSatellite
 
-fThruster = norm( deltaH ) % Newtons
+fThruster = norm( deltaH ) / tThrust % Newtons
 
 % Theta defined as angle in XY plane
 thetaThruster = acosd( dot( vStart(1:2) , vRequired(1:2) ) / (norm( vStart(1:2) ) * norm( vRequired(1:2) ))) 
