@@ -1,6 +1,6 @@
 %% LOAD PARAMETERS
 
-% All parameters based on km and s
+% All parameters based on deg, km and s
 
 rEarth = 6378; 
 muEarth = 398600;
