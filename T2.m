@@ -12,7 +12,7 @@ T_A = 40;
 
 hNorm_B = 52362;
 e_B = 0.0072696;
-i_B = 50;
+i_B = 59.9;
 O_B = 40;
 w_B = 120;
 T_B = 40;
@@ -164,5 +164,7 @@ end
 
 
 
-
+% TODOs
+% implement both analytical and numerical strategies for the propagation of the motion
+% have a look at solution of the Kepler problem, 2.6 of the last book sent by Leonard (see also pages around 85), seems that equation 2.18 is 
 

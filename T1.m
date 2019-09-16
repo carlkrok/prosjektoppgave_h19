@@ -187,3 +187,11 @@ function [rX, rY] = orbitPoints(h, mu, e, numPoints)
     end
 
 end
+
+
+% TODOs
+% add 'selection of the least costly trajectory that satisfies also the constraints'. Cost indexes = minimum time, minimum Delta v, do a convex combination
+% add the computation of the propagation of the uncertainties (from the actuation being different from the thought one to environmental phenomena, like J2, atmospheric drag, etc to distribution of the final orbital parameters)
+
+
+
