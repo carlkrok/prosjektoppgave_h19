@@ -35,7 +35,7 @@ plotOrbitWithEarth( r0Debris, v0Debris, eDebris, muEarth, rEarth, angleDiff )
 
 
 
-[ fThruster, thetaThruster, phiThruster ] = thrustRequired( posStart, vStart, posEnd, deltaTime, massSatellite, tThrust, orbitTypeDebris, muEarth )
+[ fThruster, thetaThruster, phiThruster ] = thrustRequired( posStart, vStart, posEnd, deltaTime, massSatellite, tThrust, orbitTypeDebris )
 
 
 
@@ -46,7 +46,7 @@ plotOrbitWithEarth( r0Debris, v0Debris, eDebris, muEarth, rEarth, angleDiff )
 
 
 
-function [ fThruster, thetaThruster, phiThruster ] = thrustRequired( posStart, vStart, posEnd, deltaTime, massSatellite, tThrust, orbitTypeDebris, muEarth )
+function [ fThruster, thetaThruster, phiThruster ] = thrustRequired( posStart, vStart, posEnd, deltaTime, massSatellite, tThrust, orbitTypeDebris )
 
     rStart = norm( posStart );
     rEnd = norm( posEnd );
@@ -62,13 +62,13 @@ function [ fThruster, thetaThruster, phiThruster ] = thrustRequired( posStart, v
 
     % TODO: Find first estimate expression
     z0 = 1; 
-    z1 = newtonStep( z0, rStart, rEnd, A, muEarth, deltaTime );
+    z1 = newtonStep( z0, rStart, rEnd, A, mu, deltaTime );
 
     tolerance = 0.00001;
     while abs( z1 - z0 ) > tolerance
 
         z0 = z1;
-        z1 = newtonStep( z0, rStart, rEnd, A, muEarth, deltaTime );
+        z1 = newtonStep( z0, rStart, rEnd, A, mu, deltaTime );
 
     end
 
@@ -77,8 +77,8 @@ function [ fThruster, thetaThruster, phiThruster ] = thrustRequired( posStart, v
 
     % Calculating Lagrange constants
     f = 1 - (y( z, rStart, rEnd, A ) / rStart);
-    g = A * sqrt( y( z, rStart, rEnd, A ) / muEarth);
-    df = (sqrt( muEarth ) / (rStart * rEnd)) * sqrt( y( z, rStart, rEnd, A ) / C( z ) ) * (z * S( z ) - 1);
+    g = A * sqrt( y( z, rStart, rEnd, A ) / mu);
+    df = (sqrt( mu ) / (rStart * rEnd)) * sqrt( y( z, rStart, rEnd, A ) / C( z ) ) * (z * S( z ) - 1);
     dg = 1 - (y( z, rStart, rEnd, A ) / rEnd);
 
     % Calculating required velocity in startPosition to arrive at endPosition
@@ -117,7 +117,6 @@ function plotOrbitWithEarth( r0, v0, e, muEarth, rEarth, angleDiff )
 
     figure(1);
     hold on;
-    plot(r0( 1 ), r0( 2 ), '*');
     plot(rEarthX, rEarthY);
 
     [rX, rY] = orbitPoints(h, muEarth, e, numPoints);

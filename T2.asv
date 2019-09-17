@@ -49,14 +49,12 @@ r_B = r0_B;
 v_B = v0_B;
 
 currTime = 0;
-numSamples = 5000;
+numSamples = 1000;
 anomalyTolerance = 10^(-6);
-nMax = 1000;
 
 orbitPeriod_A = orbitPeriod( muEarth, hNorm_A, e_A );
-numPeriods = 60;
-endTime = currTime + orbitPeriod_A * numPeriods;
-sampleInterval = (orbitPeriod_A * numPeriods) / numSamples;
+endTime = currTime + orbitPeriod_A;
+sampleInterval = orbitPeriod_A / numSamples;
 
 r0LVLH_Rel = BPosRelativeToA( r0_A, v0_A, r0_B );
 
@@ -68,29 +66,32 @@ rLVLH_RelX( 1 ) = r0LVLH_Rel( 1 );
 rLVLH_RelY( 1 ) = r0LVLH_Rel( 2 );
 rLVLH_RelZ( 1 ) = r0LVLH_Rel( 3 );
 
-for sampleIter = 2 : 1 : numSamples
+for sampleIter = [2; 1; numSamples]
    
-    [r_A, v_A] = nextState( muEarth, r0_A, v0_A, currTime, anomalyTolerance, nMax );
-    [r_B, v_B] = nextState( muEarth, r0_B, v0_B, currTime, anomalyTolerance, nMax );
+    [r_A, v_A] = nextState( muEarth, r0_A, v0_A, sampleInterval, anomalyTolerance );
+    [r_B, v_B] = nextState( muEarth, r0_B, v0_B, sampleInterval, anomalyTolerance );
     
     rLVLH_Rel = BPosRelativeToA( r_A, v_A, r_B );
     rLVLH_RelX( sampleIter ) = rLVLH_Rel( 1 );
     rLVLH_RelY( sampleIter ) = rLVLH_Rel( 2 );
     rLVLH_RelZ( sampleIter ) = rLVLH_Rel( 3 );
-    
-    currTime = currTime + sampleInterval;
 
+    r0_A = r_A;
+    v0_A = v_A;
+    r0_B = r_B;
+    v0_B = v_B;
+    
 end
 
 figure(1)
-plot3( rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ, '*' )
+plot3( rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ )
 
 
 %%
 
 
 
-function [r, v] = nextState( mu, r0, v0, deltaT, anomalyTolerance, nMax )
+function [r, v] = nextState( mu, r0, v0, deltaT, anomalyTolerance )
 
     v0Radial = dot( r0, v0 ) / norm( r0 );
     v0RadialNorm = norm( v0Radial );
@@ -100,7 +101,7 @@ function [r, v] = nextState( mu, r0, v0, deltaT, anomalyTolerance, nMax )
     
     alpha = 2 / r0Norm - v0Norm^2 / mu;
     
-    X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, anomalyTolerance, nMax );
+    X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, anomalyTolerance );
     
     f = fLagrange( r0Norm, alpha, X );
     g = gLagrange( mu, alpha, X, deltaT );
@@ -141,7 +142,7 @@ function g = gLagrange( mu, alpha, X, deltaT )
 end
 
 
-function X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, tolerance, nMax )
+function X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, tolerance )
 
     X = sqrt( mu ) * abs( alpha ) * deltaT;
     
@@ -150,14 +151,12 @@ function X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, tolerance, nM
     
     ratio = f / df;
     
-    n = 0;
-    while( abs(ratio) > tolerance && n < nMax )
+    while( ratio > tolerance )
         
-        n = n + 1;
+        X = X - ratio;
         f = F( r0Norm, v0RadialNorm, mu, X, alpha );
         df = dF( r0Norm, v0RadialNorm, mu, X, alpha, deltaT );
         ratio = f / df;
-        X = X - ratio;
         
     end
 
@@ -185,7 +184,7 @@ function rLVLH_Rel = BPosRelativeToA( rECI_A, vECI_A, rECI_B )
 end
 
 
-function [rLVLH_Rel, vLVLH_Rel, aLVLH_Rel] = BRelativeToA( rECI_A, vECI_A, rECI_B, vECI_B )
+function [rLVLH_Rel, vLVLH_Rel, aLVLH_Rel] = BRelativeToA( rECI_A, vECI_A, aECI_A, rECI_B, vECI_B, aECI_B )
 
     hECI_A = cross( rECI_A, vECI_A );
 
