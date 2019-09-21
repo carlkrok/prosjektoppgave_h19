@@ -1,5 +1,7 @@
 %% Initial parameters for spacecraft A and B. All based on deg, km and s.
 
+DEGCONV = pi/180;
+
 rEarth = 6378; 
 muEarth = 398600;
 
@@ -12,7 +14,7 @@ T_A = 40;
 
 hNorm_B = 52362;
 e_B = 0.0072696;
-i_B = 59.9;
+i_B = 50;
 O_B = 40;
 w_B = 120;
 T_B = 40;
@@ -50,7 +52,7 @@ v_B = v0_B;
 
 currTime = 0;
 numSamples = 5000;
-anomalyTolerance = 10^(-6);
+anomalyTolerance = 10^(-8);
 nMax = 1000;
 
 orbitPeriod_A = orbitPeriod( muEarth, hNorm_A, e_A );
@@ -83,7 +85,17 @@ for sampleIter = 2 : 1 : numSamples
 end
 
 figure(1)
-plot3( rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ, '*' )
+plot3( rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ, '-' )
+hold on
+axis equal
+axis on
+grid on
+%   Label the origin of the moving frame attached to A:
+text (0, 0, 0, 'A')
+%   Label the start of B's relative trajectory:
+text(rLVLH_RelX(1), rLVLH_RelY(1), rLVLH_RelZ(1), 'B')
+%   Draw the initial position vector of B:
+line([0 rLVLH_RelX(1)], [0 rLVLH_RelY(1)], [0 rLVLH_RelZ(1)])
 
 
 %%
@@ -145,8 +157,8 @@ function X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, tolerance, nM
 
     X = sqrt( mu ) * abs( alpha ) * deltaT;
     
-    f = F( r0Norm, v0RadialNorm, mu, X, alpha );
-    df = dF( r0Norm, v0RadialNorm, mu, X, alpha, deltaT );
+    df = dF( r0Norm, v0RadialNorm, mu, X, alpha );
+    f = F( r0Norm, v0RadialNorm, mu, X, alpha, deltaT );
     
     ratio = f / df;
     
@@ -154,11 +166,16 @@ function X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, tolerance, nM
     while( abs(ratio) > tolerance && n < nMax )
         
         n = n + 1;
-        f = F( r0Norm, v0RadialNorm, mu, X, alpha );
-        df = dF( r0Norm, v0RadialNorm, mu, X, alpha, deltaT );
+        df = dF( r0Norm, v0RadialNorm, mu, X, alpha );
+        f = F( r0Norm, v0RadialNorm, mu, X, alpha, deltaT );
         ratio = f / df;
         X = X - ratio;
         
+    end
+    
+    if n == nMax
+        fprintf('\n **No. iterations of Kepler''s equation = %g', n)
+        fprintf('\n   f/df                                = %g\n', f/df)
     end
 
 end
@@ -188,9 +205,10 @@ end
 function [rLVLH_Rel, vLVLH_Rel, aLVLH_Rel] = BRelativeToA( rECI_A, vECI_A, rECI_B, vECI_B )
 
     hECI_A = cross( rECI_A, vECI_A );
+    hECINorm_A = norm( hECI_A );
 
     i_unitVectorMovingFrame = ( rECI_A / norm( rECI_A ));
-    k_unitVectorMovingFrame = ( hECI_A / hNorm_A );
+    k_unitVectorMovingFrame = ( hECI_A / hECINorm_A );
     j_unitVectorMovingFrame = cross( k_unitVectorMovingFrame, i_unitVectorMovingFrame );
 
 
@@ -217,14 +235,14 @@ function [rLVLH_Rel, vLVLH_Rel, aLVLH_Rel] = BRelativeToA( rECI_A, vECI_A, rECI_
 end
 
     
-function val = dF( r0Norm, v0RadialNorm, mu, X, alpha, deltaT )
+function val = F( r0Norm, v0RadialNorm, mu, X, alpha, deltaT )
 
     z = alpha * X^2;
     val = ((r0Norm * v0RadialNorm) / sqrt( mu )) * X^2 * C( z ) + (1 - alpha * r0Norm ) * X^3 * S( z ) + r0Norm * X - sqrt( mu ) * deltaT;
     
 end
 
-function val = F( r0Norm, v0RadialNorm, mu, X, alpha )
+function val = dF( r0Norm, v0RadialNorm, mu, X, alpha )
 
     z = alpha * X^2;
     val = ((r0Norm * v0RadialNorm) / sqrt( mu )) * X * (1 - alpha * X^2 * S( z )) + (1 - alpha * r0Norm) * X^2 * C( z ) + r0Norm;

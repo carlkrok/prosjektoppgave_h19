@@ -1,5 +1,7 @@
 %% Initial parameters for spacecraft A and B. All based on deg, km and s.
 
+DEGCONV = pi/180;
+
 rEarth = 6378; 
 muEarth = 398600;
 
@@ -12,7 +14,7 @@ T_A = 40;
 
 hNorm_B = 52362;
 e_B = 0.0072696;
-i_B = 59.9;
+i_B = 50;
 O_B = 40;
 w_B = 120;
 T_B = 40;
@@ -49,12 +51,14 @@ r_B = r0_B;
 v_B = v0_B;
 
 currTime = 0;
-numSamples = 1000;
-anomalyTolerance = 10^(-6);
+numSamples = 5000;
+anomalyTolerance = 10^(-8);
+nMax = 1000;
 
 orbitPeriod_A = orbitPeriod( muEarth, hNorm_A, e_A );
-endTime = currTime + orbitPeriod_A;
-sampleInterval = orbitPeriod_A / numSamples;
+numPeriods = 60;
+endTime = currTime + orbitPeriod_A * numPeriods;
+sampleInterval = (orbitPeriod_A * numPeriods) / numSamples;
 
 r0LVLH_Rel = BPosRelativeToA( r0_A, v0_A, r0_B );
 
@@ -66,32 +70,29 @@ rLVLH_RelX( 1 ) = r0LVLH_Rel( 1 );
 rLVLH_RelY( 1 ) = r0LVLH_Rel( 2 );
 rLVLH_RelZ( 1 ) = r0LVLH_Rel( 3 );
 
-for sampleIter = [2; 1; numSamples]
+for sampleIter = 2 : 1 : numSamples
    
-    [r_A, v_A] = nextState( muEarth, r0_A, v0_A, sampleInterval, anomalyTolerance );
-    [r_B, v_B] = nextState( muEarth, r0_B, v0_B, sampleInterval, anomalyTolerance );
+    [r_A, v_A] = nextState( muEarth, r0_A, v0_A, currTime, anomalyTolerance, nMax );
+    [r_B, v_B] = nextState( muEarth, r0_B, v0_B, currTime, anomalyTolerance, nMax );
     
     rLVLH_Rel = BPosRelativeToA( r_A, v_A, r_B );
     rLVLH_RelX( sampleIter ) = rLVLH_Rel( 1 );
     rLVLH_RelY( sampleIter ) = rLVLH_Rel( 2 );
     rLVLH_RelZ( sampleIter ) = rLVLH_Rel( 3 );
-
-    r0_A = r_A;
-    v0_A = v_A;
-    r0_B = r_B;
-    v0_B = v_B;
     
+    currTime = currTime + sampleInterval;
+
 end
 
 figure(1)
-plot3( rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ )
+plot3( rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ, '*' )
 
 
 %%
 
 
 
-function [r, v] = nextState( mu, r0, v0, deltaT, anomalyTolerance )
+function [r, v] = nextState( mu, r0, v0, deltaT, anomalyTolerance, nMax )
 
     v0Radial = dot( r0, v0 ) / norm( r0 );
     v0RadialNorm = norm( v0Radial );
@@ -101,7 +102,7 @@ function [r, v] = nextState( mu, r0, v0, deltaT, anomalyTolerance )
     
     alpha = 2 / r0Norm - v0Norm^2 / mu;
     
-    X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, anomalyTolerance );
+    X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, anomalyTolerance, nMax );
     
     f = fLagrange( r0Norm, alpha, X );
     g = gLagrange( mu, alpha, X, deltaT );
@@ -142,7 +143,7 @@ function g = gLagrange( mu, alpha, X, deltaT )
 end
 
 
-function X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, tolerance )
+function X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, tolerance, nMax )
 
     X = sqrt( mu ) * abs( alpha ) * deltaT;
     
@@ -151,13 +152,20 @@ function X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, tolerance )
     
     ratio = f / df;
     
-    while( ratio > tolerance )
+    n = 0;
+    while( abs(ratio) > tolerance && n < nMax )
         
-        X = X - ratio;
+        n = n + 1;
         f = F( r0Norm, v0RadialNorm, mu, X, alpha );
         df = dF( r0Norm, v0RadialNorm, mu, X, alpha, deltaT );
         ratio = f / df;
+        X = X - ratio;
         
+    end
+    
+    if n == nMax
+        fprintf('\n **No. iterations of Kepler''s equation = %g', n)
+        fprintf('\n   f/df                                = %g\n', f/df)
     end
 
 end
@@ -184,12 +192,13 @@ function rLVLH_Rel = BPosRelativeToA( rECI_A, vECI_A, rECI_B )
 end
 
 
-function [rLVLH_Rel, vLVLH_Rel, aLVLH_Rel] = BRelativeToA( rECI_A, vECI_A, aECI_A, rECI_B, vECI_B, aECI_B )
+function [rLVLH_Rel, vLVLH_Rel, aLVLH_Rel] = BRelativeToA( rECI_A, vECI_A, rECI_B, vECI_B )
 
     hECI_A = cross( rECI_A, vECI_A );
+    hECINorm_A = norm( hECI_A );
 
     i_unitVectorMovingFrame = ( rECI_A / norm( rECI_A ));
-    k_unitVectorMovingFrame = ( hECI_A / hNorm_A );
+    k_unitVectorMovingFrame = ( hECI_A / hECINorm_A );
     j_unitVectorMovingFrame = cross( k_unitVectorMovingFrame, i_unitVectorMovingFrame );
 
 
