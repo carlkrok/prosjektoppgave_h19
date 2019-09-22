@@ -5,19 +5,43 @@ DEGCONV = pi/180;
 rEarth = 6378; 
 muEarth = 398600;
 
+% From example 7.2 in [Curtis2011]
+
+% hNorm_A = 52059;
+% e_A = 0.025724;
+% i_A = 60;
+% O_A = 40;
+% w_A = 30;
+% T_A = 40;
+
+% hNorm_B = 52362;
+% e_B = 0.0072696;
+% i_B = 50;
+% O_B = 40;
+% w_B = 120;
+% T_B = 40;
+
+
 hNorm_A = 52059;
 e_A = 0.025724;
-i_A = 60;
-O_A = 40;
-w_A = 30;
-T_A = 40;
+i_A = 0;
+O_A = 0;
+w_A = 0;
+T_A = 0;
 
-hNorm_B = 52362;
-e_B = 0.0072696;
-i_B = 50;
-O_B = 40;
-w_B = 120;
-T_B = 40;
+hNorm_B = 52059;
+e_B = 0.025724;
+i_B = 0;
+O_B = 0;
+w_B = 0;
+T_B = 90;
+
+hNorm_C = 52059;
+e_C = 0.025724;
+i_C = 0;
+O_C = 0;
+w_C = 0;
+T_C = 180;
 
 
 %% Calculation of relative position, velocity and acceleration of
@@ -35,62 +59,94 @@ QmatPQWtoECI_B = transformPQWtoECI( i_B, O_B, w_B );
 rECI_B = QmatPQWtoECI_B * rPQW_B;
 vECI_B = QmatPQWtoECI_B * vPQW_B;
 
+rPQW_C = positionVectorPQW( muEarth, hNorm_C, e_C, T_C );
+vPQW_C = velocityVectorPQW( muEarth, hNorm_C, e_C, T_C );
+QmatPQWtoECI_C = transformPQWtoECI( i_C, O_C, w_C );
+rECI_C = QmatPQWtoECI_C * rPQW_C;
+vECI_C = QmatPQWtoECI_C * vPQW_C;
+
 
 %% Plot of relative motion
 
-r0_A = rECI_A;
-v0_A = vECI_A;
-
-r_A = r0_A;
-v_A = v0_A;
-
-r0_B = rECI_B;
-v0_B = vECI_B;
-
-r_B = r0_B;
-v_B = v0_B;
-
-currTime = 0;
-numSamples = 5000;
 anomalyTolerance = 10^(-8);
 nMax = 1000;
 
 orbitPeriod_A = orbitPeriod( muEarth, hNorm_A, e_A );
 numPeriods = 60;
-endTime = currTime + orbitPeriod_A * numPeriods;
-sampleInterval = (orbitPeriod_A * numPeriods) / numSamples;
+numSamples = 5000;
 
-r0LVLH_Rel = BPosRelativeToA( r0_A, v0_A, r0_B );
+[rLVLH_Rel1X, rLVLH_Rel1Y, rLVLH_Rel1Z, rLVLH_Rel1Norm, sampleT1] = relativeTrajectory( rECI_A, vECI_A, rECI_B, vECI_B, anomalyTolerance, nMax, orbitPeriod_A, numPeriods, numSamples, muEarth );
 
-rLVLH_RelX = [numSamples];
-rLVLH_RelY = [numSamples];
-rLVLH_RelZ = [numSamples];
+[rLVLH_Rel2X, rLVLH_Rel2Y, rLVLH_Rel2Z, rLVLH_Rel2Norm, sampleT2] = relativeTrajectory( rECI_A, vECI_A, rECI_C, vECI_C, anomalyTolerance, nMax, orbitPeriod_A, numPeriods, numSamples, muEarth );
 
-rLVLH_RelX( 1 ) = r0LVLH_Rel( 1 );
-rLVLH_RelY( 1 ) = r0LVLH_Rel( 2 );
-rLVLH_RelZ( 1 ) = r0LVLH_Rel( 3 );
-
-for sampleIter = 2 : 1 : numSamples
-   
-    [r_A, v_A] = nextState( muEarth, r0_A, v0_A, currTime, anomalyTolerance, nMax );
-    [r_B, v_B] = nextState( muEarth, r0_B, v0_B, currTime, anomalyTolerance, nMax );
-    
-    rLVLH_Rel = BPosRelativeToA( r_A, v_A, r_B );
-    rLVLH_RelX( sampleIter ) = rLVLH_Rel( 1 );
-    rLVLH_RelY( sampleIter ) = rLVLH_Rel( 2 );
-    rLVLH_RelZ( sampleIter ) = rLVLH_Rel( 3 );
-    
-    currTime = currTime + sampleInterval;
-
-end
 
 figure(1)
-plot3( rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ, '*' )
+plot3( rLVLH_Rel1X, rLVLH_Rel1Y, rLVLH_Rel1Z, '-', rLVLH_Rel2X, rLVLH_Rel2Y, rLVLH_Rel2Z, '-' )
+hold on
+%axis equal
+axis on
+grid on
+%   Label the origin of the moving frame attached to A:
+text (0, 0, 0, 'A')
+%   Label the start of relative trajectories:
+text(rLVLH_Rel1X(1), rLVLH_Rel1Y(1), rLVLH_Rel1Z(1), 'B')
+text(rLVLH_Rel2X(1), rLVLH_Rel2Y(1), rLVLH_Rel2Z(1), 'C')
+%   Draw the initial position vectors:
+line([0 rLVLH_Rel1X(1)], [0 rLVLH_Rel1Y(1)], [0 rLVLH_Rel1Z(1)])
+line([0 rLVLH_Rel2X(1)], [0 rLVLH_Rel2Y(1)], [0 rLVLH_Rel2Z(1)])
+hold off
 
+figure(2)
+hold on
+plot( sampleT1, rLVLH_Rel1Norm)
+plot( sampleT2, rLVLH_Rel2Norm, 'legend','C')
+hold off
 
 %%
 
+function [rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ, rLVLH_RelNorm, sampleT] = relativeTrajectory( r0_A, v0_A, r0_B, v0_B, anomalyTolerance, nMax, orbitPeriod_A, numPeriods, numSamples, muEarth )
 
+    r_A = r0_A;
+    v_A = v0_A;
+
+    r_B = r0_B;
+    v_B = v0_B;
+
+    currTime = 0;
+    endTime = currTime + orbitPeriod_A * numPeriods;
+    sampleInterval = (orbitPeriod_A * numPeriods) / numSamples;
+
+    r0LVLH_Rel = BPosRelativeToA( r0_A, v0_A, r0_B );
+
+    rLVLH_RelX = [numSamples];
+    rLVLH_RelY = [numSamples];
+    rLVLH_RelZ = [numSamples];
+    rLVLH_RelNorm = [numSamples];
+    sampleT = [numSamples];
+    
+    rLVLH_RelX( 1 ) = r0LVLH_Rel( 1 );
+    rLVLH_RelY( 1 ) = r0LVLH_Rel( 2 );
+    rLVLH_RelZ( 1 ) = r0LVLH_Rel( 3 );
+    rLVLH_RelNorm( 1 ) = norm(r0LVLH_Rel);
+    sampleT( 1 ) = currTime;
+
+    for sampleIter = 2 : 1 : numSamples
+        
+        currTime = currTime + sampleInterval;
+
+        [r_A, v_A] = nextState( muEarth, r0_A, v0_A, currTime, anomalyTolerance, nMax );
+        [r_B, v_B] = nextState( muEarth, r0_B, v0_B, currTime, anomalyTolerance, nMax );
+
+        rLVLH_Rel = BPosRelativeToA( r_A, v_A, r_B );
+        rLVLH_RelX( sampleIter ) = rLVLH_Rel( 1 );
+        rLVLH_RelY( sampleIter ) = rLVLH_Rel( 2 );
+        rLVLH_RelZ( sampleIter ) = rLVLH_Rel( 3 );
+        rLVLH_RelNorm( sampleIter ) = norm(rLVLH_Rel);
+        sampleT( sampleIter ) = currTime;
+
+    end
+
+end
 
 function [r, v] = nextState( mu, r0, v0, deltaT, anomalyTolerance, nMax )
 
@@ -147,8 +203,8 @@ function X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, tolerance, nM
 
     X = sqrt( mu ) * abs( alpha ) * deltaT;
     
-    f = F( r0Norm, v0RadialNorm, mu, X, alpha );
-    df = dF( r0Norm, v0RadialNorm, mu, X, alpha, deltaT );
+    df = dF( r0Norm, v0RadialNorm, mu, X, alpha );
+    f = F( r0Norm, v0RadialNorm, mu, X, alpha, deltaT );
     
     ratio = f / df;
     
@@ -156,8 +212,8 @@ function X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, tolerance, nM
     while( abs(ratio) > tolerance && n < nMax )
         
         n = n + 1;
-        f = F( r0Norm, v0RadialNorm, mu, X, alpha );
-        df = dF( r0Norm, v0RadialNorm, mu, X, alpha, deltaT );
+        df = dF( r0Norm, v0RadialNorm, mu, X, alpha );
+        f = F( r0Norm, v0RadialNorm, mu, X, alpha, deltaT );
         ratio = f / df;
         X = X - ratio;
         
@@ -225,14 +281,14 @@ function [rLVLH_Rel, vLVLH_Rel, aLVLH_Rel] = BRelativeToA( rECI_A, vECI_A, rECI_
 end
 
     
-function val = dF( r0Norm, v0RadialNorm, mu, X, alpha, deltaT )
+function val = F( r0Norm, v0RadialNorm, mu, X, alpha, deltaT )
 
     z = alpha * X^2;
     val = ((r0Norm * v0RadialNorm) / sqrt( mu )) * X^2 * C( z ) + (1 - alpha * r0Norm ) * X^3 * S( z ) + r0Norm * X - sqrt( mu ) * deltaT;
     
 end
 
-function val = F( r0Norm, v0RadialNorm, mu, X, alpha )
+function val = dF( r0Norm, v0RadialNorm, mu, X, alpha )
 
     z = alpha * X^2;
     val = ((r0Norm * v0RadialNorm) / sqrt( mu )) * X * (1 - alpha * X^2 * S( z )) + (1 - alpha * r0Norm) * X^2 * C( z ) + r0Norm;

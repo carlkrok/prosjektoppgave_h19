@@ -5,6 +5,15 @@
 rEarth = 6378; 
 muEarth = 398600;
 
+
+% Program calculates thruster momentum and angle required to reach posEnd
+% given posStart, vStart, deltaTime and massSatellite. Assumes thruster
+% points in opposite direction of vStart, and operates for tThrust seconds.
+% All parameters based on kg, deg, km and s
+% Theta defined as angle in XY plane
+% Phi defined as angle in ZX plane
+
+
 % For plotting of orbit function
 r0Debris = [2000 + rEarth, 0, 0];
 v0Debris = [0, 8, 0];
@@ -14,39 +23,26 @@ angleDiff = 1;
 % Lambert's problem, thruster required function
 massSatellite = 1.3;
 tThrust = 0.1;
+
 posStart = [5000, 10000, 2100];
 vStart = [-1.9925, 1.9254, 3.2456];
 posEnd = [-14600, 2500, 7000];
+vEnd = [-1.9925, 1.9254, 3.2456];
+
 deltaTime = 3600;
 orbitTypeDebris = "prograde"; % Alt: retrograde
 
 
-%% TWO BODY SIMULATION
 
-plotOrbitWithEarth( r0Debris, v0Debris, eDebris, muEarth, rEarth, angleDiff )
-
-
-%% ORBIT DETERMINATION
- 
-% Program calculates thruster momentum and angle required to reach posEnd
-% given posStart, vStart, deltaTime and massSatellite. Assumes thruster
-% points in opposite direction of vStart, and operates for tThrust seconds.
-% All parameters based on kg, deg, km and s
+[ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEnd, deltaTime, orbitTypeDebris, muEarth )
 
 
-
-[ fThruster, thetaThruster, phiThruster ] = thrustRequired( posStart, vStart, posEnd, deltaTime, massSatellite, tThrust, orbitTypeDebris, muEarth )
-
-
+%plotOrbitWithEarth( r0Debris, v0Debris, eDebris, muEarth, rEarth, angleDiff )
+%[ fThruster, thetaThruster, phiThruster ] = thrustRequiredToPoint( posStart, vStart, posEnd, deltaTime, massSatellite, tThrust, orbitTypeDebris, muEarth )
 
 
+function [ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEnd, deltaTime, orbitTypeDebris, muEarth )
 
-
-
-
-
-
-function [ fThruster, thetaThruster, phiThruster ] = thrustRequired( posStart, vStart, posEnd, deltaTime, massSatellite, tThrust, orbitTypeDebris, muEarth )
 
     rStart = norm( posStart );
     rEnd = norm( posEnd );
@@ -61,7 +57,56 @@ function [ fThruster, thetaThruster, phiThruster ] = thrustRequired( posStart, v
     A = sind( deltaTheta ) * sqrt( (rStart * rEnd) / (1 - cosd( deltaTheta ) ) );
 
     % TODO: Find first estimate expression
-    z0 = 1; 
+    z0 = 0; 
+    z1 = newtonStep( z0, rStart, rEnd, A, muEarth, deltaTime );
+    
+    tolerance = 0.00001;
+    while abs( z1 - z0 ) > tolerance
+
+        z0 = z1;
+        z1 = newtonStep( z0, rStart, rEnd, A, muEarth, deltaTime );
+
+    end
+
+    z = z1;
+
+
+    % Calculating Lagrange constants
+    f = 1 - (y( z, rStart, rEnd, A ) / rStart);
+    g = A * sqrt( y( z, rStart, rEnd, A ) / muEarth);
+    df = (sqrt( muEarth ) / (rStart * rEnd)) * sqrt( y( z, rStart, rEnd, A ) / C( z ) ) * (z * S( z ) - 1);
+    dg = 1 - (y( z, rStart, rEnd, A ) / rEnd);
+
+    % Calculating required velocity in startPosition to arrive at end orbit
+    % in deltaT seconds
+    vRequiredStart = (1 / g) * (posEnd - f * posStart);
+    vIntersectOrbit = (1 / g) * ( dg * posEnd - posStart );
+
+    % Change in velocity required
+    deltaVStart = vStart - vRequiredStart;
+    deltaVEnd = vIntersectOrbit - vEnd;
+
+
+end
+
+
+
+function [ fThruster, thetaThruster, phiThruster ] = thrustRequiredToPoint( posStart, vStart, posEnd, deltaTime, massSatellite, tThrust, orbitTypeDebris, muEarth )
+
+    rStart = norm( posStart );
+    rEnd = norm( posEnd );
+
+    deltaTheta = acosd( dot( posStart, posEnd ) / (rStart * rEnd) );
+
+    wOrbit = cross( posStart, posEnd );
+    if ((wOrbit(3) < 0 && orbitTypeDebris == "prograde") || (~(wOrbit(3) < 0 ) && orbitTypeDebris == "retrograde"))
+        deltaTheta = 360 - deltaTheta;
+    end
+
+    A = sind( deltaTheta ) * sqrt( (rStart * rEnd) / (1 - cosd( deltaTheta ) ) );
+
+    % TODO: Find first estimate expression
+    z0 = 0; 
     z1 = newtonStep( z0, rStart, rEnd, A, muEarth, deltaTime );
 
     tolerance = 0.00001;
