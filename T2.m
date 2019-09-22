@@ -23,25 +23,25 @@ muEarth = 398600;
 
 
 hNorm_A = 52059;
-e_A = 0.025724;
-i_A = 0;
-O_A = 0;
-w_A = 0;
-T_A = 0;
+e_A = 0.025724; % Eccentricity
+i_A = 0; % Inclination
+O_A = 0; % Right ascension
+w_A = 0; % Argument of Perigee
+T_A = 0; % True anomaly
 
 hNorm_B = 52059;
 e_B = 0.025724;
-i_B = 0;
+i_B = 0.01;
 O_B = 0;
 w_B = 0;
-T_B = 90;
+T_B = 0;
 
 hNorm_C = 52059;
 e_C = 0.025724;
-i_C = 0;
+i_C = -0.005;
 O_C = 0;
 w_C = 0;
-T_C = 180;
+T_C = 0;
 
 
 %% Calculation of relative position, velocity and acceleration of
@@ -72,7 +72,7 @@ anomalyTolerance = 10^(-8);
 nMax = 1000;
 
 orbitPeriod_A = orbitPeriod( muEarth, hNorm_A, e_A );
-numPeriods = 60;
+numPeriods = 1;
 numSamples = 5000;
 
 [rLVLH_Rel1X, rLVLH_Rel1Y, rLVLH_Rel1Z, rLVLH_Rel1Norm, sampleT1] = relativeTrajectory( rECI_A, vECI_A, rECI_B, vECI_B, anomalyTolerance, nMax, orbitPeriod_A, numPeriods, numSamples, muEarth );
@@ -83,7 +83,7 @@ numSamples = 5000;
 figure(1)
 plot3( rLVLH_Rel1X, rLVLH_Rel1Y, rLVLH_Rel1Z, '-', rLVLH_Rel2X, rLVLH_Rel2Y, rLVLH_Rel2Z, '-' )
 hold on
-%axis equal
+axis equal
 axis on
 grid on
 %   Label the origin of the moving frame attached to A:

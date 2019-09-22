@@ -34,11 +34,57 @@ orbitTypeDebris = "prograde"; % Alt: retrograde
 
 
 
+
+
 [ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEnd, deltaTime, orbitTypeDebris, muEarth )
 
 
+
+minTime = 1800;
+maxTime = 36000;
+deltaTime = 900;
+
+numpoints = ( maxTime - minTime ) / deltaTime;
+
+firstManouver = [ numpoints ];
+secondManouver = [ numpoints ];
+
+for manouverTime = minTime : deltaTime : maxTime
+    
+    [ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEnd, manouverTime, orbitTypeDebris, muEarth );
+    
+    firstManouver( ( manouverTime - minTime + deltaTime ) / deltaTime ) = norm( deltaVStart );
+    secondManouver( ( manouverTime - minTime + deltaTime ) / deltaTime ) = norm( deltaVEnd );
+    
+end
+
+figure(3)
+hold on
+plot(firstManouver)
+plot(secondManouver)
+legend('First Manouver', 'Second Manouver')
+hold off
+
 %plotOrbitWithEarth( r0Debris, v0Debris, eDebris, muEarth, rEarth, angleDiff )
 %[ fThruster, thetaThruster, phiThruster ] = thrustRequiredToPoint( posStart, vStart, posEnd, deltaTime, massSatellite, tThrust, orbitTypeDebris, muEarth )
+
+
+
+
+function [ chasersDeltaVStart, chasersDeltaVEnd ] = changeFormation( chasersPosStart, chasersVStart, chasersPosEnd, chasersVEnd, deltaTime, orbitTypeFormation, muEarth )
+
+    numChasers = len( chasersPosStart );
+    
+    chasersDeltaVStart = [ numChasers ];
+    chasersDeltaVEnd = [ numChasers ];
+    
+    for chaserIterator = 0 : 1 : numChasers
+        
+        [ chasersDeltaVStart( chaserIterator ), chasersDeltaVEnd( chaserIterator ) ] = changeOrbit( chasersPosStart( chaserIterator ), chasersVStart( chaserIterator ), chasersPosEnd( chaserIterator ), chasersVEnd( chaserIterator ), deltaTime, orbitTypeFormation, muEarth );
+        
+    end
+
+end
 
 
 function [ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEnd, deltaTime, orbitTypeDebris, muEarth )

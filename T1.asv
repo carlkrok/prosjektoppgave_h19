@@ -23,19 +23,70 @@ angleDiff = 1;
 % Lambert's problem, thruster required function
 massSatellite = 1.3;
 tThrust = 0.1;
+
 posStart = [5000, 10000, 2100];
 vStart = [-1.9925, 1.9254, 3.2456];
 posEnd = [-14600, 2500, 7000];
+vEnd = [-1.9925, 1.9254, 3.2456];
+
 deltaTime = 3600;
 orbitTypeDebris = "prograde"; % Alt: retrograde
 
 
+
+
+
+[ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEnd, deltaTime, orbitTypeDebris, muEarth )
+
+
+
+minTime = 1800;
+maxTime = 36000;
+deltaTime = 900;
+
+numpoints = ( maxTime - minTime ) / deltaTime;
+
+firstManouver = [ numpoints ];
+secondManouver = [ numpoints ];
+
+figure(3)
+hold on
+
+for manouverTime = minTime : deltaTime : maxTime
+    
+    [ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEnd, manouverTime, orbitTypeDebris, muEarth );
+    
+    firstManouver( ( manouverTime - minTime ) / deltaTime ) = norm( deltaVStart );
+    secondManouver( ( manouverTime - minTime ) / deltaTime ) = norm( deltaVEnd );
+    
+end
+
+hold off
+
+
 %plotOrbitWithEarth( r0Debris, v0Debris, eDebris, muEarth, rEarth, angleDiff )
+%[ fThruster, thetaThruster, phiThruster ] = thrustRequiredToPoint( posStart, vStart, posEnd, deltaTime, massSatellite, tThrust, orbitTypeDebris, muEarth )
 
-[ fThruster, thetaThruster, phiThruster ] = thrustRequiredToPoint( posStart, vStart, posEnd, deltaTime, massSatellite, tThrust, orbitTypeDebris, muEarth )
 
 
-function [ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEnd, deltaTime, massSatellite, tThrust, orbitTypeDebris, muEarth )
+
+function [ chasersDeltaVStart, chasersDeltaVEnd ] = changeFormation( chasersPosStart, chasersVStart, chasersPosEnd, chasersVEnd, deltaTime, orbitTypeFormation, muEarth )
+
+    numChasers = len( chasersPosStart );
+    
+    chasersDeltaVStart = [ numChasers ];
+    chasersDeltaVEnd = [ numChasers ];
+    
+    for chaserIterator = 0 : 1 : numChasers
+        
+        [ chasersDeltaVStart( chaserIterator ), chasersDeltaVEnd( chaserIterator ) ] = changeOrbit( chasersPosStart( chaserIterator ), chasersVStart( chaserIterator ), chasersPosEnd( chaserIterator ), chasersVEnd( chaserIterator ), deltaTime, orbitTypeFormation, muEarth );
+        
+    end
+
+end
+
+
+function [ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEnd, deltaTime, orbitTypeDebris, muEarth )
 
 
     rStart = norm( posStart );
@@ -71,12 +122,14 @@ function [ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEn
     df = (sqrt( muEarth ) / (rStart * rEnd)) * sqrt( y( z, rStart, rEnd, A ) / C( z ) ) * (z * S( z ) - 1);
     dg = 1 - (y( z, rStart, rEnd, A ) / rEnd);
 
-    % Calculating required velocity in startPosition to arrive at endPosition
+    % Calculating required velocity in startPosition to arrive at end orbit
     % in deltaT seconds
-    vSart = (1 / g) * (posEnd - f * posStart);
+    vRequiredStart = (1 / g) * (posEnd - f * posStart);
+    vIntersectOrbit = (1 / g) * ( dg * posEnd - posStart );
 
     % Change in velocity required
-    deltaVSart = vStart - vRequired;
+    deltaVStart = vStart - vRequiredStart;
+    deltaVEnd = vIntersectOrbit - vEnd;
 
 
 end
