@@ -38,7 +38,7 @@ T_B = 0;
 
 hNorm_C = 52059;
 e_C = 0.025724;
-i_C = -0.005;
+i_C = 0;
 O_C = 0;
 w_C = 0;
 T_C = 0;
@@ -359,4 +359,8 @@ end
 % TODOs
 % implement both analytical and numerical strategies for the propagation of the motion
 % have a look at solution of the Kepler problem, 2.6 of the last book sent by Leonard (see also pages around 85), seems that equation 2.18 is 
+
+
+
+
 
