@@ -18,74 +18,82 @@ e_B = 0.025724;
 i_B = 0.01;
 O_B = 0;
 w_B = 0;
-T_B = 0;
+T_B = 90;
 
 hNorm_C = 52059;
 e_C = 0.025724;
-i_C = 0;
+i_C = 0.01;
 O_C = 0;
 w_C = 0;
-T_C = 0;
+T_C = 90;
 
 
 anomalyErrorTolerance = 10^(-8);
 anomalyMaxIterations = 1000;
 
 
-manouverTime = 3600; % Seconds
+orbitType = "prograde";
+orbitPeriod_A = orbitPeriod( muEarth, hNorm_A, e_A );
+numPeriods = 1;
+numSamples = 1000;
+
+manouverTime = 1000; % Seconds
 
 
 %% Calculation of relative position, velocity and acceleration of
 % spacecraft B relative to A
 
-rPQW_A = positionVectorPQW( muEarth, hNorm_A, e_A, T_A );
-vPQW_A = velocityVectorPQW( muEarth, hNorm_A, e_A, T_A );
+r0PQW_A = positionVectorPQW( muEarth, hNorm_A, e_A, T_A );
+v0PQW_A = velocityVectorPQW( muEarth, hNorm_A, e_A, T_A );
 QmatPQWtoECI_A = transformPQWtoECI( i_A, O_A, w_A );
-rECI_A = QmatPQWtoECI_A * rPQW_A;
-vECI_A = QmatPQWtoECI_A * vPQW_A;
+r0ECI_A = QmatPQWtoECI_A * r0PQW_A;
+v0ECI_A = QmatPQWtoECI_A * v0PQW_A;
 
-rPQW_B = positionVectorPQW( muEarth, hNorm_B, e_B, T_B );
-vPQW_B = velocityVectorPQW( muEarth, hNorm_B, e_B, T_B );
+r0PQW_B = positionVectorPQW( muEarth, hNorm_B, e_B, T_B );
+v0PQW_B = velocityVectorPQW( muEarth, hNorm_B, e_B, T_B );
 QmatPQWtoECI_B = transformPQWtoECI( i_B, O_B, w_B );
-rECI_B = QmatPQWtoECI_B * rPQW_B;
-vECI_B = QmatPQWtoECI_B * vPQW_B;
+r0ECI_B = QmatPQWtoECI_B * r0PQW_B;
+v0ECI_B = QmatPQWtoECI_B * v0PQW_B;
 
-rPQW_C = positionVectorPQW( muEarth, hNorm_C, e_C, T_C );
-vPQW_C = velocityVectorPQW( muEarth, hNorm_C, e_C, T_C );
+r0PQW_C = positionVectorPQW( muEarth, hNorm_C, e_C, T_C );
+v0PQW_C = velocityVectorPQW( muEarth, hNorm_C, e_C, T_C );
 QmatPQWtoECI_C = transformPQWtoECI( i_C, O_C, w_C );
-rECI_C = QmatPQWtoECI_C * rPQW_C;
-vECI_C = QmatPQWtoECI_C * vPQW_C;
+r0ECI_C = QmatPQWtoECI_C * r0PQW_C;
+v0ECI_C = QmatPQWtoECI_C * v0PQW_C;
 
 
 
 %% Solve Lambert's problem to intersect new orbit
 
 
+% A's position after manouver time
+
+[ rECIManouverEnd_A, vECIManouverEnd_A ] = nextState( muEarth, r0ECI_A, v0ECI_A, manouverTime, anomalyErrorTolerance, anomalyMaxIterations );
+
+% Required velocity change satellite B and C
+[ deltaVStart_B, deltaVEnd_B, vIntersectOrbit ] = interceptOrbit( r0ECI_B, v0ECI_B, rECIManouverEnd_A, vECIManouverEnd_A, manouverTime, orbitType, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
 
 
+% Updating B and C's velocities 
+vECI_B = v0ECI_B + deltaVStart_B;
 
-
-
-
+vECI_C = v0ECI_C;
 
 
 
 %% Plot of relative motion
 
+[rLVLH_RelB1X, rLVLH_RelB1Y, rLVLH_RelB1Z, rLVLH_RelB1Norm, sampleTB1] = relativeTrajectory( r0ECI_A, v0ECI_A, r0ECI_B, vECI_B, anomalyErrorTolerance, anomalyMaxIterations, orbitPeriod_A, numPeriods, numSamples, muEarth );
 
-orbitPeriod_A = orbitPeriod( muEarth, hNorm_A, e_A );
-numPeriods = 1;
-numSamples = 5000;
+[rLVLH_RelB2X, rLVLH_RelB2Y, rLVLH_RelB2Z, rLVLH_RelB2Norm, sampleTB2] = relativeTrajectory( rECIManouverEnd_A, vECIManouverEnd_A, r0ECI_B, vECI_B, anomalyErrorTolerance, anomalyMaxIterations, orbitPeriod_A, numPeriods, numSamples, muEarth );
 
-[rLVLH_Rel1X, rLVLH_Rel1Y, rLVLH_Rel1Z, rLVLH_Rel1Norm, sampleT1] = relativeTrajectory( rECI_A, vECI_A, rECI_B, vECI_B, anomalyErrorTolerance, anomalyMaxIterations, orbitPeriod_A, numPeriods, numSamples, muEarth );
-
-[rLVLH_Rel2X, rLVLH_Rel2Y, rLVLH_Rel2Z, rLVLH_Rel2Norm, sampleT2] = relativeTrajectory( rECI_A, vECI_A, rECI_C, vECI_C, anomalyErrorTolerance, anomalyMaxIterations, orbitPeriod_A, numPeriods, numSamples, muEarth );
+[rLVLH_RelCX, rLVLH_RelCY, rLVLH_RelCZ, rLVLH_RelCNorm, sampleTC] = relativeTrajectory( r0ECI_A, v0ECI_A, r0ECI_C, vECI_C, anomalyErrorTolerance, anomalyMaxIterations, orbitPeriod_A, numPeriods, numSamples, muEarth );
 
 
 figure(4)
 hold on
-plot3( rLVLH_Rel1X, rLVLH_Rel1Y, rLVLH_Rel1Z, '-' )
-plot3( rLVLH_Rel2X, rLVLH_Rel2Y, rLVLH_Rel2Z, '-' )
+plot3( rLVLH_RelB1X, rLVLH_RelB1Y, rLVLH_RelB1Z, '-' )
+plot3( rLVLH_RelCX, rLVLH_RelCY, rLVLH_RelCZ, '-' )
 legend( 'B', 'C' )
 %axis equal
 axis on
@@ -93,17 +101,17 @@ grid on
 % Label the origin of the moving frame attached to A:
 text (0, 0, 0, 'A')
 % Label the start of relative trajectories:
-text(rLVLH_Rel1X(1), rLVLH_Rel1Y(1), rLVLH_Rel1Z(1), 'B')
-text(rLVLH_Rel2X(1), rLVLH_Rel2Y(1), rLVLH_Rel2Z(1), 'C')
+text(rLVLH_RelB1X(1), rLVLH_RelB1Y(1), rLVLH_RelB1Z(1), 'B')
+text(rLVLH_RelCX(1), rLVLH_RelCY(1), rLVLH_RelCZ(1), 'C')
 % Draw the initial position vectors:
-line([0 rLVLH_Rel1X(1)], [0 rLVLH_Rel1Y(1)], [0 rLVLH_Rel1Z(1)])
-line([0 rLVLH_Rel2X(1)], [0 rLVLH_Rel2Y(1)], [0 rLVLH_Rel2Z(1)])
+%line([0 rLVLH_Rel1X(1)], [0 rLVLH_Rel1Y(1)], [0 rLVLH_Rel1Z(1)])
+%line([0 rLVLH_Rel2X(1)], [0 rLVLH_Rel2Y(1)], [0 rLVLH_Rel2Z(1)])
 hold off
 
 figure(5)
 hold on
-plot( sampleT1, rLVLH_Rel1Norm )
-plot( sampleT2, rLVLH_Rel2Norm )
+plot( sampleTB1, rLVLH_RelB1Norm )
+plot( sampleTC, rLVLH_RelCNorm )
 legend( 'B', 'C' )
 hold off
 
@@ -112,50 +120,36 @@ hold off
 
 
 
-function [ deltaVStart, deltaVEnd ] = velocityChangeRequired( posStart, vStart, posEnd, vEnd, deltaTime, orbitTypeDebris, muEarth )
+function [ deltaVStart, deltaVEnd, vIntersectOrbit ] = interceptOrbit( posStart, vStart, posEnd, vEnd, deltaTime, orbitTypeDebris, mu, anomalyTolerance, nMax )
 
 
-    rStart = norm( posStart );
-    rEnd = norm( posEnd );
-
-    deltaTheta = acosd( dot( posStart, posEnd ) / (rStart * rEnd) );
-
-    wOrbit = cross( posStart, posEnd );
-    if ((wOrbit(3) < 0 && orbitTypeDebris == "prograde") || (~(wOrbit(3) < 0 ) && orbitTypeDebris == "retrograde"))
-        deltaTheta = 360 - deltaTheta;
-    end
-
-    A = sind( deltaTheta ) * sqrt( (rStart * rEnd) / (1 - cosd( deltaTheta ) ) );
-
-    % TODO: Find first estimate expression
-    z0 = 0; 
-    z1 = newtonStep( z0, rStart, rEnd, A, muEarth, deltaTime );
+    posStartNorm = norm( posStart );
+    vStartNorm = norm( vStart );
     
-    tolerance = 0.00001;
-    while abs( z1 - z0 ) > tolerance
-
-        z0 = z1;
-        z1 = newtonStep( z0, rStart, rEnd, A, muEarth, deltaTime );
-
-    end
-
-    z = z1;
-
-
-    % Calculating Lagrange constants
-    f = 1 - (y( z, rStart, rEnd, A ) / rStart);
-    g = A * sqrt( y( z, rStart, rEnd, A ) / muEarth);
-    df = (sqrt( muEarth ) / (rStart * rEnd)) * sqrt( y( z, rStart, rEnd, A ) / C( z ) ) * (z * S( z ) - 1);
-    dg = 1 - (y( z, rStart, rEnd, A ) / rEnd);
-
+    vStartRadial = dot( posStart, vStart ) / posStartNorm;
+    vStartRadialNorm = norm( vStartRadial );
+    
+    alpha = 2 / posStartNorm - vStartNorm^2 / mu;
+    
+    X = findAnomaly( mu, alpha, posStartNorm, vStartRadialNorm, deltaTime, anomalyTolerance, nMax );
+    
+    f = fLagrange( posStartNorm, alpha, X );
+    g = gLagrange( mu, alpha, X, deltaTime );
+    
+    r = f * posStart + g * vStart;
+    rNorm = norm( r );
+    
+    df = dfLagrange( posStartNorm, rNorm, mu, alpha, X );
+    dg = dgLagrange( rNorm, alpha, X );
+    
     % Calculating required velocity in startPosition to arrive at end orbit
     % in deltaT seconds
     vRequiredStart = (1 / g) * (posEnd - f * posStart);
     vIntersectOrbit = (1 / g) * ( dg * posEnd - posStart );
 
     % Change in velocity required
-    deltaVStart = vStart - vRequiredStart;
-    deltaVEnd = vIntersectOrbit - vEnd;
+    deltaVStart = vRequiredStart - vStart;
+    deltaVEnd = vEnd - vIntersectOrbit;
 
 
 end
