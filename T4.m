@@ -5,20 +5,6 @@ DEGCONV = pi/180;
 rEarth = 6378; 
 muEarth = 398600;
 
-% From example 7.2 in [Curtis2011]
-% hNorm_A = 52059;
-% e_A = 0.025724;
-% i_A = 60;
-% O_A = 40;
-% w_A = 30;
-% T_A = 40;
-% hNorm_B = 52362;
-% e_B = 0.0072696;
-% i_B = 50;
-% O_B = 40;
-% w_B = 120;
-% T_B = 40;
-
 
 hNorm_A = 52059;
 e_A = 0.025724; % Eccentricity
@@ -40,6 +26,13 @@ i_C = 0;
 O_C = 0;
 w_C = 0;
 T_C = 0;
+
+
+anomalyErrorTolerance = 10^(-8);
+anomalyMaxIterations = 1000;
+
+
+manouverTime = 3600; % Seconds
 
 
 %% Calculation of relative position, velocity and acceleration of
@@ -64,23 +57,36 @@ rECI_C = QmatPQWtoECI_C * rPQW_C;
 vECI_C = QmatPQWtoECI_C * vPQW_C;
 
 
+
+%% Solve Lambert's problem to intersect new orbit
+
+
+
+
+
+
+
+
+
+
+
 %% Plot of relative motion
 
-anomalyTolerance = 10^(-8);
-nMax = 1000;
 
 orbitPeriod_A = orbitPeriod( muEarth, hNorm_A, e_A );
 numPeriods = 1;
 numSamples = 5000;
 
-[rLVLH_Rel1X, rLVLH_Rel1Y, rLVLH_Rel1Z, rLVLH_Rel1Norm, sampleT1] = relativeTrajectory( rECI_A, vECI_A, rECI_B, vECI_B, anomalyTolerance, nMax, orbitPeriod_A, numPeriods, numSamples, muEarth );
+[rLVLH_Rel1X, rLVLH_Rel1Y, rLVLH_Rel1Z, rLVLH_Rel1Norm, sampleT1] = relativeTrajectory( rECI_A, vECI_A, rECI_B, vECI_B, anomalyErrorTolerance, anomalyMaxIterations, orbitPeriod_A, numPeriods, numSamples, muEarth );
 
-[rLVLH_Rel2X, rLVLH_Rel2Y, rLVLH_Rel2Z, rLVLH_Rel2Norm, sampleT2] = relativeTrajectory( rECI_A, vECI_A, rECI_C, vECI_C, anomalyTolerance, nMax, orbitPeriod_A, numPeriods, numSamples, muEarth );
+[rLVLH_Rel2X, rLVLH_Rel2Y, rLVLH_Rel2Z, rLVLH_Rel2Norm, sampleT2] = relativeTrajectory( rECI_A, vECI_A, rECI_C, vECI_C, anomalyErrorTolerance, anomalyMaxIterations, orbitPeriod_A, numPeriods, numSamples, muEarth );
 
 
-figure(1)
-plot3( rLVLH_Rel1X, rLVLH_Rel1Y, rLVLH_Rel1Z, '-', rLVLH_Rel2X, rLVLH_Rel2Y, rLVLH_Rel2Z, '-' )
+figure(4)
 hold on
+plot3( rLVLH_Rel1X, rLVLH_Rel1Y, rLVLH_Rel1Z, '-' )
+plot3( rLVLH_Rel2X, rLVLH_Rel2Y, rLVLH_Rel2Z, '-' )
+legend( 'B', 'C' )
 %axis equal
 axis on
 grid on
@@ -94,14 +100,67 @@ line([0 rLVLH_Rel1X(1)], [0 rLVLH_Rel1Y(1)], [0 rLVLH_Rel1Z(1)])
 line([0 rLVLH_Rel2X(1)], [0 rLVLH_Rel2Y(1)], [0 rLVLH_Rel2Z(1)])
 hold off
 
-figure(2)
+figure(5)
 hold on
-plot( sampleT1, rLVLH_Rel1Norm)
-plot( sampleT2, rLVLH_Rel2Norm)
-legend('B', 'C')
+plot( sampleT1, rLVLH_Rel1Norm )
+plot( sampleT2, rLVLH_Rel2Norm )
+legend( 'B', 'C' )
 hold off
 
 %%
+
+
+
+
+function [ deltaVStart, deltaVEnd ] = velocityChangeRequired( posStart, vStart, posEnd, vEnd, deltaTime, orbitTypeDebris, muEarth )
+
+
+    rStart = norm( posStart );
+    rEnd = norm( posEnd );
+
+    deltaTheta = acosd( dot( posStart, posEnd ) / (rStart * rEnd) );
+
+    wOrbit = cross( posStart, posEnd );
+    if ((wOrbit(3) < 0 && orbitTypeDebris == "prograde") || (~(wOrbit(3) < 0 ) && orbitTypeDebris == "retrograde"))
+        deltaTheta = 360 - deltaTheta;
+    end
+
+    A = sind( deltaTheta ) * sqrt( (rStart * rEnd) / (1 - cosd( deltaTheta ) ) );
+
+    % TODO: Find first estimate expression
+    z0 = 0; 
+    z1 = newtonStep( z0, rStart, rEnd, A, muEarth, deltaTime );
+    
+    tolerance = 0.00001;
+    while abs( z1 - z0 ) > tolerance
+
+        z0 = z1;
+        z1 = newtonStep( z0, rStart, rEnd, A, muEarth, deltaTime );
+
+    end
+
+    z = z1;
+
+
+    % Calculating Lagrange constants
+    f = 1 - (y( z, rStart, rEnd, A ) / rStart);
+    g = A * sqrt( y( z, rStart, rEnd, A ) / muEarth);
+    df = (sqrt( muEarth ) / (rStart * rEnd)) * sqrt( y( z, rStart, rEnd, A ) / C( z ) ) * (z * S( z ) - 1);
+    dg = 1 - (y( z, rStart, rEnd, A ) / rEnd);
+
+    % Calculating required velocity in startPosition to arrive at end orbit
+    % in deltaT seconds
+    vRequiredStart = (1 / g) * (posEnd - f * posStart);
+    vIntersectOrbit = (1 / g) * ( dg * posEnd - posStart );
+
+    % Change in velocity required
+    deltaVStart = vStart - vRequiredStart;
+    deltaVEnd = vIntersectOrbit - vEnd;
+
+
+end
+
+
 
 function [rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ, rLVLH_RelNorm, sampleT] = relativeTrajectory( r0_A, v0_A, r0_B, v0_B, anomalyTolerance, nMax, orbitPeriod_A, numPeriods, numSamples, muEarth )
 
