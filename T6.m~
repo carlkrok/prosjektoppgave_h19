@@ -55,36 +55,28 @@ QmatPQWtoECI_B = transformPQWtoECI( i_B, O_B, w_B );
 r0ECI_B = QmatPQWtoECI_B * r0PQW_B;
 v0ECI_B = QmatPQWtoECI_B * v0PQW_B;
 
-r0ECI_E = r0ECI_B;
-
 
 
 manouverEndPositionError = [ 100 ];
 indexCounter = 1;
 
-
 % A's position after manouver time
 [ rECIManouverEnd_A, vECIManouverEnd_A ] = nextState( muEarth, r0ECI_A, v0ECI_A, manouverTime, anomalyErrorTolerance, anomalyMaxIterations );
-    
+
 % Required velocity change satellite B
 [ deltaVStart_B, deltaVEnd_B, vIntersectOrbit ] = interceptOrbit( r0ECI_B, v0ECI_B, rECIManouverEnd_A, vECIManouverEnd_A, manouverTime, orbitType, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
 
-for manouverTimeDelay = 0 : 0.1 : 10 % [ seconds ]
-    % A's position after delay time
-    [ rECIDelayEnd_A, vECIDelayEnd_A ] = nextState( muEarth, r0ECI_A, v0ECI_A, manouverTimeDelay, anomalyErrorTolerance, anomalyMaxIterations );
 
-    
-    % A's position after delay and manouver time
-    [ rECIDelayAndManouverEnd_A, vECIDelayAndManouverEnd_A ] = nextState( muEarth, r0ECI_A, v0ECI_A, manouverTimeDelay + manouverTime, anomalyErrorTolerance, anomalyMaxIterations );
-
+for deltaVScaleError = .95 : 0.01 : 1.05 % [ percent ]
+   
     
     deltaTimeAfterManouver = orbitPeriod_A - manouverTime;
-
-    [rLVLH_RelE1X, rLVLH_RelE1Y, rLVLH_RelE1Z, rLVLH_RelE1Norm, sampleTE1, lastECIPos_E1, lastECIVel_E1 ] = relativeTrajectory( r0ECI_A, v0ECI_A, r0ECI_B, v0ECI_B, anomalyErrorTolerance, anomalyMaxIterations, manouverTimeDelay, numPeriods, numSamples, muEarth );
-    firstECIVel_E2 = lastECIVel_E1 + deltaVStart_B;
-    [rLVLH_RelE2X, rLVLH_RelE2Y, rLVLH_RelE2Z, rLVLH_RelE2Norm, sampleTE2, lastECIPos_E2, lastECIVel_E2 ] = relativeTrajectory( rECIDelayEnd_A, vECIDelayEnd_A, lastECIPos_E1, firstECIVel_E2, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriods, numSamples, muEarth );
     
-    manouverEndPositionError( indexCounter ) = rLVLH_RelE2Norm( numSamples );
+    deltaVStartErronous_B = deltaVScaleError * deltaVStart_B;
+
+    [rLVLH_RelB1X, rLVLH_RelB1Y, rLVLH_RelB1Z, rLVLH_RelB1Norm, sampleTB1, lastECIPos_B1, lastECIVel_B1 ] = relativeTrajectory( r0ECI_A, v0ECI_A, r0ECI_B, v0ECI_B + deltaVStartErronous_B, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriods, numSamples, muEarth );
+    
+    manouverEndPositionError( indexCounter ) = rLVLH_RelB1Norm( numSamples );
     indexCounter = indexCounter + 1;
     
 end
@@ -93,9 +85,8 @@ end
 
 figure(7)
 hold on
-plot( manouverEndPositionError )
+plot( [ 0], manouverEndPositionError )
 axis on
-grid on
 hold off
 
 
