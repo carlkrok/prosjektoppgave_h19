@@ -165,18 +165,6 @@ firstECIVel_E3 = [ vECI_E2X( numSamples ), vECI_E2Y( numSamples ), vECI_E2Z( num
 [rECI_E3X, rECI_E3Y, rECI_E3Z, vECI_E3X, vECI_E3Y, vECI_E3Z, sampleT_ECIE3] = ECITrajectory( lastECIPos_E2 , firstECIVel_E3, anomalyErrorTolerance, anomalyMaxIterations, deltaTimeAfterManouver - manouverTimeDelay, numPeriods, numSamples, muEarth );
 
 
-%% Parameter error analysis
-
-
-
-
-
-
-
-
-
-
-%%
 indexManouverTimeA = round( numSamples * manouverTime / orbitPeriod_A );
 
 figure(4)
@@ -221,6 +209,7 @@ plot3( rECI_D2X, rECI_D2Y, rECI_D2Z, 'Color','[1 0 0]' )
 plot3( rECI_E1X, rECI_E1Y, rECI_E1Z, 'Color','[1 0 0]' )
 plot3( rECI_E2X, rECI_E2Y, rECI_E2Z, 'Color','[1 0 0]' )
 plot3( rECI_E3X, rECI_E3Y, rECI_E3Z, 'Color','[1 0 0]' )
+
 plot3( rECI_CX, rECI_CY, rECI_CZ, '--', 'Color','[0 0 1]' )
 axis equal
 % Draw the initial position vectors:
@@ -234,7 +223,12 @@ axis on
 grid on
 hold off
 
-figure(7)
+
+
+fprintf('%i\n', x)
+
+
+
 
 
 
