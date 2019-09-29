@@ -39,6 +39,8 @@ numSamples = 1000;
 manouverTime = 1000; % Seconds
 
 
+deltaVScaleErrorVec = [ .95 : 0.01 : 1.05 ];
+
 
 %% Calculation of relative position, velocity and acceleration of
 % spacecraft B relative to A
@@ -57,7 +59,7 @@ v0ECI_B = QmatPQWtoECI_B * v0PQW_B;
 
 
 
-manouverEndPositionError = [ 100 ];
+manouverEndPositionError = [ size(deltaVScaleErrorVec) ];
 indexCounter = 1;
 
 % A's position after manouver time
@@ -67,7 +69,7 @@ indexCounter = 1;
 [ deltaVStart_B, deltaVEnd_B, vIntersectOrbit ] = interceptOrbit( r0ECI_B, v0ECI_B, rECIManouverEnd_A, vECIManouverEnd_A, manouverTime, orbitType, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
 
 
-for deltaVScaleError = .95 : 0.01 : 1.05 % [ percent ]
+for deltaVScaleError = deltaVScaleErrorVec % [ percent ]
    
     
     deltaTimeAfterManouver = orbitPeriod_A - manouverTime;
@@ -85,7 +87,7 @@ end
 
 figure(7)
 hold on
-plot( [ 0.95 : 0.01 : 1.05 ], manouverEndPositionError )
+plot( deltaVScaleErrorVec, manouverEndPositionError )
 axis on
 grid on
 hold off

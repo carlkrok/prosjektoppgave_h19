@@ -234,9 +234,6 @@ axis on
 grid on
 hold off
 
-figure(7)
-
-
 
 
 function [ deltaVStart, deltaVEnd, vIntersectOrbit ] = interceptOrbit( posStart, vStart, posEnd, vEnd, deltaTime, orbitTypeDebris, mu, tolerance, nMax )

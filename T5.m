@@ -38,6 +38,8 @@ numSamples = 1000;
 
 manouverTime = 1000; % Seconds
 
+manouverTimeDelayVec = [ 0 : 0.1 : 10 ]; % Seconds
+
 
 
 %% Calculation of relative position, velocity and acceleration of
@@ -59,7 +61,7 @@ r0ECI_E = r0ECI_B;
 
 
 
-manouverEndPositionError = [ 100 ];
+manouverEndPositionError = [ size(manouverTimeDelayVec) ];
 indexCounter = 1;
 
 
@@ -69,7 +71,7 @@ indexCounter = 1;
 % Required velocity change satellite B
 [ deltaVStart_B, deltaVEnd_B, vIntersectOrbit ] = interceptOrbit( r0ECI_B, v0ECI_B, rECIManouverEnd_A, vECIManouverEnd_A, manouverTime, orbitType, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
 
-for manouverTimeDelay = 0 : 0.1 : 10 % [ seconds ]
+for manouverTimeDelay = manouverTimeDelayVec % [ seconds ]
     % A's position after delay time
     [ rECIDelayEnd_A, vECIDelayEnd_A ] = nextState( muEarth, r0ECI_A, v0ECI_A, manouverTimeDelay, anomalyErrorTolerance, anomalyMaxIterations );
 
