@@ -60,6 +60,7 @@ v0ECI_B = QmatPQWtoECI_B * v0PQW_B;
 
 
 manouverEndPositionError = [ size(deltaVScaleErrorVec) ];
+deltaVStartError = [ size(deltaVScaleErrorVec) ];
 indexCounter = 1;
 
 % A's position after manouver time
@@ -79,6 +80,7 @@ for deltaVScaleError = deltaVScaleErrorVec % [ percent ]
     [rLVLH_RelB1X, rLVLH_RelB1Y, rLVLH_RelB1Z, rLVLH_RelB1Norm, sampleTB1, lastECIPos_B1, lastECIVel_B1 ] = relativeTrajectory( r0ECI_A, v0ECI_A, r0ECI_B, v0ECI_B + deltaVStartErronous_B, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriods, numSamples, muEarth );
     
     manouverEndPositionError( indexCounter ) = rLVLH_RelB1Norm( numSamples );
+    deltaVStartError( indexCounter ) = sign( deltaVScaleError - 1 ) * norm( deltaVStartErronous_B - deltaVStart_B );
     indexCounter = indexCounter + 1;
     
 end
@@ -92,6 +94,12 @@ axis on
 grid on
 hold off
 
+figure(8)
+hold on
+plot( deltaVStartError, manouverEndPositionError )
+axis on
+grid on
+hold off
 
 
 
