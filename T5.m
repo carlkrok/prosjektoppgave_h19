@@ -1,7 +1,4 @@
 
-clear all
-close all
-
 
 %% Initial parameters for spacecraft A and B. All based on deg, km and s.
 
@@ -33,8 +30,13 @@ anomalyMaxIterations = 1000;
 orbitType = "prograde";
 orbitPeriod_A = orbitPeriod( muEarth, hNorm_A, e_A );
 numPeriods = 1;
-numSamples = 1000;
+numSamples = 5000;
 
+multipleOrbitsNumPeriods = 20;
+multipleOrbitsNumSamples = 10000;
+multipleOrbitsManouverTimeDelay = 1;
+
+multipleOrbitsSampleTimeVec = 0 : ( multipleOrbitsNumPeriods * orbitPeriod_A ) / multipleOrbitsNumSamples : multipleOrbitsNumPeriods * orbitPeriod_A;
 
 manouverTime = 1000; % Seconds
 
@@ -60,46 +62,80 @@ v0ECI_B = QmatPQWtoECI_B * v0PQW_B;
 r0ECI_E = r0ECI_B;
 
 
+multipleOrbitsPositionError = [ multipleOrbitsNumSamples ];
 
 manouverEndPositionError = [ size(manouverTimeDelayVec) ];
-indexCounter = 1;
+
 
 
 % A's position after manouver time
 [ rECIManouverEnd_A, vECIManouverEnd_A ] = nextState( muEarth, r0ECI_A, v0ECI_A, manouverTime, anomalyErrorTolerance, anomalyMaxIterations );
     
 % Required velocity change satellite B
-[ deltaVStart_B, deltaVEnd_B, vIntersectOrbit ] = interceptOrbit( r0ECI_B, v0ECI_B, rECIManouverEnd_A, vECIManouverEnd_A, manouverTime, orbitType, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
+[ deltaVStartECI_B, deltaVEndECI_B, vIntersectOrbit ] = interceptOrbit( r0ECI_B, v0ECI_B, rECIManouverEnd_A, vECIManouverEnd_A, manouverTime, orbitType, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
 
-for manouverTimeDelay = manouverTimeDelayVec % [ seconds ]
-    % A's position after delay time
-    [ rECIDelayEnd_A, vECIDelayEnd_A ] = nextState( muEarth, r0ECI_A, v0ECI_A, manouverTimeDelay, anomalyErrorTolerance, anomalyMaxIterations );
+[ QmatECItoLVLH1 ] = ECIToLVLH( r0ECI_B, v0ECI_B );
+deltaVStartLVLH_B = QmatECItoLVLH1 * deltaVStartECI_B;
+deltaVEndLVLH_B = QmatECItoLVLH1 * deltaVEndECI_B;
 
-    
+indexCounter = 1;
+[ rECIDelayAndManouverEnd_A, vECIDelayAndManouverEnd_A ] = nextState( muEarth, r0ECI_A, v0ECI_A, multipleOrbitsManouverTimeDelay + manouverTime, anomalyErrorTolerance, anomalyMaxIterations );
+[ rECIDelayEnd_B, vECIDelayEnd_B ] = nextState( muEarth, r0ECI_B, v0ECI_B, multipleOrbitsManouverTimeDelay, anomalyErrorTolerance, anomalyMaxIterations );
+[ QmatECItoLVLH1 ] = ECIToLVLH( rECIDelayEnd_B, vECIDelayEnd_B );
+QmatLVLHtoECI1 = QmatECItoLVLH1';
+deltaVStart_B1 = QmatLVLHtoECI1 * deltaVStartLVLH_B;
+[ rECIDelayAndManouverEnd_B, vECIDelayAndManouverEnd_B ] = nextState( muEarth, rECIDelayEnd_B, vECIDelayEnd_B + deltaVStartLVLH_B, manouverTime, anomalyErrorTolerance, anomalyMaxIterations );
+[ QmatECItoLVLH2 ] = ECIToLVLH( rECIDelayAndManouverEnd_B, vECIDelayAndManouverEnd_B );
+QmatLVLHtoECI2 = QmatECItoLVLH2';
+deltaVEnd_B2 = QmatLVLHtoECI2 * deltaVEndLVLH_B;
+for sampleTime = multipleOrbitsSampleTimeVec % [ seconds ]
+
     % A's position after delay and manouver time
-    [ rECIDelayAndManouverEnd_A, vECIDelayAndManouverEnd_A ] = nextState( muEarth, r0ECI_A, v0ECI_A, manouverTimeDelay + manouverTime, anomalyErrorTolerance, anomalyMaxIterations );
+    [ rECIFinal_A, vECIFinal_A ] = nextState( muEarth, rECIDelayAndManouverEnd_A, vECIDelayAndManouverEnd_A, sampleTime, anomalyErrorTolerance, anomalyMaxIterations );
 
     
-    deltaTimeAfterManouver = orbitPeriod_A - manouverTime;
-
-    [rLVLH_RelE1X, rLVLH_RelE1Y, rLVLH_RelE1Z, rLVLH_RelE1Norm, sampleTE1, lastECIPos_E1, lastECIVel_E1 ] = relativeTrajectory( r0ECI_A, v0ECI_A, r0ECI_B, v0ECI_B, anomalyErrorTolerance, anomalyMaxIterations, manouverTimeDelay, numPeriods, numSamples, muEarth );
-    firstECIVel_E2 = lastECIVel_E1 + deltaVStart_B;
-    [rLVLH_RelE2X, rLVLH_RelE2Y, rLVLH_RelE2Z, rLVLH_RelE2Norm, sampleTE2, lastECIPos_E2, lastECIVel_E2 ] = relativeTrajectory( rECIDelayEnd_A, vECIDelayEnd_A, lastECIPos_E1, firstECIVel_E2, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriods, numSamples, muEarth );
+    [ rECIFinal_B, vECIFinal_B ] = nextState( muEarth, rECIDelayAndManouverEnd_B, vECIDelayAndManouverEnd_B + deltaVEnd_B2, sampleTime, anomalyErrorTolerance, anomalyMaxIterations );
     
-    manouverEndPositionError( indexCounter ) = rLVLH_RelE2Norm( numSamples );
+    multipleOrbitsPositionError( indexCounter ) = norm( rECIFinal_A - rECIFinal_B );
     indexCounter = indexCounter + 1;
     
 end
     
 
+indexCounter = 1;
+for manouverTimeDelay = manouverTimeDelayVec % [ seconds ]
+    
+    % A's position after delay and manouver time
+    [ rECIDelayAndManouverEnd_A, vECIDelayAndManouverEnd_A ] = nextState( muEarth, r0ECI_A, v0ECI_A, manouverTimeDelay + manouverTime, anomalyErrorTolerance, anomalyMaxIterations );
 
-figure(7)
+
+    [ rECIDelayEnd_B, vECIDelayEnd_B ] = nextState( muEarth, r0ECI_B, v0ECI_B, manouverTimeDelay, anomalyErrorTolerance, anomalyMaxIterations );
+    
+    [ QmatECItoLVLH3 ] = ECIToLVLH( rECIDelayEnd_B, vECIDelayEnd_B );
+    QmatLVLHtoECI3 = QmatECItoLVLH3';
+    deltaVStart_B3 = QmatLVLHtoECI3 * deltaVStartLVLH_B;
+    
+    [ rECIDelayAndManouverEnd_B, vECIDelayAndManouverEnd_B ] = nextState( muEarth, rECIDelayEnd_B, vECIDelayEnd_B + deltaVStart_B3, manouverTimeDelay + manouverTime, anomalyErrorTolerance, anomalyMaxIterations );
+    
+    manouverEndPositionError( indexCounter ) = norm( rECIDelayAndManouverEnd_A - rECIDelayAndManouverEnd_B );
+    indexCounter = indexCounter + 1;
+    
+end
+
+
+
+figure(9)
 hold on
 plot( manouverEndPositionError )
-axis on
+axis equal
 grid on
 hold off
 
+figure(10)
+hold on
+plot( multipleOrbitsPositionError )
+grid on
+hold off
 
 
 
@@ -364,6 +400,22 @@ function X = findAnomaly( mu, alpha, r0Norm, v0RadialNorm, deltaT, tolerance, nM
 
 end
 
+function [ QmatECItoLVLH ] = ECIToLVLH( rECI, vECI )
+
+   hECI = cross( rECI, vECI );
+   hECINorm = norm( hECI );
+
+   i_unitVectorMovingFrame = ( rECI / norm( rECI ));
+   k_unitVectorMovingFrame = ( hECI / hECINorm );
+   j_unitVectorMovingFrame = cross( k_unitVectorMovingFrame, i_unitVectorMovingFrame );
+
+
+   QmatECItoLVLH = [i_unitVectorMovingFrame';
+                    j_unitVectorMovingFrame';
+                    k_unitVectorMovingFrame'];
+
+
+end
 
 function rLVLH_Rel = BPosRelativeToA( rECI_A, vECI_A, rECI_B )
 

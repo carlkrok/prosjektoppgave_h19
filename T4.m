@@ -45,11 +45,12 @@ anomalyMaxIterations = 1000;
 
 orbitType = "prograde";
 orbitPeriod_A = orbitPeriod( muEarth, hNorm_A, e_A );
-numPeriods = 1;
-numSamples = 1000;
+numPeriods = 100;
+numSamples = 10000;
 
 manouverTime = 1000; % Seconds
-
+numPeriodsManouver = 1;
+numSamplesManouver = 1000;
 
 
 % Error variables on initial position, initial velocity and change of
@@ -123,46 +124,45 @@ vECI_D = v0ECI_B + deltaVStartErronous_B;
 
 deltaTimeAfterManouver = orbitPeriod_A - manouverTime;
 
-[rLVLH_RelB1X, rLVLH_RelB1Y, rLVLH_RelB1Z, rLVLH_RelB1Norm, sampleTB1, lastECIPos_B1, lastECIVel_B1 ] = relativeTrajectory( r0ECI_A, v0ECI_A, r0ECI_B, vECI_B, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriods, numSamples, muEarth );
+[rLVLH_RelB1X, rLVLH_RelB1Y, rLVLH_RelB1Z, rLVLH_RelB1Norm, sampleTB1, lastECIPos_B1, lastECIVel_B1 ] = relativeTrajectory( r0ECI_A, v0ECI_A, r0ECI_B, vECI_B, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriodsManouver, numSamplesManouver, muEarth );
 firstECIVel_B2 = lastECIVel_B1 + deltaVEnd_B;
-[rLVLH_RelB2X, rLVLH_RelB2Y, rLVLH_RelB2Z, rLVLH_RelB2Norm, sampleTB2, lastECIPos_B2, lastECIVel_B2 ] = relativeTrajectory( rECIManouverEnd_A, vECIManouverEnd_A, lastECIPos_B1, firstECIVel_B2, anomalyErrorTolerance, anomalyMaxIterations, deltaTimeAfterManouver, numPeriods, numSamples, muEarth );
+[rLVLH_RelB2X, rLVLH_RelB2Y, rLVLH_RelB2Z, rLVLH_RelB2Norm, sampleTB2, lastECIPos_B2, lastECIVel_B2 ] = relativeTrajectory( rECIManouverEnd_A, vECIManouverEnd_A, lastECIPos_B1, firstECIVel_B2, anomalyErrorTolerance, anomalyMaxIterations, deltaTimeAfterManouver, numPeriods - numPeriodsManouver, numSamples - numSamplesManouver, muEarth );
 
 [rLVLH_RelCX, rLVLH_RelCY, rLVLH_RelCZ, rLVLH_RelCNorm, sampleTC, lastECIPos_C, lastECIVel_C ] = relativeTrajectory( r0ECI_A, v0ECI_A, r0ECI_C, vECI_C, anomalyErrorTolerance, anomalyMaxIterations, orbitPeriod_A, numPeriods, numSamples, muEarth );
 
-[rLVLH_RelD1X, rLVLH_RelD1Y, rLVLH_RelD1Z, rLVLH_RelD1Norm, sampleTD1, lastECIPos_D1, lastECIVel_D1 ] = relativeTrajectory( r0ECI_A, v0ECI_A, r0ECI_B, vECI_D, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriods, numSamples, muEarth );
+[rLVLH_RelD1X, rLVLH_RelD1Y, rLVLH_RelD1Z, rLVLH_RelD1Norm, sampleTD1, lastECIPos_D1, lastECIVel_D1 ] = relativeTrajectory( r0ECI_A, v0ECI_A, r0ECI_B, vECI_D, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriodsManouver, numSamplesManouver, muEarth );
 firstECIVel_D2 = lastECIVel_D1 + deltaVEnd_B;
 [rLVLH_RelD2X, rLVLH_RelD2Y, rLVLH_RelD2Z, rLVLH_RelD2Norm, sampleTD2, lastECIPos_D2, lastECIVel_D2 ] = relativeTrajectory( rECIManouverEnd_A, vECIManouverEnd_A, lastECIPos_D1, firstECIVel_D2, anomalyErrorTolerance, anomalyMaxIterations, deltaTimeAfterManouver, numPeriods, numSamples, muEarth );
 
-[rLVLH_RelE1X, rLVLH_RelE1Y, rLVLH_RelE1Z, rLVLH_RelE1Norm, sampleTE1, lastECIPos_E1, lastECIVel_E1 ] = relativeTrajectory( r0ECI_A, v0ECI_A, r0ECI_B, v0ECI_B, anomalyErrorTolerance, anomalyMaxIterations, manouverTimeDelay, numPeriods, numSamples, muEarth );
+[rLVLH_RelE1X, rLVLH_RelE1Y, rLVLH_RelE1Z, rLVLH_RelE1Norm, sampleTE1, lastECIPos_E1, lastECIVel_E1 ] = relativeTrajectory( r0ECI_A, v0ECI_A, r0ECI_B, v0ECI_B, anomalyErrorTolerance, anomalyMaxIterations, manouverTimeDelay, numPeriodsManouver, numSamplesManouver, muEarth );
 firstECIVel_E2 = lastECIVel_E1 + deltaVStart_B;
-[rLVLH_RelE2X, rLVLH_RelE2Y, rLVLH_RelE2Z, rLVLH_RelE2Norm, sampleTE2, lastECIPos_E2, lastECIVel_E2 ] = relativeTrajectory( rECIDelayEnd_A, vECIDelayEnd_A, lastECIPos_E1, firstECIVel_E2, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriods, numSamples, muEarth );
+[rLVLH_RelE2X, rLVLH_RelE2Y, rLVLH_RelE2Z, rLVLH_RelE2Norm, sampleTE2, lastECIPos_E2, lastECIVel_E2 ] = relativeTrajectory( rECIDelayEnd_A, vECIDelayEnd_A, lastECIPos_E1, firstECIVel_E2, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriodsManouver, numSamplesManouver,muEarth );
 firstECIVel_E3 = lastECIVel_E2 + deltaVEnd_B;
-[rLVLH_RelE3X, rLVLH_RelE3Y, rLVLH_RelE3Z, rLVLH_RelE3Norm, sampleTE3, lastECIPos_E3, lastECIVel_E3 ] = relativeTrajectory( rECIDelayAndManouverEnd_A, vECIDelayAndManouverEnd_A, lastECIPos_E2, firstECIVel_E3, anomalyErrorTolerance, anomalyMaxIterations, deltaTimeAfterManouver - manouverTimeDelay, numPeriods, numSamples, muEarth );
-
+[rLVLH_RelE3X, rLVLH_RelE3Y, rLVLH_RelE3Z, rLVLH_RelE3Norm, sampleTE3, lastECIPos_E3, lastECIVel_E3 ] = relativeTrajectory( rECIDelayAndManouverEnd_A, vECIDelayAndManouverEnd_A, lastECIPos_E2, firstECIVel_E3, anomalyErrorTolerance, anomalyMaxIterations, deltaTimeAfterManouver - manouverTimeDelay, numPeriods - numPeriodsManouver, numSamples - numSamplesManouver, muEarth );
 
 
 
 [rECI_AX, rECI_AY, rECI_AZ, vECI_AX, vECI_AY, vECI_AZ, sampleT_ECIA] = ECITrajectory( r0ECI_A, v0ECI_A, anomalyErrorTolerance, anomalyMaxIterations, orbitPeriod_A, numPeriods, numSamples, muEarth );
 
-[rECI_B1X, rECI_B1Y, rECI_B1Z, vECI_B1X, vECI_B1Y, vECI_B1Z, sampleT_ECIB1] = ECITrajectory( r0ECI_B, vECI_B, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriods, numSamples, muEarth );
-lastECIPos_B1 = [ rECI_B1X( numSamples ), rECI_B1Y( numSamples ), rECI_B1Z( numSamples ) ]';
-firstECIVel_B2 = [ vECI_B1X( numSamples ), vECI_B1Y( numSamples ), vECI_B1Z( numSamples ) ]' + deltaVEnd_B;
-[rECI_B2X, rECI_B2Y, rECI_B2Z, vECI_B2X, vECI_B2Y, vECI_B2Z, sampleT_ECIB2] = ECITrajectory( lastECIPos_B1 , firstECIVel_B2, anomalyErrorTolerance, anomalyMaxIterations, deltaTimeAfterManouver, numPeriods, numSamples, muEarth );
+[rECI_B1X, rECI_B1Y, rECI_B1Z, vECI_B1X, vECI_B1Y, vECI_B1Z, sampleT_ECIB1] = ECITrajectory( r0ECI_B, vECI_B, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriodsManouver, numSamplesManouver, muEarth );
+lastECIPos_B1 = [ rECI_B1X( numSamplesManouver ), rECI_B1Y( numSamplesManouver ), rECI_B1Z( numSamplesManouver ) ]';
+firstECIVel_B2 = [ vECI_B1X( numSamplesManouver ), vECI_B1Y( numSamplesManouver ), vECI_B1Z( numSamplesManouver ) ]' + deltaVEnd_B;
+[rECI_B2X, rECI_B2Y, rECI_B2Z, vECI_B2X, vECI_B2Y, vECI_B2Z, sampleT_ECIB2] = ECITrajectory( lastECIPos_B1 , firstECIVel_B2, anomalyErrorTolerance, anomalyMaxIterations, deltaTimeAfterManouver, numPeriods - numPeriodsManouver, numSamples - numSamplesManouver, muEarth );
 
 [rECI_CX, rECI_CY, rECI_CZ, vECI_CX, vECI_CY, vECI_CZ, sampleT_ECIC] = ECITrajectory( r0ECI_B, v0ECI_B, anomalyErrorTolerance, anomalyMaxIterations, orbitPeriod_A, numPeriods, numSamples, muEarth );
 
-[rECI_D1X, rECI_D1Y, rECI_D1Z, vECI_D1X, vECI_D1Y, vECI_D1Z, sampleT_ECID1] = ECITrajectory( r0ECI_B, vECI_D, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriods, numSamples, muEarth );
-lastECIPos_D1 = [ rECI_D1X( numSamples ), rECI_D1Y( numSamples ), rECI_D1Z( numSamples ) ]';
-firstECIVel_D2 = [ vECI_D1X( numSamples ), vECI_D1Y( numSamples ), vECI_D1Z( numSamples ) ]' + deltaVEnd_B;
-[rECI_D2X, rECI_D2Y, rECI_D2Z, vECI_D2X, vECI_D2Y, vECI_D2Z, sampleT_ECID2] = ECITrajectory( lastECIPos_D1 , firstECIVel_D2, anomalyErrorTolerance, anomalyMaxIterations, deltaTimeAfterManouver, numPeriods, numSamples, muEarth );
+[rECI_D1X, rECI_D1Y, rECI_D1Z, vECI_D1X, vECI_D1Y, vECI_D1Z, sampleT_ECID1] = ECITrajectory( r0ECI_B, vECI_D, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriodsManouver, numSamplesManouver, muEarth );
+lastECIPos_D1 = [ rECI_D1X( numSamplesManouver ), rECI_D1Y( numSamplesManouver ), rECI_D1Z( numSamplesManouver ) ]';
+firstECIVel_D2 = [ vECI_D1X( numSamplesManouver ), vECI_D1Y( numSamplesManouver ), vECI_D1Z( numSamplesManouver ) ]' + deltaVEnd_B;
+[rECI_D2X, rECI_D2Y, rECI_D2Z, vECI_D2X, vECI_D2Y, vECI_D2Z, sampleT_ECID2] = ECITrajectory( lastECIPos_D1 , firstECIVel_D2, anomalyErrorTolerance, anomalyMaxIterations, deltaTimeAfterManouver, numPeriods - numPeriodsManouver, numSamples - numSamplesManouver, muEarth );
 
-[rECI_E1X, rECI_E1Y, rECI_E1Z, vECI_E1X, vECI_E1Y, vECI_E1Z, sampleT_ECIE1] = ECITrajectory( r0ECI_B, v0ECI_B, anomalyErrorTolerance, anomalyMaxIterations, manouverTimeDelay, numPeriods, numSamples, muEarth );
-lastECIPos_E1 = [ rECI_E1X( numSamples ), rECI_E1Y( numSamples ), rECI_E1Z( numSamples ) ]';
-firstECIVel_E2 = [ vECI_E1X( numSamples ), vECI_E1Y( numSamples ), vECI_E1Z( numSamples ) ]' + deltaVStart_B;
-[rECI_E2X, rECI_E2Y, rECI_E2Z, vECI_E2X, vECI_E2Y, vECI_E2Z, sampleT_ECIE2] = ECITrajectory( lastECIPos_E1, firstECIVel_E2, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriods, numSamples, muEarth );
-lastECIPos_E2 = [ rECI_E2X( numSamples ), rECI_E2Y( numSamples ), rECI_E2Z( numSamples ) ]';
-firstECIVel_E3 = [ vECI_E2X( numSamples ), vECI_E2Y( numSamples ), vECI_E2Z( numSamples ) ]' + deltaVEnd_B;
-[rECI_E3X, rECI_E3Y, rECI_E3Z, vECI_E3X, vECI_E3Y, vECI_E3Z, sampleT_ECIE3] = ECITrajectory( lastECIPos_E2 , firstECIVel_E3, anomalyErrorTolerance, anomalyMaxIterations, deltaTimeAfterManouver - manouverTimeDelay, numPeriods, numSamples, muEarth );
+[rECI_E1X, rECI_E1Y, rECI_E1Z, vECI_E1X, vECI_E1Y, vECI_E1Z, sampleT_ECIE1] = ECITrajectory( r0ECI_B, v0ECI_B, anomalyErrorTolerance, anomalyMaxIterations, manouverTimeDelay, numPeriodsManouver, numSamplesManouver, muEarth );
+lastECIPos_E1 = [ rECI_E1X( numSamplesManouver ), rECI_E1Y( numSamplesManouver ), rECI_E1Z( numSamplesManouver ) ]';
+firstECIVel_E2 = [ vECI_E1X( numSamplesManouver ), vECI_E1Y( numSamplesManouver ), vECI_E1Z( numSamplesManouver ) ]' + deltaVStart_B;
+[rECI_E2X, rECI_E2Y, rECI_E2Z, vECI_E2X, vECI_E2Y, vECI_E2Z, sampleT_ECIE2] = ECITrajectory( lastECIPos_E1, firstECIVel_E2, anomalyErrorTolerance, anomalyMaxIterations, manouverTime, numPeriodsManouver, numSamplesManouver, muEarth );
+lastECIPos_E2 = [ rECI_E2X( numSamplesManouver ), rECI_E2Y( numSamplesManouver ), rECI_E2Z( numSamplesManouver ) ]';
+firstECIVel_E3 = [ vECI_E2X( numSamplesManouver ), vECI_E2Y( numSamplesManouver ), vECI_E2Z( numSamplesManouver ) ]' + deltaVEnd_B;
+[rECI_E3X, rECI_E3Y, rECI_E3Z, vECI_E3X, vECI_E3Y, vECI_E3Z, sampleT_ECIE3] = ECITrajectory( lastECIPos_E2 , firstECIVel_E3, anomalyErrorTolerance, anomalyMaxIterations, deltaTimeAfterManouver - manouverTimeDelay, numPeriods - numPeriodsManouver, numSamples - numSamplesManouver, muEarth );
 
 
 %% Parameter error analysis
@@ -213,15 +213,15 @@ figure(6)
 hold on
 [ sx, sy, sz ] = sphere;
 surf( sx*rEarth, sy*rEarth, sz*rEarth, 'FaceAlpha', 0.05, 'EdgeAlpha', 0.05 );
-plot3( rECI_AX, rECI_AY, rECI_AZ )
-plot3( rECI_B1X, rECI_B1Y, rECI_B1Z, 'Color','[0 1 0]' )
-plot3( rECI_B2X, rECI_B2Y, rECI_B2Z, 'Color','[0 1 0]' )
-plot3( rECI_D1X, rECI_D1Y, rECI_D1Z, 'Color','[1 0 0]' )
-plot3( rECI_D2X, rECI_D2Y, rECI_D2Z, 'Color','[1 0 0]' )
+% plot3( rECI_AX, rECI_AY, rECI_AZ )
+% plot3( rECI_B1X, rECI_B1Y, rECI_B1Z, 'Color','[0 1 0]' )
+% plot3( rECI_B2X, rECI_B2Y, rECI_B2Z, 'Color','[0 1 0]' )
+% plot3( rECI_D1X, rECI_D1Y, rECI_D1Z, 'Color','[1 0 0]' )
+% plot3( rECI_D2X, rECI_D2Y, rECI_D2Z, 'Color','[1 0 0]' )
 plot3( rECI_E1X, rECI_E1Y, rECI_E1Z, 'Color','[1 0 0]' )
 plot3( rECI_E2X, rECI_E2Y, rECI_E2Z, 'Color','[1 0 0]' )
 plot3( rECI_E3X, rECI_E3Y, rECI_E3Z, 'Color','[1 0 0]' )
-plot3( rECI_CX, rECI_CY, rECI_CZ, '--', 'Color','[0 0 1]' )
+% plot3( rECI_CX, rECI_CY, rECI_CZ, '--', 'Color','[0 0 1]' )
 axis equal
 % Draw the initial position vectors:
 plot3( [0 rECI_AX( 1 ) ], [0 rECI_AY( 1 ) ], [0 rECI_AZ( 1 ) ], '-.' )
@@ -330,7 +330,7 @@ function [rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ, rLVLH_RelNorm, sampleT, lastECIPos
    r_B = r0_B;
    v_B = v0_B;
 
-   currTime = 1;
+   currTime = 0;
    endTime = currTime + orbitPeriod_A * numPeriods;
    sampleInterval = (orbitPeriod_A * numPeriods) / numSamples;
 
@@ -377,7 +377,7 @@ function [rXECI, rYECI, rZECI, vXECI, vYECI, vZECI, sampleT] = ECITrajectory( r0
    v = v0;
 
 
-   currTime = 1;
+   currTime = 0;
    endTime = currTime + orbitPeriod_A * numPeriods;
    sampleInterval = (orbitPeriod_A * numPeriods) / numSamples;
 
