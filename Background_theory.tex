@@ -2,15 +2,78 @@
 \section{Background Theory}
 
 % Background theory on orbital mechanics and statistics to be added in this section.
+Section based on book by Curtis \cite{Curtis2009}.
+
 
 \subsection{Two Body Motion}
 
+\subsubsection{Perifocal Coordinate System}
 
-\subsection{Orbital Mechanics}
+We define the perifocal frame with the unit vectors $\hat{\mathbf{p}}$, $\hat{\mathbf{q}}$ and $\hat{\mathbf{w}}$. The center of the coordinate system is at the focus of the orbit. The unit vectors $\hat{\mathbf{p}}$ and $\hat{\mathbf{q}}$ lie in the orbital plane, with $\hat{\mathbf{p}}$ pointing towards the \textit{periapsis} of the orbit and $\hat{\mathbf{q}}$ towards the point at which \textit{true anomaly} is equal to $90 \deg$. The unit vector $\hat{\mathbf{w}}$ is the cross product of the unit vectors in the orbital plane, $\hat{\mathbf{w}} = \hat{\mathbf{p}} \times \hat{\mathbf{q}}$, and thus points in the same direction as the angular momentum vector $\Vec{\mathbf{h}}$ of the orbiting object. \\
 
+The position of the orbiting object described in the perifocal plane is given in Eq. \ref{eq:radius_perifocal_frame}, and velocity in Eq. \ref{eq:velocity_perifocal_frame}.
+
+\begin{equation}
+    \Vec{\mathbf{r}} = \Bar{x}\hat{\mathbf{p}} + \Bar{y}\hat{\mathbf{q}}
+    \label{eq:radius_perifocal_frame}
+\end{equation}
+
+\begin{equation}
+    \Vec{\mathbf{v}} = \dot{\Vec{\mathbf{r}}} = \dot{\Bar{x}}\hat{\mathbf{p}} + \dot{\Bar{y}}\hat{\mathbf{q}}
+    \label{eq:velocity_perifocal_frame}
+\end{equation}
+
+
+
+\subsubsection{Lagrange Coefficients}
+
+Using the Lagrange Coefficients, referring to the functions \textit{f} and \textit{g} in Eq. \ref{eq:radius_lagrange_coefficients}, from the French mathematical physicist Joseph-Louis Lagrange (1736-1813), we are able to describe the position and velocity of an orbiting object at any point in time if the initial conditions are known. The Lagrange Coefficients are derived based on the fact that the angular momentum is constant throughout the orbit.   
+
+
+\begin{equation}
+    \Vec{\mathbf{r}} = f \Vec{\mathbf{r_0}} + g \Vec{\mathbf{v_0}}
+    \label{eq:radius_lagrange_coefficients}
+\end{equation}
+
+The Lagrange Coefficients $f$ and $g$, and their time derivatives $\dot{f}$ and $\dot{g}$, are defined below.
+
+\begin{align}
+    f &= \frac{ \Bar{x} \dot{\Bar{y_0}} - \Bar{y} \dot{\Bar{x_0}} }{ h }
+    \label{eq:lagrange_f} \\
+    g &= \frac{ - \Bar{x} \Bar{y_0} + \Bar{y} \Bar{x_0} }{ h } 
+    \label{eq:lagrange_g} \\
+    \dot{f} &= \frac{ \dot{\Bar{x}} \dot{\Bar{y_0}} - \dot{\Bar{y}} \dot{\Bar{x_0}} }{ h } 
+    \label{eq:lagrange_f_dot} \\
+    \dot{g} &= \frac{ - \dot{\Bar{x}} \Bar{y_0} + \dot{\Bar{y}} \Bar{x_0} }{ h } 
+    \label{eq:lagrange_g_dot}
+\end{align}
+
+Using the change in true anomaly $\Delta \Theta$, or the change in universal anomaly $\chi$, the Lagrange Coefficients and their time derivatives become the functions given below.
+
+\begin{align}
+    f &= 1 - \frac{ \mu r }{ h^2 } ( 1 - \cos{\Delta \Theta} ) &&= 1 - \frac{\chi^2}{r} C(z)
+    \label{eq:lagrange_anomaly_f} \\
+    g  &= \frac{ r_0 r }{ h } \sin{\Delta \Theta} &&= \Delta t - \frac{1}{\sqrt{\mu} \chi^3 S( z )}
+    \label{eq:lagrange_anomaly_g} \\
+    \dot{f} &= \frac{\mu}{h} \frac{1 - \cos{\Delta \Theta}}{\sin{\Delta \Theta}} [ \frac{\mu}{h^2} (1 - \cos{\Delta \Theta} - \frac{1}{r_0} - \frac{1}{r} ] &&= \frac{\sqrt{\mu}}{r_0 r} \chi [z S(z) - 1]
+    \label{eq:lagrange_anomaly_f_dot} \\
+    \dot{g} &= 1 - \frac{\mu r_0}{h^2} (1 - \cos{\Delta \Theta} ) &&= 1 - \frac{\chi^2}{r} C(z)
+    \label{eq:lagrange_anomaly_g_dot}
+\end{align}
+
+In which $z = \alpha \chi^2$, $\alpha = \frac{1}{a}$ is the reciprocal of the semimajor axis, and $C(z)$ and $S(z)$ are \textit{Stumpff functions} defined below.
+
+\begin{align}
+    C(z) &= \sum_{k = 0}^{\infty} (-1)^k \frac{z^k}{(2k + 2)!} \\
+    S(z) &= \sum_{k = 0}^{\infty} (-1)^k \frac{z^k}{(2k + 3)!}
+\end{align}{}
 
 \subsection{Lambert's problem}
 
+Lambert's problem, from the French-born German astronomer J. H. Lambert (1728-1777), concerns finding the trajectory joining two orbital points $P_0$ and $P$, given the transfer time $\Delta t$. Lambert's problem can be solved using the Lagrange Coefficients. In this section an iterative approach from \cite{Curtis2009} is presented.
 
-Based on \cite{Curtis2009}.
+
+
+
+
 
