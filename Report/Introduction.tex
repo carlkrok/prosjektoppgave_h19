@@ -2,17 +2,71 @@
 
 \subsection{Problem Formulation}
 
-The aim of this study is to investigate the spatial and timing uncertainties associated with orbital rendezvous maneuvers. X is of interest because … 
+The aim of this study is to investigate spatial and timing uncertainties associated with orbital rendezvous maneuvers. This is of interest because of the limited observation possibilities of orbiting objects, thus making accurate location difficult to retrieve, and the large scales in time and distance of orbital maneuvers. \\
+
+The concept of uncertainty propagation in rendezvous maneuvers is central to solving the issue of space debris, which is a major challenge of today's space industry. The number of space debris objects is expected to steadily increase over time, due to chain-reactions of collisions between existing debris objects. To prevent a runaway fragmentation of space debris, about 4 to 5 high risk objects must be actively removed from the Low Earth Orbit each year \cite{ESA_about_space_debris}. This study aims to contribute to this growing area of research by exploring the possibility of using a formation of low-cost satellites to perform Active Debris Removal. \\
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 
 \subsection{Background}
 
-Section based on book by Curtis \cite{Curtis2009}.
+This section provides a short introduction to relevant theory in orbital mechanics and uncertainty propagation. The intended reader is someone with a technical background other than orbital mechanics or statistics, and the goal is to give a sufficient understanding of necessary concepts. The sections on orbital mechanics are mostly based on the book by Curtis \cite{Curtis2009}.
+
+
+\subsubsection{Orbital Parameters}
+
+The following is an introduction to a parametric description of orbits, using the definitions from Curtis \cite{Curtis2009}. Under the assumption that an orbit is an ideal Keplerian orbit, it can be uniquely identified using six orbital elements. Three parameters are required to define the orbit on a plane, and three additional parameters are needed to further place the orbit in three dimensional space. \\
+
+The three parameters used to describe an orbit on a plane are the \textit{specific angular momentum}, \textit{eccentricity}, and \textit{true anomaly}. The specific angular momentum is, as the name suggests, the angular momentum of the orbiting object. This value is constant at any point on a given orbit. The eccentricity value describes how much the shape of the orbit deviates from a circle, and can be found by dividing the distance between the center of the orbit and one of the foci by the \textit{semi-major axis} (longest distance to the central body). The shape of a orbit corresponding to different eccentricity values is given in Table \ref{table:eccentricity}. The true anomaly is the angle between the position of the orbiting object and \textit{periapsis} (the shortest distance to the central body). \\
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+$e = 0$      & Circle    \\
+$0 < e < 1 $ & Ellipse   \\
+$e = 1$      & Parabola  \\
+$e > 1 $     & Hyperbola \\
+\bottomrule
+\end{tabular}
+\caption{Orbital shapes for different eccentricity values}
+\label{table:eccentricity}
+\end{table}
+
+
+To place the orbit in three dimensional space, three axis rotations are required. The orbital elements corresponding to these rotations are the \textit{inclination}, \textit{right ascension of the ascending node} and the \textit{argument of perigee}. The inclination describes the angle between the orbital plane and the \textit{equatorial} (Earth XY) plane. The right ascension of the ascending node is the angle between the equatorial X-axis and the point on the equatorial plane where the orbit passes through from below. The third angle, argument of perigee, is the angle in the orbital plane between the point the orbit passes above the equatorial plane and the point of perigee. \\
+
+
+A summary of the six orbital elements is given in Table \ref{table:orbital_parameters}. \\
+
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}llll@{}}
+\toprule
+%\multicolumn{4}{c}{Orbital Parameters}                            \\ \midrule
+Name                                  & Symbol              & Range     & Unit \\ \midrule
+Specific angular momentum             & \textit{h}          & -         & $\frac{kgm}{s^2}$ \\
+Inclination                           & \textit{i}          & [0, 180]  & Deg    \\
+Right ascension of the ascending node & $\mathit{\Omega}$   & [0, 360]  & Deg  \\
+Eccentricity                          & \textit{e}          & -         & -    \\
+Argument of perigee                   & $\mathit{\omega}$   & [0, 360]  & Deg  \\
+True anomaly                          & $\mathit{\Theta}$   & [0, 360]  & Deg  \\ \bottomrule
+\end{tabular}
+\caption{Overview of the six orbital parameters}
+\label{table:orbital_parameters}
+\end{table}
 
 
 \subsubsection{Perifocal Coordinate System}
 
-We define the perifocal frame with the unit vectors $\hat{\mathbf{p}}$, $\hat{\mathbf{q}}$ and $\hat{\mathbf{w}}$. The center of the coordinate system is at the focus of the orbit. The unit vectors $\hat{\mathbf{p}}$ and $\hat{\mathbf{q}}$ lie in the orbital plane, with $\hat{\mathbf{p}}$ pointing towards the \textit{periapsis} of the orbit and $\hat{\mathbf{q}}$ towards the point at which \textit{true anomaly} is equal to $90 \deg$. The unit vector $\hat{\mathbf{w}}$ is the cross product of the unit vectors in the orbital plane, $\hat{\mathbf{w}} = \hat{\mathbf{p}} \times \hat{\mathbf{q}}$, and thus points in the same direction as the angular momentum vector $\Vec{\mathbf{h}}$ of the orbiting object. \\
+The center of the perifocal coordinate system is at the focus of the orbit. The perifocal frame is defined with the unit vectors $\hat{\mathbf{p}}$, $\hat{\mathbf{q}}$ and $\hat{\mathbf{w}}$. The unit vectors $\hat{\mathbf{p}}$ and $\hat{\mathbf{q}}$ lie in the orbital plane, with $\hat{\mathbf{p}}$ pointing towards the \textit{periapsis} of the orbit and $\hat{\mathbf{q}}$ towards the point at which \textit{true anomaly} is equal to $90 \deg$. The unit vector $\hat{\mathbf{w}}$ is the cross product of the unit vectors in the orbital plane, $\hat{\mathbf{w}} = \hat{\mathbf{p}} \times \hat{\mathbf{q}}$, and thus points in the same direction as the angular momentum vector $\Vec{\mathbf{h}}$ of the orbiting object. \\
 
 The position of the orbiting object described in the perifocal plane is given in Eq. \ref{eq:radius_perifocal_frame}, and velocity in Eq. \ref{eq:velocity_perifocal_frame}.
 
@@ -30,7 +84,7 @@ The position of the orbiting object described in the perifocal plane is given in
 
 \subsubsection{Lagrange Coefficients}
 
-Using the Lagrange Coefficients, referring to the functions \textit{f} and \textit{g} in Eq. \ref{eq:radius_lagrange_coefficients}, from the French mathematical physicist Joseph-Louis Lagrange (1736-1813), we are able to describe the position and velocity of an orbiting object at any point in time if the initial conditions are known. The Lagrange Coefficients are derived based on the fact that the angular momentum is constant throughout the orbit.   
+Using the Lagrange Coefficients, the functions \textit{f} and \textit{g}, from the French mathematical physicist Joseph-Louis Lagrange (1736-1813), we are able to describe the position and velocity of an orbiting object at any point in time if the initial conditions are known, as shown in Eq. \ref{eq:radius_lagrange_coefficients}. The Lagrange Coefficients are derived based on the fact that the angular momentum is constant throughout the orbit.   
 
 
 \begin{equation}
@@ -51,7 +105,7 @@ The Lagrange Coefficients $f$ and $g$, and their time derivatives $\dot{f}$ and 
     \label{eq:lagrange_g_dot}
 \end{align}
 
-Using the change in true anomaly $\Delta \Theta$, or the change in universal anomaly $\chi$, the Lagrange Coefficients and their time derivatives become the functions given below.
+Using the change in true anomaly $\Delta \Theta$, or the change in universal anomaly $\chi$, the Lagrange Coefficients and their time derivatives have the following expressions. The left column in the functions below are the expressions based on true anomaly $\Delta \Theta$, and the right column are the expressions based on universal anomaly $\chi$.
 
 \begin{align}
     f &= 1 - \frac{ \mu r }{ h^2 } ( 1 - \cos{\Delta \Theta} ) &&= 1 - \frac{\chi^2}{r} C(z)
@@ -64,7 +118,7 @@ Using the change in true anomaly $\Delta \Theta$, or the change in universal ano
     \label{eq:lagrange_anomaly_g_dot}
 \end{align}
 
-In which $z = \alpha \chi^2$, $\alpha = \frac{1}{a}$ is the reciprocal of the semimajor axis, and $C(z)$ and $S(z)$ are \textit{Stumpff functions} defined below.
+For the functions above, $z = \alpha \chi^2$, $\alpha = \frac{1}{a}$ is the reciprocal of the semimajor axis, and $C(z)$ and $S(z)$ are \textit{Stumpff functions} defined below.
 
 \begin{align}
     C(z) &= \sum_{k = 0}^{\infty} (-1)^k \frac{z^k}{(2k + 2)!} \\
@@ -73,10 +127,18 @@ In which $z = \alpha \chi^2$, $\alpha = \frac{1}{a}$ is the reciprocal of the se
 
 \subsubsection{Lambert's problem}
 
-Lambert's problem, from the French-born German astronomer J. H. Lambert (1728-1777), concerns finding the trajectory joining two orbital points $P_0$ and $P$, given the transfer time $\Delta t$. Lambert's problem can be solved using the Lagrange Coefficients. In this section an iterative approach from \cite{Curtis2009} is presented.
+Lambert's problem, from the French-born German astronomer J. H. Lambert (1728-1777), concerns finding the trajectory joining two orbital points $P_0$ and $P$, given the transfer time $\Delta t$. Lambert's problem can be solved using the Lagrange Coefficients. In this section an iterative approach from the book by Curtis \cite{Curtis2009} is presented.
 
 
 
 
 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\subsection{Previous Work}
 
