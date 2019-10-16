@@ -2,7 +2,7 @@
 
 \subsection{Problem Formulation}
 
-The aim of this study is to investigate spatial and timing uncertainties associated with orbital rendezvous maneuvers. This is of interest because of the limited observation possibilities of orbiting objects, thus making accurate location difficult to retrieve, and the large scales in time and distance of orbital maneuvers. \\
+The aim of this study is to investigate spatial and timing uncertainties associated with orbital rendezvous maneuvers. This is of interest because of the limited observation possibilities of orbiting objects, thus making accurate location difficult to retrieve. In addition, the large scales in time and distance of orbital maneuvers, nonlinearities in the mechanics and the presence of disturbances make the uncertainty propagation interesting and non-trivial. \\
 
 The concept of uncertainty propagation in rendezvous maneuvers is central to solving the issue of space debris, which is a major challenge of today's space industry. The number of space debris objects is expected to steadily increase over time, due to chain-reactions of collisions between existing debris objects. To prevent a runaway fragmentation of space debris, about 4 to 5 high risk objects must be actively removed from the Low Earth Orbit each year \cite{ESA_about_space_debris}. This study aims to contribute to this growing area of research by exploring the possibility of using a formation of low-cost satellites to perform Active Debris Removal. \\
 
@@ -16,7 +16,7 @@ The concept of uncertainty propagation in rendezvous maneuvers is central to sol
 
 \subsection{Background}
 
-This section provides a short introduction to relevant theory in orbital mechanics and uncertainty propagation. The intended reader is someone with a technical background other than orbital mechanics or statistics, and the goal is to give a sufficient understanding of necessary concepts. The sections on orbital mechanics are mostly based on the book by Curtis \cite{Curtis2009}.
+This section provides a short introduction to relevant theory in orbital mechanics and propagation of uncertainties. The intended reader is someone with a technical background other than orbital mechanics or statistics, and the goal is to give a sufficient understanding of necessary concepts. The sections on orbital mechanics are mostly based on the book by Curtis \cite{Curtis2009}.
 
 
 \subsubsection{Orbital Parameters}
@@ -64,8 +64,9 @@ True anomaly                          & $\mathit{\Theta}$   & [0, 360]  & Deg  \
 \end{table}
 
 
-\subsubsection{Perifocal Coordinate System}
+\subsubsection{Coordinate Systems}
 
+\textbf{Perifocal Coordinate System} \\
 The center of the perifocal coordinate system is at the focus of the orbit. The perifocal frame is defined with the unit vectors $\hat{\mathbf{p}}$, $\hat{\mathbf{q}}$ and $\hat{\mathbf{w}}$. The unit vectors $\hat{\mathbf{p}}$ and $\hat{\mathbf{q}}$ lie in the orbital plane, with $\hat{\mathbf{p}}$ pointing towards the \textit{periapsis} of the orbit and $\hat{\mathbf{q}}$ towards the point at which \textit{true anomaly} is equal to $90 \deg$. The unit vector $\hat{\mathbf{w}}$ is the cross product of the unit vectors in the orbital plane, $\hat{\mathbf{w}} = \hat{\mathbf{p}} \times \hat{\mathbf{q}}$, and thus points in the same direction as the angular momentum vector $\Vec{\mathbf{h}}$ of the orbiting object. \\
 
 The position of the orbiting object described in the perifocal plane is given in Eq. \ref{eq:radius_perifocal_frame}, and velocity in Eq. \ref{eq:velocity_perifocal_frame}.
@@ -80,6 +81,16 @@ The position of the orbiting object described in the perifocal plane is given in
     \label{eq:velocity_perifocal_frame}
 \end{equation}
 
+
+\textbf{Local Vertical Local Horizontal Coordinate System} \\
+
+Define the Local Vertical Local Horizontal (LVLH) coordinate frame. \\  
+\todo{Fill in}
+
+\textbf{Earth Centered Intertial Coordinate System} \\
+
+Define the Earth Centered Intertial (ECI) coordinate frame. \\
+\todo{Fill in}
 
 
 \subsubsection{Lagrange Coefficients}
@@ -130,7 +141,7 @@ For the functions above, $z = \alpha \chi^2$, $\alpha = \frac{1}{a}$ is the reci
 Lambert's problem, from the French-born German astronomer J. H. Lambert (1728-1777), concerns finding the trajectory joining two orbital points $P_0$ and $P$, given the transfer time $\Delta t$. Lambert's problem can be solved using the Lagrange Coefficients. In this section an iterative approach from the book by Curtis \cite{Curtis2009} is presented.
 
 
-
+\todo{Insert Algorithm from Curtis}
 
 
 
@@ -141,4 +152,8 @@ Lambert's problem, from the French-born German astronomer J. H. Lambert (1728-17
 
 
 \subsection{Previous Work}
+
+In the section that follows, selected previous works on the uncertainty propagation in orbital mechanics are presented.  \\
+
+
 
