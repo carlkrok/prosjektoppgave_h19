@@ -3,11 +3,13 @@
 \documentclass[a4paper]{article}	  
 \usepackage[margin=3cm]{geometry} 	   % Choose your margin here. 
 \usepackage{amsmath}
+\usepackage{appendix}
 \usepackage{parskip}
 \usepackage{graphicx}
 \graphicspath{{../Images/}}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{setspace}
 \usepackage{todonotes}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -17,6 +19,18 @@
 \addbibresource{bibliography.bib}
 \usepackage{wrapfig}
 \usepackage{booktabs}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\usepackage{titlesec}
+\setcounter{secnumdepth}{4}
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead{}
+\rhead{\rightmark}
+\cfoot{Page \thepage}
 
 \renewcommand{\arraystretch}{1.3}
 \setlength{\tabcolsep}{3mm}
@@ -32,15 +46,15 @@
 \Large \textbf{Uncertainty Propagation in Orbital Rendezvous Manouvers} \\
 \vspace{0.25cm}
 \large Project Report \\
-\vspace{1cm}
+\vspace{0.75cm}
+\large Desember 2019 \\
+\vspace{0.75cm}
 \large \textbf{Carl Martin Krokeide} \\
 \vspace{0.1cm}
  Department of Engineering Cybernetics \\
 \vspace{0.1cm}
  Norwegian University of Science and Technology \\
-\vspace{0.75cm}
-\large Desember 2019 \\
-\vspace{1.5cm}
+\vspace{1.25cm}
 \end{center}
 \end{titlepage}
 
@@ -71,6 +85,18 @@ Supervisor 2: Dr. Leonard Felicetti}
 
 \newpage
 
+\input{Report/Theory.tex}
+
+\newpage
+
+\input{Report/Methods.tex}
+
+\newpage
+
+\input{Report/Results.tex}
+
+\newpage
+
 \input{Report/Discussion.tex}
 
 \newpage
@@ -80,5 +106,12 @@ Supervisor 2: Dr. Leonard Felicetti}
 \newpage
 
 \printbibliography[heading=bibintoc,title={References}]
+
+\newpage
+
+\appendix
+\appendixpage
+\addappheadtotoc
+
 
 \end{document}
