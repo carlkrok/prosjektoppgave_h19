@@ -142,12 +142,6 @@ Algorithm \ref{algo:lambert} presents an approach using the Lagrange Coefficient
     \KwIn{Starting point, end point, direction and time frame of desired trajectory}
     \KwOut{Initial velocity required to follow desired trajectory and velocity at end point}
     Calculate the change in true anomaly, $\mathit{\Delta\Theta}$, based on starting point, end point and direction of orbit (prograde or retrograde)\;
-    \;
-    \For{$i \gets 2$ \textbf{to} $n$} {
-      \If{$a_i > max$} {
-        $max \gets a_i$\;
-      }
-    }
     \Return{velocityStart, velocityEnd}\;
     \caption{Solve Lambert's Problem Using Lagrange Coefficients}
     \label{algo:lambert}
@@ -167,6 +161,6 @@ In the following section different methods of uncertainty propagation are presen
 
 \subsubsection{Monte Carlo Simulations}
 
-Monte Carlo simulation relies on repeated random sampling to obtain numerical results. The method is computationally heavy, but when the number of samples approaches infinity, the MC simulation result will converge towards the true probability distribution of the system. \\
+Monte Carlo simulation relies on repeated random sampling to obtain numerical results. MC simulation is computationally heavy, but has the advantage that when the number of samples approaches infinity, the result converges towards the true probability distribution of the system. \\
 
 
