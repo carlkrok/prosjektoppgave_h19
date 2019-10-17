@@ -66,14 +66,20 @@ end
 
 figure(7)
 hold on
+title('Rendezvous Position Error with Reduced Thrust')
 plot( deltaVScaleErrorVec, manouverEndPositionError )
+xlabel('deltaVStart Scaling Error')
+ylabel('Maneuver End Distance Error [km]')
 axis on
 grid on
 hold off
 
 figure(8)
 hold on
+title('Rendezvous Position Error with Reduced Thrust')
 plot( deltaVStartError, manouverEndPositionError )
+xlabel('deltaVStart Error [m/s]')
+ylabel('Maneuver End Distance Error [km]')
 axis on
 grid on
 hold off

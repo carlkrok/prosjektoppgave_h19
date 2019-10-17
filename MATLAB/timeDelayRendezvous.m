@@ -106,14 +106,20 @@ end
 
 figure(9)
 hold on
-plot( manouverEndPositionError )
-axis equal
+title('Rendezvous Position Error with Actuation Time Delay')
+plot( manouverTimeDelayVec, manouverEndPositionError )
+xlabel('Time Delay [s]')
+ylabel('Maneuver End Distance Error [km]')
 grid on
 hold off
 
 figure(10)
 hold on
+title('Relative Position Error for Rendezvous Maneuver with Actuation Time Delay')
 plot( multipleOrbitsPositionError )
+legend(sprintf('Delay Time %i Second(s)', multipleOrbitsManouverTimeDelay))
+xlabel('Time [s]')
+ylabel('Relative Distance [km]')
 grid on
 hold off
 

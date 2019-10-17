@@ -136,6 +136,7 @@ firstECIVel_E3 = [ vECI_E2X( numSamplesManeuver ), vECI_E2Y( numSamplesManeuver 
 
 figure(4)
 hold on
+title('Motion Relative to Satellite A')
 plot3( [ rLVLH_RelB1X rLVLH_RelB2X ], [ rLVLH_RelB1Y rLVLH_RelB2Y ], [ rLVLH_RelB1Z rLVLH_RelB2Z ])
 plot3( [ rLVLH_RelD1X rLVLH_RelD2X ], [ rLVLH_RelD1Y rLVLH_RelD2Y ], [ rLVLH_RelD1Z rLVLH_RelD2Z ])
 plot3( [ rLVLH_RelE1X rLVLH_RelE2X rLVLH_RelE3X ], [ rLVLH_RelE1Y rLVLH_RelE2Y rLVLH_RelE3Y ], [ rLVLH_RelE1Z rLVLH_RelE2Z rLVLH_RelE3Z ])
@@ -144,6 +145,9 @@ legend( 'B', 'B with thrust error', 'B with time delay', 'C' )
 axis equal
 axis on
 grid on
+xlabel('[km]')
+ylabel('[km]')
+zlabel('[km]')
 % Label the origin of the moving frame attached to A:
 text (0, 0, 0, 'A')
 % Label the start of relative trajectories:
@@ -156,16 +160,20 @@ hold off
 
 figure(5)
 hold on
+title('Distance to Satellite A')
 plot( [ sampleTB1 ( sampleTB2 + maneuverTime ) ], [ rLVLH_RelB1Norm rLVLH_RelB2Norm ] )
 plot( [ sampleTD1 ( sampleTD2 + maneuverTime ) ], [ rLVLH_RelD1Norm rLVLH_RelD2Norm ] )
 plot( [ sampleTE1 ( sampleTE2 + maneuverTimeDelay ) ( sampleTE3 + maneuverTime + maneuverTimeDelay ) ], [ rLVLH_RelE1Norm rLVLH_RelE2Norm rLVLH_RelE3Norm ] )
 plot( sampleTC, rLVLH_RelCNorm )
 legend( 'B', 'B with thrust error', 'B with time delay', 'C' )
+xlabel('Time [s]')
+ylabel('Distance [km]')
 hold off
 
 
 figure(6)
 hold on
+title('Rendezvous Maneuver')
 [ sx, sy, sz ] = sphere;
 surf( sx*rEarth, sy*rEarth, sz*rEarth, 'FaceAlpha', 0.05, 'EdgeAlpha', 0.05 );
 % plot3( rECI_AX, rECI_AY, rECI_AZ )

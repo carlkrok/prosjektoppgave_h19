@@ -53,9 +53,12 @@ numSamples = 5000;
 [rLVLH_Rel2X, rLVLH_Rel2Y, rLVLH_Rel2Z, rLVLH_Rel2Norm, sampleT2] = relativeTrajectory( rECI_A, vECI_A, rECI_C, vECI_C, anomalyTolerance, nMax, orbitPeriod_A, numPeriods, numSamples, muEarth );
 
 
-figure(1)
-plot3( rLVLH_Rel1X, rLVLH_Rel1Y, rLVLH_Rel1Z, '-', rLVLH_Rel2X, rLVLH_Rel2Y, rLVLH_Rel2Z, '-' )
+figure(2)
 hold on
+title('Trajectories Relative to Satellite A')
+plot3( rLVLH_Rel1X, rLVLH_Rel1Y, rLVLH_Rel1Z, '-')
+plot3( rLVLH_Rel2X, rLVLH_Rel2Y, rLVLH_Rel2Z, '-')
+legend('Relative Trajectory of B', 'Relative Trajectory of C')
 %axis equal
 axis on
 grid on
@@ -65,14 +68,17 @@ text (0, 0, 0, 'A')
 text(rLVLH_Rel1X(1), rLVLH_Rel1Y(1), rLVLH_Rel1Z(1), 'B')
 text(rLVLH_Rel2X(1), rLVLH_Rel2Y(1), rLVLH_Rel2Z(1), 'C')
 % Draw the initial position vectors:
-line([0 rLVLH_Rel1X(1)], [0 rLVLH_Rel1Y(1)], [0 rLVLH_Rel1Z(1)])
-line([0 rLVLH_Rel2X(1)], [0 rLVLH_Rel2Y(1)], [0 rLVLH_Rel2Z(1)])
+%line([0 rLVLH_Rel1X(1)], [0 rLVLH_Rel1Y(1)], [0 rLVLH_Rel1Z(1)])
+%line([0 rLVLH_Rel2X(1)], [0 rLVLH_Rel2Y(1)], [0 rLVLH_Rel2Z(1)])
 hold off
 
-figure(2)
+figure(3)
 hold on
+title('Distance to Satellite A')
 plot( sampleT1, rLVLH_Rel1Norm)
 plot( sampleT2, rLVLH_Rel2Norm)
+xlabel('Time [s]')
+ylabel('Distance [km]')
 legend('B', 'C')
 hold off
 

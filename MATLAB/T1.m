@@ -47,11 +47,14 @@ for manouverTime = minTime : deltaTime : maxTime
     
 end
 
-figure(3)
+figure(1)
 hold on
+title('Thrust Requirement for Different Maneuver Times')
 plot(firstManouver)
 plot(secondManouver)
 legend('First Manouver', 'Second Manouver')
+xlabel('Maneuver Lengths ( minTime : deltaTime : maxTime )')
+ylabel('Velocity Change [km/s]')
 hold off
 
 %plotOrbitWithEarth( r0Debris, v0Debris, eDebris, muEarth, rEarth, angleDiff )
