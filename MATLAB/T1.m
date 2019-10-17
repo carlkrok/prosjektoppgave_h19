@@ -1,11 +1,3 @@
-%% LOAD PARAMETERS
-
-% All parameters based on deg, km and s
-
-rEarth = 6378; 
-muEarth = 398600;
-
-
 % Program calculates thruster momentum and angle required to reach posEnd
 % given posStart, vStart, deltaTime and massSatellite. Assumes thruster
 % points in opposite direction of vStart, and operates for tThrust seconds.
@@ -13,6 +5,7 @@ muEarth = 398600;
 % Theta defined as angle in XY plane
 % Phi defined as angle in ZX plane
 
+run earthParameters;
 
 % For plotting of orbit function
 r0Debris = [2000 + rEarth, 0, 0];
@@ -33,11 +26,7 @@ deltaTime = 3600;
 orbitTypeDebris = "prograde"; % Alt: retrograde
 
 
-
-
-
 [ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEnd, deltaTime, orbitTypeDebris, muEarth )
-
 
 
 minTime = 1800;
@@ -86,7 +75,6 @@ function [ chasersDeltaVStart, chasersDeltaVEnd ] = changeFormation( chasersPosS
 
 end
 
-
 function [ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEnd, deltaTime, orbitTypeDebris, muEarth )
 
 
@@ -104,13 +92,13 @@ function [ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEn
 
     % TODO: Find first estimate expression
     z0 = 0; 
-    z1 = newtonStep( z0, rStart, rEnd, A, muEarth, deltaTime );
+    z1 = newtonStepZ( z0, rStart, rEnd, A, muEarth, deltaTime );
     
     tolerance = 0.00001;
     while abs( z1 - z0 ) > tolerance
 
         z0 = z1;
-        z1 = newtonStep( z0, rStart, rEnd, A, muEarth, deltaTime );
+        z1 = newtonStepZ( z0, rStart, rEnd, A, muEarth, deltaTime );
 
     end
 
@@ -118,10 +106,10 @@ function [ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEn
 
 
     % Calculating Lagrange constants
-    f = 1 - (y( z, rStart, rEnd, A ) / rStart);
-    g = A * sqrt( y( z, rStart, rEnd, A ) / muEarth);
-    df = (sqrt( muEarth ) / (rStart * rEnd)) * sqrt( y( z, rStart, rEnd, A ) / C( z ) ) * (z * S( z ) - 1);
-    dg = 1 - (y( z, rStart, rEnd, A ) / rEnd);
+    f = 1 - (y_func( z, rStart, rEnd, A ) / rStart);
+    g = A * sqrt( y_func( z, rStart, rEnd, A ) / muEarth);
+    df = (sqrt( muEarth ) / (rStart * rEnd)) * sqrt( y_func( z, rStart, rEnd, A ) / C_stumpff( z ) ) * (z * S_stumpff( z ) - 1);
+    dg = 1 - (y_func( z, rStart, rEnd, A ) / rEnd);
 
     % Calculating required velocity in startPosition to arrive at end orbit
     % in deltaT seconds
@@ -134,8 +122,6 @@ function [ deltaVStart, deltaVEnd ] = changeOrbit( posStart, vStart, posEnd, vEn
 
 
 end
-
-
 
 function [ fThruster, thetaThruster, phiThruster ] = thrustRequiredToPoint( posStart, vStart, posEnd, deltaTime, massSatellite, tThrust, orbitTypeDebris, muEarth )
 
@@ -153,13 +139,13 @@ function [ fThruster, thetaThruster, phiThruster ] = thrustRequiredToPoint( posS
 
     % TODO: Find first estimate expression
     z0 = 0; 
-    z1 = newtonStep( z0, rStart, rEnd, A, muEarth, deltaTime );
+    z1 = newtonStepZ( z0, rStart, rEnd, A, muEarth, deltaTime );
 
     tolerance = 0.00001;
     while abs( z1 - z0 ) > tolerance
 
         z0 = z1;
-        z1 = newtonStep( z0, rStart, rEnd, A, muEarth, deltaTime );
+        z1 = newtonStepZ( z0, rStart, rEnd, A, muEarth, deltaTime );
 
     end
 
@@ -167,10 +153,10 @@ function [ fThruster, thetaThruster, phiThruster ] = thrustRequiredToPoint( posS
 
 
     % Calculating Lagrange constants
-    f = 1 - (y( z, rStart, rEnd, A ) / rStart);
-    g = A * sqrt( y( z, rStart, rEnd, A ) / muEarth);
-    df = (sqrt( muEarth ) / (rStart * rEnd)) * sqrt( y( z, rStart, rEnd, A ) / C( z ) ) * (z * S( z ) - 1);
-    dg = 1 - (y( z, rStart, rEnd, A ) / rEnd);
+    f = 1 - (y_func( z, rStart, rEnd, A ) / rStart);
+    g = A * sqrt( y_func( z, rStart, rEnd, A ) / muEarth);
+    df = (sqrt( muEarth ) / (rStart * rEnd)) * sqrt( y_func( z, rStart, rEnd, A ) / C_stumpff( z ) ) * (z * S_stumpff( z ) - 1);
+    dg = 1 - (y_func( z, rStart, rEnd, A ) / rEnd);
 
     % Calculating required velocity in startPosition to arrive at endPosition
     % in deltaT seconds
@@ -215,61 +201,6 @@ function plotOrbitWithEarth( r0, v0, e, muEarth, rEarth, angleDiff )
     
     plot( rX, rY );
     hold off;
-end
-
-
-function z1 = newtonStep( z0, r1, r2, A, mu, deltaT )
-
-    z1 = z0 - (F( z0, r1, r2, A, mu, deltaT ) / dF( z0, r1, r2, A ));
-
-end
-    
-    
-function val = dF( z, r1, r2, A )
-
-    if z == 0
-        val = (sqrt( 2 ) / 40) * y( 0, r1, r2, A )^(3 / 2) + (A / 8) * (sqrt( y( 0, r1, r2, A ) ) + A * sqrt( 1 / (2 * y( 0, r1, r2, A ) ) ));
-    else
-        val = (y( z, r1, r2, A ) / C( z ))^(3/2) * ((1 / (2 * z)) * (C( z ) - (3 / 2) * (S( z )^2 / C( z ))) + (3 / 4) * (S( z )^2 / C( z ))) + (A / 8) * (3 * (S(z ) / C( z )) * sqrt( y( z, r1, r2, A ) ) + A * sqrt( C( z ) / y( z, r1, r2, A )));
-    end
-    
-end
-
-function val = F( z, r1, r2, A, mu, deltaT )
-
-    val = (y( z, r1, r2, A ) / C( z ))^(3 / 2) * S( z ) + A * sqrt( y( z, r1, r2, A ) ) - sqrt( mu ) * deltaT;
-
-end
-    
-
-function val = y( z, r1, r2, A )
-
-    val = r1 + r2 + A * ((z * S( z ) - 1) / sqrt( C( z ) ));
-end
-
-
-function val = S( z )
-
-    if z > 0
-        val = (sqrt( z ) - sin( sqrt( z ) )) / (sqrt( z ))^3;
-    elseif z < 0
-        val = (sinh( sqrt( -z ) ) - sqrt( -z )) / (sqrt( -z ))^3;
-    else
-        val = 1 / 6;
-    end
-
-end
-
-function val = C( z )
-
-    if z > 0
-        val = (1 - cos( sqrt( z ) )) / z;
-    elseif z < 0
-        val = (cosh( sqrt( -z ) ) - 1) / -z;
-    else
-        val = 1 / 2;
-    end
-
 end
 
 function [rX, rY] = orbitPoints(h, mu, e, numPoints)
