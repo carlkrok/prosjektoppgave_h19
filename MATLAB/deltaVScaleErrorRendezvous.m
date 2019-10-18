@@ -47,10 +47,8 @@ indexCounter = 1;
 [ deltaVStart_B, deltaVEnd_B, vIntersectOrbit ] = interceptOrbit( r0ECI_B, v0ECI_B, rECIManouverEnd_A, vECIManouverEnd_A, manouverTime, orbitType, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
 
 
+deltaTimeAfterManouver = orbitPeriod_A - manouverTime;
 for deltaVScaleError = deltaVScaleErrorVec % [ percent ]
-   
-    
-    deltaTimeAfterManouver = orbitPeriod_A - manouverTime;
     
     deltaVStartErronous_B = deltaVScaleError * deltaVStart_B;
 
