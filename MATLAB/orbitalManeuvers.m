@@ -10,10 +10,11 @@ anomalyMaxIterations = 1000;
 
 orbitType = "prograde";
 orbitPeriod_A = orbitPeriod( muEarth, hNorm_A, e_A );
-numPeriods = 1; %100;
-numSamples = 1000; %10000;
 
-maneuverTime = 2500; % Seconds
+numPeriods = 3;
+numSamples = 3000;
+
+maneuverTime = 2000; % Seconds
 numPeriodsManeuver = 1;
 numSamplesManeuver = 1000;
 
