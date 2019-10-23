@@ -123,29 +123,67 @@ end
 
 %% Statistical Analysis
 
+absMeanDeviationEndPos = zeros( MCsampleNum, 1 );
 absDeviationEndPos = zeros( MCsampleNum, 1 );
-
+relEndPos_B = MCposEnd;
 
 for dataIndex = 1 : MCsampleNum
     
     thisMeanEndPos = MCposEndMean( dataIndex, : );
+    thisEndPos = MCposEnd( dataIndex, : );
     
-    absDeviationEndPos( dataIndex ) = norm( rECIManouverEnd_A - thisMeanEndPos' );
+    absMeanDeviationEndPos( dataIndex ) = norm( rECIManouverEnd_A - thisMeanEndPos' );
+    
+    relEndPos_B( dataIndex, : ) = relEndPos_B( dataIndex, : ) - rECIManouverEnd_A';
+    
+    absDeviationEndPos( dataIndex ) = norm( rECIManouverEnd_A - thisEndPos' );
     
 end
+
 
 
 %% Plots
 
 figure(1)
 hold on
-title('Norm of Error between Rendezvous Point and Mean MC End Point')
-plot( absDeviationEndPos )
+title('Norm of Error in Point of Rendezvous of Mean Value MC Simulations')
+plot( absMeanDeviationEndPos )
 hold off
 
+figure(2)
+hold on
+title('Error in ECI XY-Position of MC Simulations')
+plot( relEndPos_B( : , 1 ), relEndPos_B( :, 2 ), '*' )
+xlabel('X')
+ylabel('Y')
+hold off
 
+figure(3)
+hold on
+title('Error in ECI XZ-Position of MC Simulations')
+plot( relEndPos_B( :, 1 ), relEndPos_B( :, 3 ), '*' )
+xlabel('X')
+ylabel('Z')
+hold off
 
+figure(4)
+hold on
+title('Error in ECI XYZ-Position of MC Simulations')
+plot3( relEndPos_B( :, 1 ), relEndPos_B( :, 2 ), relEndPos_B( :, 3 ), '*' )
+xlabel('X')
+ylabel('Y')
+zlabel('Z')
+hold off
 
+figure(5)
+hold on
+title('Norm of Error in Point of Rendezvous of MC Simulations')
+plot( absDeviationEndPos, '*' )
+hold off
 
-
+figure(6)
+hold on
+title('Time Delays of MC Simulations')
+plot( MCdeviationTimes, '*' )
+hold off
 
