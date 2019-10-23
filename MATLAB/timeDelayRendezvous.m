@@ -4,7 +4,7 @@ run earthParameters;
 run satelliteParameters;
 
 anomalyErrorTolerance = 10^(-12);
-anomalyMaxIterations = 1000;
+anomalyMaxIterations = 2000;
 
 
 orbitType = "prograde";
