@@ -14,12 +14,12 @@ anomalyMaxIterations = 2000;
 orbitType = "prograde";
 orbitPeriod_A = orbitPeriod( muEarth, hNorm_A, e_A );
 
-maneuverTime = 2500;
+maneuverTime = 3500;
 
 
 %% Monte Carlo Experiment Setup
 
-MCsampleNum = 1000;
+MCsampleNum = 10000;
 
 meanDeviationTimeSetup = 0;
 maxDeviationTimeSetup = 10;
@@ -85,7 +85,7 @@ QmatLVLHtoECI_B = QmatECItoLVLH_B';
 deltaVExperimentStart_B = QmatLVLHtoECI_B * deltaVStartLVLH_B;
 
 % B's position at experiment end
-[ rECIExperimentEnd_B, vECIExperimentEnd_B ] = nextStateTimeStep( muEarth, rECIExperimentStart_B, vECIExperimentStart_B + deltaVExperimentStart_B, maneuverTime, anomalyErrorTolerance, anomalyMaxIterations );
+[ rECIExperimentEnd_B, vECIExperimentEnd_B ] = nextStateTimeStep( muEarth, rECIExperimentStart_B, vECIExperimentStart_B + deltaVExperimentStart_B, maneuverTime - MCdeviationTimes( 1 ), anomalyErrorTolerance, anomalyMaxIterations );
 
 MCposEnd( 1, : ) = rECIExperimentEnd_B';
 MCvelEnd( 1, : ) = vECIExperimentEnd_B';
@@ -110,7 +110,7 @@ for experimentIndex = 2 : MCsampleNum
     deltaVManeuverStart_B = QmatLVLHtoECI_B * deltaVStartLVLH_B;
 
     % B's position at experiment end
-    [ rECIExperimentEnd_B, vECIExperimentEnd_B ] = nextStateTimeStep( muEarth, rECIManeuverStart_B, vECIManeuverStart_B + deltaVManeuverStart_B, maneuverTime, anomalyErrorTolerance, anomalyMaxIterations );
+    [ rECIExperimentEnd_B, vECIExperimentEnd_B ] = nextStateTimeStep( muEarth, rECIManeuverStart_B, vECIManeuverStart_B + deltaVManeuverStart_B, maneuverTime - thisDeviation, anomalyErrorTolerance, anomalyMaxIterations );
 
     MCposEnd( experimentIndex, : ) = rECIExperimentEnd_B';
     MCvelEnd( experimentIndex, : ) = vECIExperimentEnd_B';
