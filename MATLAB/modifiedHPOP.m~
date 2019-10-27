@@ -2,6 +2,8 @@ clc
 clear all
 format long g
 close all
+profile on
+tic
 
 global const Cnm Snm AuxParam eopdata swdata SOLdata DTCdata APdata PC
 
@@ -42,7 +44,7 @@ swdata = fscanf(fid,'%4i %3d %3d %5i %3i %3i %3i %3i %3i %3i %3i %3i %3i %4i %4i
 fclose(fid);
 
 % read space weather data 1997 - 2016 Solar data
-fid = fopen('SOLFSMY.txt','r'); % SOLFSMY_2019
+fid = fopen('SOLFSMY_2019.txt','r');
 %  ------------------------------------------------------------------------
 % | YYYY DDD   JulianDay  F10   F81c  S10   S81c  M10   M81c  Y10   Y81c
 %  ------------------------------------------------------------------------
@@ -50,7 +52,7 @@ SOLdata = fscanf(fid,'%d %d %f %f %f %f %f %f %f %f %f',[11 inf]);
 fclose(fid);
 
 % READ GEOMAGNETIC STORM DTC VALUE
-fid = fopen('DTCFILE.txt','r'); % DTCFILE_2019
+fid = fopen('DTCFILE_2019.txt','r');
 %  ------------------------------------------------------------------------
 % | DTC YYYY DDD   DTC1 to DTC24
 %  ------------------------------------------------------------------------
@@ -58,7 +60,7 @@ DTCdata = fscanf(fid,'%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %
 fclose(fid);
 
 % read space weather data
-fid = fopen('SOLRESAP.txt','r'); % SOLRESAP_2019
+fid = fopen('SOLRESAP_2019.txt','r');
 %  ------------------------------------------------------------------------
 % | YYYY DDD  F10 F10B Ap1 to Ap8
 %  ------------------------------------------------------------------------
@@ -70,9 +72,6 @@ AuxParam = struct('Mjd_UTC',0,'area_solar',0,'area_drag',0,'mass',0,'Cr',0,...
                   'Cd',0,'n',0,'m',0,'sun',0,'moon',0,'sRad',0,'drag',0,...
                   'planets',0,'SolidEarthTides',0,'OceanTides',0,'Relativity',0,...
                   'Thrust',0);
-
-%%
-
 
 % epoch state (Envisat)
 fid = fopen('InitialState_OrbitNTNU.txt','r');
@@ -116,17 +115,17 @@ AuxParam.n       = 40;
 AuxParam.m       = 40;
 AuxParam.sun     = 1;
 AuxParam.moon    = 1;
-AuxParam.planets = 0;
-AuxParam.sRad    = 0;
-AuxParam.drag    = 0;
+AuxParam.planets = 1;
+AuxParam.sRad    = 1;
+AuxParam.drag    = 1;
 AuxParam.SolidEarthTides = 1;
 AuxParam.OceanTides = 0;
 AuxParam.Relativity = 0;
-AuxParam.Thrust = 0;
+AuxParam.Thrust = 1;
 
 Mjd0   = Mjd_UTC;
 Step   = 60;   % [s]
-N_Step = 3320; % 36 hours
+N_Step = 1588; % 26.47 hours
 
 % shorten PC, eopdata, swdata, Cnm, and Snm
 num = fix(N_Step*Step/86400)+2;
@@ -142,9 +141,9 @@ Cnm = Cnm(1:AuxParam.n+1,1:AuxParam.n+1);
 Snm = Snm(1:AuxParam.n+1,1:AuxParam.n+1);
 
 % propagation
-Eph = ephemeris_modified(Y0, N_Step, Step);
+Eph = Ephemeris(Y0, N_Step, Step);
 
-fid = fopen('SatelliteStates_OrbitNTNU.txt','w');
+fid = fopen('SatelliteStates.txt','w');
 for i=1:N_Step+1
     [year,mon,day,hr,min,sec] = invjday(Mjd0+Eph(i,1)/86400+2400000.5);
     fprintf(fid,'  %4d/%2.2d/%2.2d  %2d:%2d:%6.3f',year,mon,day,hr,min,sec);
@@ -160,7 +159,8 @@ for i=1:n
     Eph_ecef(i,2:7) = ECI2ECEF(Mjd0+Eph_ecef(i,1)/86400, Eph(i,2:7));    
 end
 
-%%
+True_EnvisatStates
+dd = True_Eph-Eph_ecef(:,2:7);
 
 % Plot orbit in ECI reference
 figure(1)
@@ -174,6 +174,27 @@ plot3(Eph_ecef(:,2),Eph_ecef(:,3),Eph_ecef(:,4),'-')
 title('Orbit ECEF (m)')
 xlabel('X');ylabel('Y');zlabel('Z');
 grid
+
+% Plot Discrepancy of Precise and Propagated orbits
+figure(3)
+subplot(3,1,1);
+plot(dd(:,1));
+title('Discrepancy of Precise and Propagated Envisat Positions for 26.47 hours');
+axis tight
+xlabel('Time')
+ylabel('dX[m]')
+hold on
+subplot(3,1,2);
+plot(dd(:,2));
+axis tight
+xlabel('Time')
+ylabel('dY[m]')
+subplot(3,1,3);
+plot(dd(:,3));
+axis tight
+xlabel('Time')
+ylabel('dZ[m]')
+toc
 
 tic
 lamda = zeros(n,1);
@@ -195,4 +216,8 @@ for k = 1:n
     pause(0.01);
     clearpoints(an);
 end
-hold off
+toc
+
+profile viewer
+profile off
+

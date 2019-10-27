@@ -63,8 +63,8 @@ MJD_TDB = Mjday_TDB(TT);
  r_Neptune,r_Pluto,r_Moon,r_Sun,r_SunSSB] = JPL_Eph_DE436(MJD_TDB);
 
 % Acceleration due to harmonic gravity field
-a = AccelHarmonic_ElasticEarth(MJD_UTC,r_Sun,r_Moon,Y(1:3),E,UT1_UTC,TT_UTC,x_pole,y_pole);
-%a = AccelHarmonic_AnelasticEarth(MJD_UTC,r_Sun,r_Moon,Y(1:3),E,UT1_UTC,TT_UTC,x_pole,y_pole);
+%a = AccelHarmonic_ElasticEarth(MJD_UTC,r_Sun,r_Moon,Y(1:3),E,UT1_UTC,TT_UTC,x_pole,y_pole);
+ a = AccelHarmonic_AnelasticEarth(MJD_UTC,r_Sun,r_Moon,Y(1:3),E,UT1_UTC,TT_UTC,x_pole,y_pole);
 
 % Luni-solar perturbations
 if (AuxParam.sun)
@@ -113,8 +113,8 @@ if (AuxParam.Relativity)
 end
 
 % Thrust 
-if (AuxParam.Thrust)
-    %a = a + Relativity(Y(1:3),Y(4:6));
+if (AuxParam.Relativity)
+    a = a + Relativity(Y(1:3),Y(4:6));
 end
 
 dY = [Y(4:6);a];
