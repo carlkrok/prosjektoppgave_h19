@@ -69,7 +69,7 @@ fclose(fid);
 AuxParam = struct('Mjd_UTC',0,'area_solar',0,'area_drag',0,'mass',0,'Cr',0,...
                   'Cd',0,'n',0,'m',0,'sun',0,'moon',0,'sRad',0,'drag',0,...
                   'planets',0,'SolidEarthTides',0,'OceanTides',0,'Relativity',0,...
-                  'Thrust',0);
+                  'Thrust',0, 'stepCounter', 0, 'thrustTime', 0, 'VelocityChange', 0);
 
 %%
 
@@ -123,10 +123,13 @@ AuxParam.SolidEarthTides = 1;
 AuxParam.OceanTides = 0;
 AuxParam.Relativity = 0;
 AuxParam.Thrust = 0;
+AuxParam.VelocityChange = 0;
 
 Mjd0   = Mjd_UTC;
 Step   = 60;   % [s]
-N_Step = 3320; % 36 hours
+N_Step = 2880; % 24 hours
+
+AuxParam.thrustTime = [2002, 04, 24, 12, 00, 00];
 
 % shorten PC, eopdata, swdata, Cnm, and Snm
 num = fix(N_Step*Step/86400)+2;
@@ -142,7 +145,7 @@ Cnm = Cnm(1:AuxParam.n+1,1:AuxParam.n+1);
 Snm = Snm(1:AuxParam.n+1,1:AuxParam.n+1);
 
 % propagation
-Eph = ephemeris_modified(Y0, N_Step, Step);
+[Eph, stats] = ephemeris_modified(Y0, N_Step, Step);
 
 fid = fopen('SatelliteStates_OrbitNTNU.txt','w');
 for i=1:N_Step+1
@@ -182,6 +185,7 @@ height = zeros(n,1);
 for i=1:n
     [lamda(i),phi(i),height(i)] = Geodetic(Eph_ecef(i,2:4));
 end
+
 figure(4)
 geoshow('landareas.shp','FaceColor',[0.5 1 0.5]);
 title('Satellite''s Ground Track')

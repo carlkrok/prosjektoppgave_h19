@@ -26,6 +26,8 @@ function dY = Accel_modified(t, Y)
 
 global const AuxParam eopdata
 
+AuxParam.stepCounter = AuxParam.stepCounter + 1;
+
 MJD_UTC = AuxParam.Mjd_UTC+t/86400;
 [x_pole,y_pole,UT1_UTC,LOD,dpsi,deps,dx_pole,dy_pole,TAI_UTC] = IERS(eopdata,MJD_UTC,'l');
 [UT1_TAI,UTC_GPS,UT1_GPS,TT_UTC,GPS_UTC] = timediff(UT1_UTC,TAI_UTC);
@@ -114,7 +116,21 @@ end
 
 % Thrust 
 if (AuxParam.Thrust)
-    %a = a + Relativity(Y(1:3),Y(4:6));
+    thrustFactor = 1.5;
+    if [year, month, day, hour, minute] == AuxParam.thrustTime(1:5)
+        h = cross(Y(1:3),Y(4:6));
+        thrustAccel = ( h / norm(h) ) * norm(a) * thrustFactor;
+        a = a + thrustAccel;
+    end
+end
+
+
+if (AuxParam.VelocityChange)
+    if [year, month, day, hour, minute] == AuxParam.thrustTime(1:5)
+        AuxParam.VelocityChange = 0;
+        h = cross(Y(1:3),Y(4:6));
+        Y(4:6) = Y(4:6) + ( h / norm(h) ) * norm(Y(4:6)) * 0.3;
+    end
 end
 
 dY = [Y(4:6);a];
