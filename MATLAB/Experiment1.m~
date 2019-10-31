@@ -158,6 +158,9 @@ Snm = Snm(1:AuxParam.n+1,1:AuxParam.n+1);
 
 orbitType_chaser = "retrograde";
 
+numSamplePointsInitialTrajectorySimple = 200;
+numSamplePointsFinalTrajectorySimple = 1000;
+
 %% Monte Carlo Experiment Setup
 
 MCsampleNum = 10;
@@ -219,6 +222,10 @@ MCSimpleVelStart = zeros(MCsampleNum, 3);
 MCSimpleVelEndMean = zeros(MCsampleNum, 3);
 MCSimpleVelStartMean = zeros(MCsampleNum, 3);
 
+MCSimpleECI_X_Trajectories = zeros(MCsampleNum, numSamplePointsInitialTrajectorySimple + numSamplePointsFinalTrajectorySimple);
+MCSimpleECI_Y_Trajectories = zeros(MCsampleNum, numSamplePointsInitialTrajectorySimple + numSamplePointsFinalTrajectorySimple);
+MCSimpleECI_Z_Trajectories = zeros(MCsampleNum, numSamplePointsInitialTrajectorySimple + numSamplePointsFinalTrajectorySimple);
+
 MC_HPOP_PosEnd = zeros( MCsampleNum, 3);
 MC_HPOP_PosStart = zeros( MCsampleNum, 3);
 MC_HPOP_PosEndMean = zeros(MCsampleNum, 3);
@@ -229,16 +236,21 @@ MC_HPOP_VelStart = zeros(MCsampleNum, 3);
 MC_HPOP_VelEndMean = zeros(MCsampleNum, 3);
 MC_HPOP_VelStartMean = zeros(MCsampleNum, 3);
 
-MC_HPOP_ECI_X_Trajectories(MCsampleNum, N_Step+1);
-MC_HPOP_ECI_Y_Trajectories(MCsampleNum, N_Step+1);
-MC_HPOP_ECI_Z_Trajectories(MCsampleNum, N_Step+1);
+MC_HPOP_ECI_X_Trajectories = zeros(MCsampleNum, N_Step+1);
+MC_HPOP_ECI_Y_Trajectories = zeros(MCsampleNum, N_Step+1);
+MC_HPOP_ECI_Z_Trajectories = zeros(MCsampleNum, N_Step+1);
 
 %%%%%%%%%%%%%  SIMPLE MODEL
 % (Debug) B's initial trajectory
-[rXECITrajectoryInitial_chaser, rYECITrajectoryInitial_chaser, rZECITrajectoryInitial_chaser, vXECITrajectoryInitial_chaser, vYECITrajectoryInitial_chaser, vZECITrajectoryInitial_chaser, sampleTECITrajectoryInitial_chaser] = ECITrajectory( r0ECI_chaser, v0ECI_chaser, anomalyErrorTolerance, anomalyMaxIterations, maneuverTime, 1, 1000, muEarth );
+[rXECITrajectoryInitial_chaser, rYECITrajectoryInitial_chaser, rZECITrajectoryInitial_chaser, vXECITrajectoryInitial_chaser, vYECITrajectoryInitial_chaser, vZECITrajectoryInitial_chaser, sampleTECITrajectoryInitial_chaser] = ECITrajectory( r0ECI_chaser, v0ECI_chaser, anomalyErrorTolerance, anomalyMaxIterations, maneuverTime, 1, numSamplePointsInitialTrajectorySimple, muEarth );
 
 % B's position at first iteration start
 [ rECIExperimentStartSimple_chaser, vECIExperimentStartSimple_chaser ] = nextStateTimeStep( muEarth, r0ECI_chaser, v0ECI_chaser, experimentStartTimeIdeal + MCdeviationTimes( 1 ), anomalyErrorTolerance, anomalyMaxIterations );
+
+[rXECITrajectoryExperimentStart_chaser, rYECITrajectoryExperimentStart_chaser, rZECITrajectoryExperimentStart_chaser, vXECITrajectoryExperimentStart_chaser, vYECITrajectoryExperimentStart_chaser, vZECITrajectoryExperimentStart_chaser, sampleTECITrajectoryExperimentStart_chaser] = ECITrajectory( r0ECI_chaser, v0ECI_chaser, anomalyErrorTolerance, anomalyMaxIterations, maneuverTime + MCdeviationTimes( 1 ), 1, numSamplePointsInitialTrajectorySimple, muEarth );
+MCSimpleECI_X_Trajectories(1, 1:numSamplePointsInitialTrajectorySimple) = rXECITrajectoryExperimentStart_chaser;
+MCSimpleECI_Y_Trajectories(1, 1:numSamplePointsInitialTrajectorySimple) = rYECITrajectoryExperimentStart_chaser;
+MCSimpleECI_Z_Trajectories(1, 1:numSamplePointsInitialTrajectorySimple) = rZECITrajectoryExperimentStart_chaser;
 
 MCSimplePosStart( 1, : ) = rECIExperimentStartSimple_chaser';
 MCSimpleVelStart( 1, : ) = vECIExperimentStartSimple_chaser';
@@ -253,7 +265,12 @@ deltaVExperimentStart_chaser = QmatLVLHtoECI_chaser * deltaVStartLVLH_chaser;
 [ rECIExperimentEndSimple_chaser, vECIExperimentEndSimple_chaser ] = nextStateTimeStep( muEarth, rECIExperimentStartSimple_chaser, vECIExperimentStartSimple_chaser + deltaVExperimentStart_chaser, experimentTime - maneuverTime - MCdeviationTimes( 1 ), anomalyErrorTolerance, anomalyMaxIterations );
 
 % (Debug) B's new trajectory
-[rXECITrajectoryNew_chaser, rYECITrajectoryNew_chaser, rZECITrajectoryNew_chaser, vXECITrajectoryNew_chaser, vYECITrajectoryNew_chaser, vZECITrajectoryNew_chaser, sampleTECITrajectoryNew_chaser] = ECITrajectory( rECIExperimentStartSimple_chaser, vECIExperimentStartSimple_chaser + deltaVExperimentStart_chaser, anomalyErrorTolerance, anomalyMaxIterations, experimentTime - maneuverTime, 1, 1000, muEarth );
+[rXECITrajectoryNew_chaser, rYECITrajectoryNew_chaser, rZECITrajectoryNew_chaser, vXECITrajectoryNew_chaser, vYECITrajectoryNew_chaser, vZECITrajectoryNew_chaser, sampleTECITrajectoryNew_chaser] = ECITrajectory( rECIExperimentStartSimple_chaser, vECIExperimentStartSimple_chaser + deltaVExperimentStart_chaser, anomalyErrorTolerance, anomalyMaxIterations, experimentTime - maneuverTime, 1, numSamplePointsFinalTrajectorySimple, muEarth );
+
+[rXECITrajectoryAfterManeuver_chaser, rYECITrajectoryAfterManeuver_chaser, rZECITrajectoryAfterManeuver_chaser, vXECITrajectoryAfterManeuver_chaser, vYECITrajectoryAfterManeuver_chaser, vZECITrajectoryAfterManeuver_chaser, sampleTECITrajectoryAfterManeuver_chaser] = ECITrajectory( rECIExperimentStartSimple_chaser, vECIExperimentStartSimple_chaser + deltaVExperimentStart_chaser, anomalyErrorTolerance, anomalyMaxIterations, maneuverTime + MCdeviationTimes( 1 ), 1, numSamplePointsFinalTrajectorySimple, muEarth );
+MCSimpleECI_X_Trajectories(1, numSamplePointsInitialTrajectorySimple:numSamplePointsFinalTrajectorySimple) = rXECITrajectoryAfterManeuver_chaser;
+MCSimpleECI_Y_Trajectories(1, numSamplePointsInitialTrajectorySimple:numSamplePointsFinalTrajectorySimple) = rYECITrajectoryAfterManeuver_chaser;
+MCSimpleECI_Z_Trajectories(1, numSamplePointsInitialTrajectorySimple:numSamplePointsFinalTrajectorySimple) = rZECITrajectoryAfterManeuver_chaser;
 
 MCSimplePosEnd( 1, : ) = rECIExperimentEndSimple_chaser';
 MCSimpleVelEnd( 1, : ) = vECIExperimentEndSimple_chaser';
@@ -273,9 +290,9 @@ MC_HPOP_VelEnd( 1, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)].
 MC_HPOP_PosEndMean( 1, : ) = MC_HPOP_PosEnd( 1, : );
 MC_HPOP_VelEndMean( 1, : ) = MC_HPOP_VelEnd( 1, : );
 
-MC_HPOP_ECI_X_Trajectories(1, :) = Eph(:, 2)';
-MC_HPOP_ECI_Y_Trajectories(1, :) = Eph(:, 3)';
-MC_HPOP_ECI_Z_Trajectories(1, :) = Eph(:, 4)';
+MC_HPOP_ECI_X_Trajectories(1, :) = Eph(:, 2)'./10^3;
+MC_HPOP_ECI_Y_Trajectories(1, :) = Eph(:, 3)'./10^3;
+MC_HPOP_ECI_Z_Trajectories(1, :) = Eph(:, 4)'./10^3;
 
 
 for experimentIndex = 2 : MCsampleNum
@@ -290,6 +307,11 @@ for experimentIndex = 2 : MCsampleNum
     MCSimplePosStart( experimentIndex, : ) = rECIManeuverStartSimple_chaser';
     MCSimpleVelStart( experimentIndex, : ) = vECIManeuverStartSimple_chaser';
     
+    [rXECITrajectoryManeuverStart_chaser, rYECITrajectoryManeuverStart_chaser, rZECITrajectoryManeuverStart_chaser, vXECITrajectoryManeuverStart_chaser, vYECITrajectoryManeuverStart_chaser, vZECITrajectoryManeuverStart_chaser, sampleTECITrajectoryManeuverStart_chaser] = ECITrajectory( r0ECI_chaser, v0ECI_chaser, anomalyErrorTolerance, anomalyMaxIterations, maneuverTime + MCdeviationTimes( experimentIndex ), 1, numSamplePointsInitialTrajectorySimple, muEarth );
+    MCSimpleECI_X_Trajectories(experimentIndex, 1:numSamplePointsInitialTrajectorySimple) = rXECITrajectoryManeuverStart_chaser;
+    MCSimpleECI_Y_Trajectories(experimentIndex, 1:numSamplePointsInitialTrajectorySimple) = rYECITrajectoryManeuverStart_chaser;
+    MCSimpleECI_Z_Trajectories(experimentIndex, 1:numSamplePointsInitialTrajectorySimple) = rZECITrajectoryManeuverStart_chaser;
+
     MCSimplePosStartMean( experimentIndex, : ) = mean( MCSimplePosStart( 1 : experimentIndex, : ) );
     
     [ QmatECItoLVLH_chaser ] = ECIToLVLH( rECIManeuverStartSimple_chaser, vECIManeuverStartSimple_chaser );
@@ -305,7 +327,11 @@ for experimentIndex = 2 : MCsampleNum
     MCSimplePosEndMean( experimentIndex, : ) = mean( MCSimplePosEnd( 1 : experimentIndex, : ) );
     MCSimpleVelEndMean( experimentIndex, : ) = mean( MCSimpleVelEnd( 1 : experimentIndex, : ) );
     
-    
+    [rXECITrajectoryAfterManeuver_chaser, rYECITrajectoryAfterManeuver_chaser, rZECITrajectoryAfterManeuver_chaser, vXECITrajectoryAfterManeuver_chaser, vYECITrajectoryAfterManeuver_chaser, vZECITrajectoryAfterManeuver_chaser, sampleTECITrajectoryAfterManeuver_chaser] = ECITrajectory( rECIExperimentStartSimple_chaser, vECIExperimentStartSimple_chaser + deltaVExperimentStart_chaser, anomalyErrorTolerance, anomalyMaxIterations, maneuverTime + MCdeviationTimes( 1 ), 1, numSamplePointsFinalTrajectorySimple, muEarth );
+    MCSimpleECI_X_Trajectories(1, numSamplePointsInitialTrajectorySimple:numSamplePointsFinalTrajectorySimple) = rXECITrajectoryAfterManeuver_chaser;
+    MCSimpleECI_Y_Trajectories(1, numSamplePointsInitialTrajectorySimple:numSamplePointsFinalTrajectorySimple) = rYECITrajectoryAfterManeuver_chaser;
+    MCSimpleECI_Z_Trajectories(1, numSamplePointsInitialTrajectorySimple:numSamplePointsFinalTrajectorySimple) = rZECITrajectoryAfterManeuver_chaser;
+
     
     %%%%%%%%%%%%%  HPOP MODEL
     % propagation
@@ -318,9 +344,9 @@ for experimentIndex = 2 : MCsampleNum
     MC_HPOP_PosEndMean( experimentIndex, : ) = mean(MC_HPOP_PosEnd( 1 : experimentIndex, : ));
     MC_HPOP_VelEndMean( experimentIndex, : ) = mean(MC_HPOP_VelEnd( 1 : experimentIndex, : ));
     
-    MC_HPOP_ECI_X_Trajectories(experimentIndex, :) = Eph(:, 2)';
-    MC_HPOP_ECI_Y_Trajectories(experimentIndex, :) = Eph(:, 3)';
-    MC_HPOP_ECI_Z_Trajectories(experimentIndex, :) = Eph(:, 4)';
+    MC_HPOP_ECI_X_Trajectories(experimentIndex, :) = Eph(:, 2)'./10^3;
+    MC_HPOP_ECI_Y_Trajectories(experimentIndex, :) = Eph(:, 3)'./10^3;
+    MC_HPOP_ECI_Z_Trajectories(experimentIndex, :) = Eph(:, 4)'./10^3;
     
 end
 
@@ -443,9 +469,20 @@ plot3( r0ECI_chaser(1), r0ECI_chaser(2), r0ECI_chaser(3), '*' )
 plot3( rECIExperimentStartSimple_chaser(1), rECIExperimentStartSimple_chaser(2), rECIExperimentStartSimple_chaser(3), '*' )
 plot3( rECIExperimentEndSimple_chaser(1), rECIExperimentEndSimple_chaser(2), rECIExperimentEndSimple_chaser(3), '*' )
 for plotIndex = 1 : MCsampleNum
-    
-    plot3( MC_HPOP_ECI_X_Trajectories(experimentIndex, :)./10^3, Eph(:, 3)./10^3, Eph(:, 4)./10^3)
-    
+    plot3( MC_HPOP_ECI_X_Trajectories(plotIndex, :), MC_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_HPOP_ECI_Z_Trajectories(plotIndex, :))
 end
 legend('Simple Model initial point', 'Simple Model maneuver start', 'Simple Model maneuver end')
 hold off
+
+figure(11)
+hold on
+title('ECI Simple Trajectories')
+plot3( r0ECI_chaser(1), r0ECI_chaser(2), r0ECI_chaser(3), '*' )
+plot3( rECIExperimentStartSimple_chaser(1), rECIExperimentStartSimple_chaser(2), rECIExperimentStartSimple_chaser(3), '*' )
+plot3( rECIExperimentEndSimple_chaser(1), rECIExperimentEndSimple_chaser(2), rECIExperimentEndSimple_chaser(3), '*' )
+for plotIndex = 1 : MCsampleNum
+    plot3( MC_HPOP_ECI_X_Trajectories(plotIndex, :), MC_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_HPOP_ECI_Z_Trajectories(plotIndex, :))
+end
+legend('Simple Model initial point', 'Simple Model maneuver start', 'Simple Model maneuver end')
+hold off
+

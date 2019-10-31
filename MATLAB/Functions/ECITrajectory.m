@@ -4,10 +4,13 @@ function [rXECI, rYECI, rZECI, vXECI, vYECI, vZECI, sampleT] = ECITrajectory( r0
    r = r0;
    v = v0;
 
-
+   if numSamples < 2
+       return
+   end
+   
    currTime = 0;
    endTime = currTime + orbitPeriod_A * numPeriods;
-   sampleInterval = (orbitPeriod_A * numPeriods) / numSamples;
+   sampleInterval = (orbitPeriod_A * numPeriods) / (numSamples-1);
 
    rXECI = [numSamples];
    rYECI = [numSamples];
