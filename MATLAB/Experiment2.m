@@ -54,20 +54,20 @@ Mjd_UTC = Mjday(year, mon, day, hour, min, sec);
 
 %% Experiment Setup
 
-maneuverEndTime = 3*3600;
+maneuverEndTime = 0.25*3600 + 4380; %4875;
 maneuverStartTime = 0.25*3600;
 AuxParam.thrustDuration = 10;
 Step   = 0.1;   % [s]
 N_Step = maneuverEndTime*1/Step; % 
 
 AuxParam.Mjd_UTC = Mjd_UTC;
-AuxParam.n       = 40;
-AuxParam.m       = 40;
-AuxParam.sun     = 1;
-AuxParam.moon    = 1;
+AuxParam.n       = 0;
+AuxParam.m       = 0;
+AuxParam.sun     = 0;
+AuxParam.moon    = 0;
 AuxParam.planets = 0;
-AuxParam.sRad    = 1;
-AuxParam.drag    = 1;
+AuxParam.sRad    = 0;
+AuxParam.drag    = 0;
 AuxParam.SolidEarthTides = 0;
 AuxParam.OceanTides = 0;
 AuxParam.Relativity = 0;
@@ -117,7 +117,7 @@ v0ECI_chaser = vChaserECI;
 orbitPeriod_chaser = tChaser;
 
 % A's position at experiment start
-%[ rECIExperimentStart_target, vECIExperimentStart_target ] = nextStateTimeStep( muEarth, r0ECI_target, v0ECI_target, experimentStartTimeIdeal, anomalyErrorTolerance, anomalyMaxIterations );
+[ rECIExperimentStart_target, vECIExperimentStart_target ] = nextStateTimeStep( muEarth, r0ECI_target, v0ECI_target, experimentStartTimeIdeal, anomalyErrorTolerance, anomalyMaxIterations );
 [rXECITrajectoryTarget, rYECITrajectoryTarget, rZECITrajectoryTarget, vXECITrajectoryTarget, vYECITrajectoryTarget, vZECITrajectoryTarget, sampleTECITrajectoryTarget] = ECITrajectory( r0ECI_target, v0ECI_target, anomalyErrorTolerance, anomalyMaxIterations, maneuverEndTime, 1, N_Step+1, muEarth );
 
 % A's position after ideal manouver
@@ -135,37 +135,61 @@ deltaVEndLVLH_chaser = QmatECItoLVLH_chaser * deltaVEndECI_chaser;
 
 %% Find optimal maneuver time
 
-
-minManeuverTime = 10; % [s]
-maxManeuverTime = maneuverEndTime;
-deltaManeuverTime = 1;
-optimalManeuverTime = minManeuverTime;
-optimalManeuverDeltaV = 10^9;
-
-deltaVManeuverTimes = zeros( 1 + ( maxManeuverTime - minManeuverTime ) / deltaManeuverTime );
-
-for thisManeuverTime = minManeuverTime : deltaManeuverTime : maxManeuverTime
-    
-    % A's position after ideal manouver
-    [ rTarget, vTarget ] = nextStateTimeStep( muEarth, r0ECI_target, v0ECI_target, maneuverStartTime + thisManeuverTime, anomalyErrorTolerance, anomalyMaxIterations );
-
-    % Required velocity change satellite B
-    [ deltaVStart, deltaVEnd ] = interceptOrbit( rECIExperimentStartIdeal_chaser, vECIExperimentStartIdeal_chaser, rTarget, vTarget, thisManeuverTime, orbitType_chaser, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
-
-    thisManeuverDeltaV = norm( deltaVStart ) + norm( deltaVEnd );
-    
-    if thisManeuverDeltaV < optimalManeuverDeltaV
-        
-        optimalManeuverTime = thisManeuverTime;
-        optimalManeuverDeltaV = thisManeuverDeltaV;
-        
-    end
-        
-    deltaVManeuverTimes( 1 + (thisManeuverTime - minManeuverTime ) / deltaManeuverTime ) = thisManeuverDeltaV;
-    
-end
-
-plot( minManeuverTime : deltaManeuverTime : maxManeuverTime, deltaVManeuverTimes )
+% 
+% minManeuverTime = 60; % [s]
+% maxManeuverTime = maneuverEndTime;
+% deltaManeuverTime = 1;
+% optimalManeuverTime = minManeuverTime;
+% optimalManeuverDeltaV = 10^9;
+% 
+% deltaVManeuverTimes = zeros( 1 + ( maxManeuverTime - minManeuverTime ) / deltaManeuverTime, 1 );
+% deltaVStartManeuverTimes = zeros( 1 + ( maxManeuverTime - minManeuverTime ) / deltaManeuverTime, 1 );
+% deltaVEndManeuverTimes = zeros( 1 + ( maxManeuverTime - minManeuverTime ) / deltaManeuverTime, 1 );
+% 
+% 
+% for thisManeuverTime = minManeuverTime : deltaManeuverTime : maxManeuverTime
+%     
+%     % A's position after ideal manouver
+%     [ rTarget, vTarget ] = nextStateTimeStep( muEarth, rECIExperimentStart_target, vECIExperimentStart_target, thisManeuverTime, anomalyErrorTolerance, anomalyMaxIterations );
+% 
+%     % Required velocity change satellite B
+%     [ deltaVStart, deltaVEnd ] = interceptOrbit( rECIExperimentStartIdeal_chaser, vECIExperimentStartIdeal_chaser, rTarget, vTarget, thisManeuverTime, orbitType_chaser, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
+% 
+%     thisManeuverDeltaV = norm( deltaVStart ) + norm( deltaVEnd );
+%     
+%     if norm( deltaVStart ) < optimalManeuverDeltaV
+%         
+%         optimalManeuverTime = thisManeuverTime;
+%         optimalManeuverDeltaV = norm( deltaVStart );
+%         
+%     end
+%         
+%     deltaVManeuverTimes( 1 + (thisManeuverTime - minManeuverTime ) / deltaManeuverTime ) = thisManeuverDeltaV;
+%     deltaVStartManeuverTimes( 1 + (thisManeuverTime - minManeuverTime ) / deltaManeuverTime ) = norm( deltaVStart );
+%     deltaVEndManeuverTimes( 1 + (thisManeuverTime - minManeuverTime ) / deltaManeuverTime ) = norm( deltaVEnd );
+%     
+% end
+% 
+% figure(1)
+% hold on
+% grid on
+% title('Start + End deltaV')
+% plot( minManeuverTime : deltaManeuverTime : maxManeuverTime, deltaVManeuverTimes' )
+% hold off
+% 
+% figure(2)
+% hold on
+% grid on
+% title('Start deltaV')
+% plot( minManeuverTime : deltaManeuverTime : maxManeuverTime, deltaVStartManeuverTimes' )
+% hold off
+% 
+% figure(3)
+% hold on
+% grid on
+% title('End deltaV')
+% plot( minManeuverTime : deltaManeuverTime : maxManeuverTime, deltaVEndManeuverTimes' )
+% hold off
 
 %% Monte Carlo Experimetns
 
@@ -292,7 +316,7 @@ for experimentIndex = 2 : MCsampleNum
     
     %%%%%%%%%%%%%  HPOP MODEL
     % propagation
-    AuxParam.thrustAcceleration = (deltaVExperimentStart_chaser*1000)./AuxParam.thrustDuration;
+    AuxParam.thrustAcceleration = (deltaVManeuverStart_chaser*1000)./AuxParam.thrustDuration;
     AuxParam.thrustStartTime = Mjd0 + ((maneuverStartTime + thisDeviationTime)/86400);
     [Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
     MC_HPOP_PosEnd( experimentIndex, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
@@ -518,6 +542,7 @@ title('Relative Trajectories MC Simple')
 for plotIndex = 1 : MCsampleNum
     plot3( relXTrajectoriesSimple(plotIndex, :), relYTrajectoriesSimple(plotIndex, :), relZTrajectoriesSimple(plotIndex, :))
 end
+plot3( relXTrajectoriesSimple(MCsampleNum, numSamplePointsInitialTrajectorySimple + numSamplePointsFinalTrajectorySimple), relYTrajectoriesSimple(MCsampleNum, numSamplePointsInitialTrajectorySimple + numSamplePointsFinalTrajectorySimple), relZTrajectoriesSimple(MCsampleNum, numSamplePointsInitialTrajectorySimple + numSamplePointsFinalTrajectorySimple), '*')
 hold off
 
 figure(15)
@@ -527,6 +552,7 @@ title('Relative Trajectories MC HPOP')
 for plotIndex = 1 : MCsampleNum
     plot3( relXTrajectoriesHPOP(plotIndex, :), relYTrajectoriesHPOP(plotIndex, :), relZTrajectoriesHPOP(plotIndex, :))
 end
+plot3( relXTrajectoriesHPOP(MCsampleNum, N_Step + 1), relYTrajectoriesHPOP(MCsampleNum, N_Step + 1), relZTrajectoriesHPOP(MCsampleNum, N_Step + 1), '*')
 hold off
 
 figure(16)
@@ -539,4 +565,6 @@ end
 for plotIndex = 1 : MCsampleNum
     plot3( relXTrajectoriesSimple(plotIndex, :), relYTrajectoriesSimple(plotIndex, :), relZTrajectoriesSimple(plotIndex, :), 'b')
 end
+plot3( relXTrajectoriesSimple(MCsampleNum, numSamplePointsInitialTrajectorySimple + numSamplePointsFinalTrajectorySimple), relYTrajectoriesSimple(MCsampleNum, numSamplePointsInitialTrajectorySimple + numSamplePointsFinalTrajectorySimple), relZTrajectoriesSimple(MCsampleNum, numSamplePointsInitialTrajectorySimple + numSamplePointsFinalTrajectorySimple), '*')
+plot3( relXTrajectoriesHPOP(MCsampleNum, N_Step + 1), relYTrajectoriesHPOP(MCsampleNum, N_Step + 1), relZTrajectoriesHPOP(MCsampleNum, N_Step + 1), '*')
 hold off

@@ -296,6 +296,9 @@ for I = 1:N
 end
 
 FACT1 = 1000/RSTAR;
+if ~(exist('AMBAR2'))
+
+end
 RHO = 3.46e-6 * AMBAR2 * TLOC1 * exp(-FACT1*SUM2)/AMBAR1/TLOC2;
 
 % Equation (2)

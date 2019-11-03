@@ -163,7 +163,7 @@ numSamplePointsFinalTrajectorySimple = 1000;
 
 %% Monte Carlo Experiment Setup
 
-MCsampleNum = 10;
+MCsampleNum = 100;
 
 meanDeviationTimeSetup = 0;
 maxDeviationTimeSetup = 2;
@@ -335,7 +335,7 @@ for experimentIndex = 2 : MCsampleNum
     
     %%%%%%%%%%%%%  HPOP MODEL
     % propagation
-    AuxParam.thrustAcceleration = (deltaVExperimentStart_chaser*1000)./AuxParam.thrustDuration;
+    AuxParam.thrustAcceleration = (deltaVManeuverStart_chaser*1000)./AuxParam.thrustDuration;
     AuxParam.thrustStartTime = Mjd0 + ((maneuverTime + thisDeviationTime)/86400);
     [Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
     MC_HPOP_PosEnd( experimentIndex, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
@@ -385,82 +385,82 @@ end
 %% Plots
 
 
-% figure(1)
-% hold on
-% title('Norm of Error in Point of Rendezvous of Mean Value MC Simulations')
-% plot( absMeanDeviationEndPosSimple )
-% plot( absMeanDeviationEndPosHPOP )
-% legend('Simple Model', 'HPOP')
-% hold off
-% 
-% figure(2)
-% hold on
-% title('Error in ECI XY-Position of MC Simulations')
-% plot( relEndPosSimple_chaser( : , 1 ), relEndPosSimple_chaser( :, 2 ), '*' )
-% plot( relEndPosHPOP_chaser( : , 1 ), relEndPosHPOP_chaser( :, 2 ), '*' )
-% legend('Simple Model', 'HPOP')
-% xlabel('X')
-% ylabel('Y')
-% hold off
-% 
-% figure(3)
-% hold on
-% title('Error in ECI XZ-Position of MC Simulations')
-% plot( relEndPosSimple_chaser( :, 1 ), relEndPosSimple_chaser( :, 3 ), '*' )
-% plot( relEndPosHPOP_chaser( :, 1 ), relEndPosHPOP_chaser( :, 3 ), '*' )
-% legend('Simple Model', 'HPOP')
-% xlabel('X')
-% ylabel('Z')
-% hold off
-% 
-% figure(4)
-% hold on
-% title('Error in ECI XYZ-Position of MC Simulations')
-% plot3( relEndPosSimple_chaser( :, 1 ), relEndPosSimple_chaser( :, 2 ), relEndPosSimple_chaser( :, 3 ), '*' )
-% plot3( relEndPosHPOP_chaser( :, 1 ), relEndPosHPOP_chaser( :, 2 ), relEndPosHPOP_chaser( :, 3 ), '*' )
-% legend('Simple Model', 'HPOP')
-% xlabel('X')
-% ylabel('Y')
-% zlabel('Z')
-% hold off
-% 
-% figure(5)
-% hold on
-% title('Norm of Error in Point of Rendezvous of MC Simulations')
-% plot( absDeviationEndPosSimple, '*' )
-% plot( absDeviationEndPosHPOP, '*' )
-% legend('Simple Model', 'HPOP')
-% hold off
-% 
-% figure(6)
-% hold on
-% title('Time Delays of MC Simulations')
-% plot( MCdeviationTimes, '*' )
-% hold off
-% 
-% figure(7)
-% hold on
-% title('ECI Trajectories')
-% plot3(rXECITrajectoryInitial_chaser, rYECITrajectoryInitial_chaser, rZECITrajectoryInitial_chaser)
-% plot3( r0ECI_chaser(1), r0ECI_chaser(2), r0ECI_chaser(3), '*' )
-% plot3( rECIExperimentStartSimple_chaser(1), rECIExperimentStartSimple_chaser(2), rECIExperimentStartSimple_chaser(3), '*' )
-% plot3( rECIExperimentEndSimple_chaser(1), rECIExperimentEndSimple_chaser(2), rECIExperimentEndSimple_chaser(3), '*' )
-% plot3( Eph(:, 2)./10^3, Eph(:, 3)./10^3, Eph(:, 4)./10^3)
-% plot3(rXECITrajectoryNew_chaser, rYECITrajectoryNew_chaser, rZECITrajectoryNew_chaser)
-% legend('Simple Model initial trajectory', 'Simple Model initial point', 'Simple Model maneuver start', 'Simple Model maneuver end', 'HPOP', 'Simple Model maneuver trajectory')
-% hold off
-% 
+figure(1)
+hold on
+title('Norm of Error in Point of Rendezvous of Mean Value MC Simulations')
+plot( absMeanDeviationEndPosSimple )
+plot( absMeanDeviationEndPosHPOP )
+legend('Simple Model', 'HPOP')
+hold off
+
+figure(2)
+hold on
+title('Error in ECI XY-Position of MC Simulations')
+plot( relEndPosSimple_chaser( : , 1 ), relEndPosSimple_chaser( :, 2 ), '*' )
+plot( relEndPosHPOP_chaser( : , 1 ), relEndPosHPOP_chaser( :, 2 ), '*' )
+legend('Simple Model', 'HPOP')
+xlabel('X')
+ylabel('Y')
+hold off
+
+figure(3)
+hold on
+title('Error in ECI XZ-Position of MC Simulations')
+plot( relEndPosSimple_chaser( :, 1 ), relEndPosSimple_chaser( :, 3 ), '*' )
+plot( relEndPosHPOP_chaser( :, 1 ), relEndPosHPOP_chaser( :, 3 ), '*' )
+legend('Simple Model', 'HPOP')
+xlabel('X')
+ylabel('Z')
+hold off
+
+figure(4)
+hold on
+title('Error in ECI XYZ-Position of MC Simulations')
+plot3( relEndPosSimple_chaser( :, 1 ), relEndPosSimple_chaser( :, 2 ), relEndPosSimple_chaser( :, 3 ), '*' )
+plot3( relEndPosHPOP_chaser( :, 1 ), relEndPosHPOP_chaser( :, 2 ), relEndPosHPOP_chaser( :, 3 ), '*' )
+legend('Simple Model', 'HPOP')
+xlabel('X')
+ylabel('Y')
+zlabel('Z')
+hold off
+
+figure(5)
+hold on
+title('Norm of Error in Point of Rendezvous of MC Simulations')
+plot( absDeviationEndPosSimple, '*' )
+plot( absDeviationEndPosHPOP, '*' )
+legend('Simple Model', 'HPOP')
+hold off
+
+figure(6)
+hold on
+title('Time Delays of MC Simulations')
+plot( MCdeviationTimes, '*' )
+hold off
+
+figure(7)
+hold on
+title('ECI Trajectories')
+plot3(rXECITrajectoryInitial_chaser, rYECITrajectoryInitial_chaser, rZECITrajectoryInitial_chaser)
+plot3( r0ECI_chaser(1), r0ECI_chaser(2), r0ECI_chaser(3), '*' )
+plot3( rECIExperimentStartSimple_chaser(1), rECIExperimentStartSimple_chaser(2), rECIExperimentStartSimple_chaser(3), '*' )
+plot3( rECIExperimentEndSimple_chaser(1), rECIExperimentEndSimple_chaser(2), rECIExperimentEndSimple_chaser(3), '*' )
+plot3( Eph(:, 2)./10^3, Eph(:, 3)./10^3, Eph(:, 4)./10^3)
+plot3(rXECITrajectoryNew_chaser, rYECITrajectoryNew_chaser, rZECITrajectoryNew_chaser)
+legend('Simple Model initial trajectory', 'Simple Model initial point', 'Simple Model maneuver start', 'Simple Model maneuver end', 'HPOP', 'Simple Model maneuver trajectory')
+hold off
+
 figure(8)
 hold on
 title('Norm of Error in Point of Rendezvous HPOP MC Simulation')
 plot( absDeviationEndPosHPOP )
 hold off
 
-% figure(9)
-% hold on
-% title('Norm of Error in Point of Rendezvous of Mean Value HPOP MC Simulation')
-% plot( absMeanDeviationEndPosHPOP )
-% hold off
+figure(9)
+hold on
+title('Norm of Error in Point of Rendezvous of Mean Value HPOP MC Simulation')
+plot( absMeanDeviationEndPosHPOP )
+hold off
 
 figure(10)
 hold on
@@ -493,3 +493,5 @@ hold on
 title('Norm of Error in Point of Rendezvous Simple Model MC Simulation')
 plot( absDeviationEndPosSimple )
 hold off
+
+
