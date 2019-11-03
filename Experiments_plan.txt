@@ -1,0 +1,15 @@
+Experiments Plan
+
+31.10
+Notes on work so far:
+Effects of J2 and Thrust Dynamics seems to be far greater than effects of timing delay in HPOP simulation.
+What can be done:
+...Could make thrust acceleration more like an impulse thrust, but would be less representative of real-world scenario
+...Could make timing delay greater to increase its effect on the result
+...J2 even greater than Thrust Dynamics, this should probably be excluded from some simulations?
+And _why_ is this a problem?
+...It is a problem because the mean value of the deviation is almost only affected by the effects other than thrust delay
+...The conclusion becomes: thrust delay is not the real problem
+
+Experiment 1 setup:
+Satellite starts in OrbitNTNU orbit. Rendezvous point should be chosen from actual debris data maybe???
