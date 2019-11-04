@@ -70,7 +70,7 @@ Mjd_UTC = Mjday(year, mon, day, hour, min, sec);
 
 maneuverEndTime = 2500;
 maneuverStartTime = 300;
-Step   = 0.05;   % [s]
+Step   = 0.1;   % [s]
 N_Step = maneuverEndTime*1/Step; %             
               
 Mjd0   = Mjd_UTC;
@@ -650,9 +650,9 @@ absMeanDeviationEndPosHPOP_4 = zeros( MCsampleNum, 1 );
 absDeviationEndPosHPOP_4 = zeros( MCsampleNum, 1 );
 relEndPosHPOP_4_chaser = MC_4_HPOP_PosEnd;
 
-absMeanDeviationEndPosHPOP_5 = zeros( MCsampleNum, 1 );
-absDeviationEndPosHPOP_5 = zeros( MCsampleNum, 1 );
-relEndPosHPOP_5_chaser = MC_5_HPOP_PosEnd;
+absMeanDeviationEndPosHPOP_4 = zeros( MCsampleNum, 1 );
+absDeviationEndPosHPOP_4 = zeros( MCsampleNum, 1 );
+relEndPosHPOP_4_chaser = MC_4_HPOP_PosEnd;
 
 for dataIndex = 1 : MCsampleNum
     
@@ -671,37 +671,31 @@ for dataIndex = 1 : MCsampleNum
     thisMeanEndPosHPOP_4 = MC_4_HPOP_PosEndMean( dataIndex, : );
     thisEndPosHPOP_4 = MC_4_HPOP_PosEnd( dataIndex, : );
     
-    thisMeanEndPosHPOP_5 = MC_5_HPOP_PosEndMean( dataIndex, : );
-    thisEndPosHPOP_5 = MC_5_HPOP_PosEnd( dataIndex, : );
+    thisMeanEndPosHPOP_4 = MC_4_HPOP_PosEndMean( dataIndex, : );
+    thisEndPosHPOP_4 = MC_4_HPOP_PosEnd( dataIndex, : );
     
     absMeanDeviationEndPosSimple( dataIndex ) = norm( rECIManouverEnd_target - thisMeanEndPosSimple' );
     absMeanDeviationEndPosHPOP_1( dataIndex ) = norm( rECIManouverEnd_target - thisMeanEndPosHPOP_1' );
     absMeanDeviationEndPosHPOP_2( dataIndex ) = norm( rECIManouverEnd_target - thisMeanEndPosHPOP_2' );
     absMeanDeviationEndPosHPOP_3( dataIndex ) = norm( rECIManouverEnd_target - thisMeanEndPosHPOP_3' );
     absMeanDeviationEndPosHPOP_4( dataIndex ) = norm( rECIManouverEnd_target - thisMeanEndPosHPOP_4' );
-    absMeanDeviationEndPosHPOP_5( dataIndex ) = norm( rECIManouverEnd_target - thisMeanEndPosHPOP_5' );
+    absMeanDeviationEndPosHPOP_4( dataIndex ) = norm( rECIManouverEnd_target - thisMeanEndPosHPOP_4' );
     
     relEndPosSimple_chaser( dataIndex, : ) = relEndPosSimple_chaser( dataIndex, : ) - rECIManouverEnd_target';
     relEndPosHPOP_1_chaser( dataIndex, : ) = relEndPosHPOP_1_chaser( dataIndex, : ) - rECIManouverEnd_target';
     relEndPosHPOP_2_chaser( dataIndex, : ) = relEndPosHPOP_2_chaser( dataIndex, : ) - rECIManouverEnd_target';
     relEndPosHPOP_3_chaser( dataIndex, : ) = relEndPosHPOP_3_chaser( dataIndex, : ) - rECIManouverEnd_target';
     relEndPosHPOP_4_chaser( dataIndex, : ) = relEndPosHPOP_4_chaser( dataIndex, : ) - rECIManouverEnd_target';
-    relEndPosHPOP_5_chaser( dataIndex, : ) = relEndPosHPOP_5_chaser( dataIndex, : ) - rECIManouverEnd_target';
+    relEndPosHPOP_4_chaser( dataIndex, : ) = relEndPosHPOP_4_chaser( dataIndex, : ) - rECIManouverEnd_target';
    
     absDeviationEndPosSimple( dataIndex ) = norm( rECIManouverEnd_target - thisEndPosSimple' );
     absDeviationEndPosHPOP_1( dataIndex ) = norm( rECIManouverEnd_target - thisEndPosHPOP_1' );
     absDeviationEndPosHPOP_2( dataIndex ) = norm( rECIManouverEnd_target - thisEndPosHPOP_2' );
     absDeviationEndPosHPOP_3( dataIndex ) = norm( rECIManouverEnd_target - thisEndPosHPOP_3' );
     absDeviationEndPosHPOP_4( dataIndex ) = norm( rECIManouverEnd_target - thisEndPosHPOP_4' );
-    absDeviationEndPosHPOP_5( dataIndex ) = norm( rECIManouverEnd_target - thisEndPosHPOP_5' );
+    absDeviationEndPosHPOP_4( dataIndex ) = norm( rECIManouverEnd_target - thisEndPosHPOP_4' );
     
 end
-
-
-relEndPosMeasurement_12 = absDeviationEndPosHPOP_2 - absDeviationEndPosHPOP_1;
-relEndPosMeasurement_45 = absDeviationEndPosHPOP_5 - absDeviationEndPosHPOP_4;
-
-
 
 
 
@@ -713,15 +707,13 @@ figure(1)
 hold on
 grid on
 title('Error in ECI XYZ-Position of MC Simulations')
-
 plot3( relEndPosSimple_chaser( :, 1 ), relEndPosSimple_chaser( :, 2 ), relEndPosSimple_chaser( :, 3 ), '*' )
 plot3( relEndPosHPOP_1_chaser( :, 1 ), relEndPosHPOP_1_chaser( :, 2 ), relEndPosHPOP_1_chaser( :, 3 ), '*' )
 plot3( relEndPosHPOP_2_chaser( :, 1 ), relEndPosHPOP_2_chaser( :, 2 ), relEndPosHPOP_2_chaser( :, 3 ), '*' )
 plot3( relEndPosHPOP_3_chaser( :, 1 ), relEndPosHPOP_3_chaser( :, 2 ), relEndPosHPOP_3_chaser( :, 3 ), '*' )
 plot3( relEndPosHPOP_4_chaser( :, 1 ), relEndPosHPOP_4_chaser( :, 2 ), relEndPosHPOP_4_chaser( :, 3 ), '*' )
-plot3( relEndPosHPOP_5_chaser( :, 1 ), relEndPosHPOP_5_chaser( :, 2 ), relEndPosHPOP_5_chaser( :, 3 ), '*' )
-plot3(0,0,0,'m+')
-legend('Simple Model', 'HPOP 1', 'HPOP 2', 'HPOP 3', 'HPOP 4' , 'HPOP 5', 'Goal Position')
+plot3( relEndPosHPOP_4_chaser( :, 1 ), relEndPosHPOP_4_chaser( :, 2 ), relEndPosHPOP_4_chaser( :, 3 ), '*' )
+legend('Simple Model', 'HPOP 1', 'HPOP 2', 'HPOP 3', 'HPOP 4' , 'HPOP 5')
 xlabel('X [km]')
 ylabel('Y [km]')
 zlabel('Z [km]')
@@ -732,12 +724,11 @@ figure(2)
 hold on
 grid on
 title('Norm of Error in Point of Rendezvous of MC Simulations')
-plot( absDeviationEndPosSimple, '+' )
-plot( absDeviationEndPosHPOP_1, '+' )
-plot( absDeviationEndPosHPOP_2, '+' )
-plot( absDeviationEndPosHPOP_3, '+' )
-plot( absDeviationEndPosHPOP_4, '+' )
-plot( absDeviationEndPosHPOP_5, '+' )
+plot( absDeviationEndPosSimple, '*' )
+plot( absDeviationEndPosHPOP_1, '*' )
+plot( absDeviationEndPosHPOP_2, '*' )
+plot( absDeviationEndPosHPOP_3, '*' )
+plot( absDeviationEndPosHPOP_4, '*' )
 legend('Simple Model', 'HPOP 1', 'HPOP 2', 'HPOP 3', 'HPOP 4', 'HPOP 5')
 xlabel('Sample')
 ylabel('Distance [km]')
@@ -757,18 +748,9 @@ for plotIndex = 1 : MCsampleNum
     plot3( MC_2_HPOP_ECI_X_Trajectories(plotIndex, :), MC_2_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_2_HPOP_ECI_Z_Trajectories(plotIndex, :), 'g')
     plot3( MC_3_HPOP_ECI_X_Trajectories(plotIndex, :), MC_3_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_3_HPOP_ECI_Z_Trajectories(plotIndex, :), 'y')
     plot3( MC_4_HPOP_ECI_X_Trajectories(plotIndex, :), MC_4_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_4_HPOP_ECI_Z_Trajectories(plotIndex, :), 'c')
-    plot3( MC_5_HPOP_ECI_X_Trajectories(plotIndex, :), MC_5_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_5_HPOP_ECI_Z_Trajectories(plotIndex, :), 'm')
+    plot3( MC_4_HPOP_ECI_X_Trajectories(plotIndex, :), MC_4_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_4_HPOP_ECI_Z_Trajectories(plotIndex, :), 'm')
 end
 legend('Simple Model initial point', 'Simple Model maneuver start', 'Simple Model maneuver end')
 hold off
 
-figure(4)
-hold on
-grid on
-title('End Pos Difference of Acceleration Duration HPOP')
-plot( relEndPosMeasurement_12)
-plot( relEndPosMeasurement_45)
-legend('Reduced Model', 'Full Model')
-xlabel('Sample')
-ylabel('Distance [km]')
-hold off
+

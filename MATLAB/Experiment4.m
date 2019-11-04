@@ -698,12 +698,6 @@ for dataIndex = 1 : MCsampleNum
 end
 
 
-relEndPosMeasurement_12 = absDeviationEndPosHPOP_2 - absDeviationEndPosHPOP_1;
-relEndPosMeasurement_45 = absDeviationEndPosHPOP_5 - absDeviationEndPosHPOP_4;
-
-
-
-
 
 %% Plots
 
@@ -713,15 +707,13 @@ figure(1)
 hold on
 grid on
 title('Error in ECI XYZ-Position of MC Simulations')
-
 plot3( relEndPosSimple_chaser( :, 1 ), relEndPosSimple_chaser( :, 2 ), relEndPosSimple_chaser( :, 3 ), '*' )
 plot3( relEndPosHPOP_1_chaser( :, 1 ), relEndPosHPOP_1_chaser( :, 2 ), relEndPosHPOP_1_chaser( :, 3 ), '*' )
 plot3( relEndPosHPOP_2_chaser( :, 1 ), relEndPosHPOP_2_chaser( :, 2 ), relEndPosHPOP_2_chaser( :, 3 ), '*' )
 plot3( relEndPosHPOP_3_chaser( :, 1 ), relEndPosHPOP_3_chaser( :, 2 ), relEndPosHPOP_3_chaser( :, 3 ), '*' )
 plot3( relEndPosHPOP_4_chaser( :, 1 ), relEndPosHPOP_4_chaser( :, 2 ), relEndPosHPOP_4_chaser( :, 3 ), '*' )
 plot3( relEndPosHPOP_5_chaser( :, 1 ), relEndPosHPOP_5_chaser( :, 2 ), relEndPosHPOP_5_chaser( :, 3 ), '*' )
-plot3(0,0,0,'m+')
-legend('Simple Model', 'HPOP 1', 'HPOP 2', 'HPOP 3', 'HPOP 4' , 'HPOP 5', 'Goal Position')
+legend('Simple Model', 'HPOP 1', 'HPOP 2', 'HPOP 3', 'HPOP 4' , 'HPOP 5')
 xlabel('X [km]')
 ylabel('Y [km]')
 zlabel('Z [km]')
@@ -732,12 +724,12 @@ figure(2)
 hold on
 grid on
 title('Norm of Error in Point of Rendezvous of MC Simulations')
-plot( absDeviationEndPosSimple, '+' )
-plot( absDeviationEndPosHPOP_1, '+' )
-plot( absDeviationEndPosHPOP_2, '+' )
-plot( absDeviationEndPosHPOP_3, '+' )
-plot( absDeviationEndPosHPOP_4, '+' )
-plot( absDeviationEndPosHPOP_5, '+' )
+plot( absDeviationEndPosSimple, '*' )
+plot( absDeviationEndPosHPOP_1, '*' )
+plot( absDeviationEndPosHPOP_2, '*' )
+plot( absDeviationEndPosHPOP_3, '*' )
+plot( absDeviationEndPosHPOP_4, '*' )
+plot( absDeviationEndPosHPOP_5, '*' )
 legend('Simple Model', 'HPOP 1', 'HPOP 2', 'HPOP 3', 'HPOP 4', 'HPOP 5')
 xlabel('Sample')
 ylabel('Distance [km]')
@@ -762,13 +754,4 @@ end
 legend('Simple Model initial point', 'Simple Model maneuver start', 'Simple Model maneuver end')
 hold off
 
-figure(4)
-hold on
-grid on
-title('End Pos Difference of Acceleration Duration HPOP')
-plot( relEndPosMeasurement_12)
-plot( relEndPosMeasurement_45)
-legend('Reduced Model', 'Full Model')
-xlabel('Sample')
-ylabel('Distance [km]')
-hold off
+
