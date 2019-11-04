@@ -269,9 +269,10 @@ MC_1_HPOP_ECI_Z_Trajectories = zeros(MCsampleNum, N_Step+1);
 
 
 % propagation
+deltaVManeuverStart_chaser = deltaVExperimentStart_chaser;
 AuxParam.thrustAcceleration = (deltaVExperimentStart_chaser*1000)./AuxParam.thrustDuration;
 AuxParam.thrustStartTime = Mjd0 + ((maneuverStartTime + MCdeviationTimes( 1 ))/86400);
-[Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
+[Eph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
 MC_1_HPOP_PosEnd( 1, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
 MC_1_HPOP_VelEnd( 1, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
 
@@ -298,7 +299,7 @@ for experimentIndex = 2 : MCsampleNum
     % propagation
     AuxParam.thrustAcceleration = (deltaVManeuverStart_chaser*1000)./AuxParam.thrustDuration;
     AuxParam.thrustStartTime = Mjd0 + ((maneuverStartTime + thisDeviationTime)/86400);
-    [Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
+    [Eph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
     MC_1_HPOP_PosEnd( experimentIndex, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
     MC_1_HPOP_VelEnd( experimentIndex, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
 
@@ -348,9 +349,10 @@ MC_2_HPOP_ECI_Z_Trajectories = zeros(MCsampleNum, N_Step+1);
 
 
 % propagation
+deltaVManeuverStart_chaser = deltaVExperimentStart_chaser;
 AuxParam.thrustAcceleration = (deltaVExperimentStart_chaser*1000)./AuxParam.thrustDuration;
 AuxParam.thrustStartTime = Mjd0 + ((maneuverStartTime + MCdeviationTimes( 1 ))/86400);
-[Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
+[Eph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
 MC_2_HPOP_PosEnd( 1, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
 MC_2_HPOP_VelEnd( 1, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
 
@@ -377,7 +379,7 @@ for experimentIndex = 2 : MCsampleNum
     % propagation
     AuxParam.thrustAcceleration = (deltaVManeuverStart_chaser*1000)./AuxParam.thrustDuration;
     AuxParam.thrustStartTime = Mjd0 + ((maneuverStartTime + thisDeviationTime)/86400);
-    [Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
+    [Eph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
     MC_2_HPOP_PosEnd( experimentIndex, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
     MC_2_HPOP_VelEnd( experimentIndex, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
 
@@ -427,9 +429,10 @@ MC_3_HPOP_ECI_Z_Trajectories = zeros(MCsampleNum, N_Step+1);
 
 
 % propagation
+deltaVManeuverStart_chaser = deltaVExperimentStart_chaser;
 AuxParam.thrustAcceleration = (deltaVExperimentStart_chaser*1000)./AuxParam.thrustDuration;
 AuxParam.thrustStartTime = Mjd0 + ((maneuverStartTime + MCdeviationTimes( 1 ))/86400);
-[Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
+[Eph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
 MC_3_HPOP_PosEnd( 1, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
 MC_3_HPOP_VelEnd( 1, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
 
@@ -456,7 +459,7 @@ for experimentIndex = 2 : MCsampleNum
     % propagation
     AuxParam.thrustAcceleration = (deltaVManeuverStart_chaser*1000)./AuxParam.thrustDuration;
     AuxParam.thrustStartTime = Mjd0 + ((maneuverStartTime + thisDeviationTime)/86400);
-    [Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
+    [Eph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
     MC_3_HPOP_PosEnd( experimentIndex, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
     MC_3_HPOP_VelEnd( experimentIndex, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
 
@@ -508,9 +511,10 @@ MC_4_HPOP_ECI_Z_Trajectories = zeros(MCsampleNum, N_Step+1);
 
 
 % propagation
+deltaVManeuverStart_chaser = deltaVExperimentStart_chaser;
 AuxParam.thrustAcceleration = (deltaVExperimentStart_chaser*1000)./AuxParam.thrustDuration;
 AuxParam.thrustStartTime = Mjd0 + ((maneuverStartTime + MCdeviationTimes( 1 ))/86400);
-[Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
+[Eph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
 MC_4_HPOP_PosEnd( 1, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
 MC_4_HPOP_VelEnd( 1, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
 
@@ -537,7 +541,7 @@ for experimentIndex = 2 : MCsampleNum
     % propagation
     AuxParam.thrustAcceleration = (deltaVManeuverStart_chaser*1000)./AuxParam.thrustDuration;
     AuxParam.thrustStartTime = Mjd0 + ((maneuverStartTime + thisDeviationTime)/86400);
-    [Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
+    [Eph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
     MC_4_HPOP_PosEnd( experimentIndex, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
     MC_4_HPOP_VelEnd( experimentIndex, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
 
@@ -586,9 +590,10 @@ MC_5_HPOP_ECI_Z_Trajectories = zeros(MCsampleNum, N_Step+1);
 
 
 % propagation
+deltaVManeuverStart_chaser = deltaVExperimentStart_chaser;
 AuxParam.thrustAcceleration = (deltaVExperimentStart_chaser*1000)./AuxParam.thrustDuration;
 AuxParam.thrustStartTime = Mjd0 + ((maneuverStartTime + MCdeviationTimes( 1 ))/86400);
-[Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
+[Eph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
 MC_5_HPOP_PosEnd( 1, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
 MC_5_HPOP_VelEnd( 1, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
 
@@ -615,7 +620,7 @@ for experimentIndex = 2 : MCsampleNum
     % propagation
     AuxParam.thrustAcceleration = (deltaVManeuverStart_chaser*1000)./AuxParam.thrustDuration;
     AuxParam.thrustStartTime = Mjd0 + ((maneuverStartTime + thisDeviationTime)/86400);
-    [Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
+    [Eph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
     MC_5_HPOP_PosEnd( experimentIndex, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
     MC_5_HPOP_VelEnd( experimentIndex, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
 

@@ -7,7 +7,7 @@ close all
 
 %% Load Parameters
 
-global const Cnm Snm AuxParam eopdata swdata SOLdata DTCdata APdata PC deltaVManeuverStart_chaser
+global const Cnm Snm AuxParam eopdata swdata SOLdata DTCdata APdata PC
 
 run earthParameters; 
 run satelliteParameters;
@@ -159,14 +159,14 @@ deltaVEndLVLH_chaser = QmatECItoLVLH_chaser * deltaVEndECI_chaser;
 
 [ QmatECItoLVLH_chaser ] = ECIToLVLH( rECIExperimentStartSimple_chaser, vECIExperimentStartSimple_chaser );
 QmatLVLHtoECI_chaser = QmatECItoLVLH_chaser';
-deltaVManeuverStart_chaser = QmatLVLHtoECI_chaser * deltaVStartLVLH_chaser;
+deltaVExperimentStart_chaser = QmatLVLHtoECI_chaser * deltaVStartLVLH_chaser;
 
 
 %%%%%%%%%%%%%  HPOP MODEL
 % propagation
-AuxParam.thrustAcceleration = (deltaVManeuverStart_chaser*1000)./AuxParam.thrustDuration;
+AuxParam.thrustAcceleration = (deltaVExperimentStart_chaser*1000)./AuxParam.thrustDuration;
 AuxParam.thrustStartTime = Mjd0 + ((maneuverStartTime + MCdeviationTimes( 1 ))/86400);
-[Eph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
+[Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
 
 MC_HPOP_PosEnd( 1, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
 
@@ -188,7 +188,7 @@ for experimentIndex = 2 : MCsampleNum
     % propagation
     AuxParam.thrustAcceleration = (deltaVManeuverStart_chaser*1000)./AuxParam.thrustDuration;
     AuxParam.thrustStartTime = Mjd0 + ((maneuverStartTime + thisDeviationTime)/86400);
-    [thisEph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
+    [thisEph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
     MC_HPOP_PosEnd( experimentIndex, : ) = [thisEph(N_Step+1, 2), thisEph(N_Step+1, 3), thisEph(N_Step+1, 4)]./10^3;
 
    
@@ -214,9 +214,7 @@ title('End Position HPOP')
 plot3(0,0,0,'k.')
 for plotIndex = 1 : MCsampleNum
 	plot3((MC_HPOP_PosEnd( plotIndex, 1 ) - rECIManouverEnd_target(1)), (MC_HPOP_PosEnd( plotIndex, 2 ) - rECIManouverEnd_target(2)), (MC_HPOP_PosEnd( plotIndex, 3 ) - rECIManouverEnd_target(3)), '*')
-    if mod((plotIndex-1), 10) == 0
-        plot3([0 (MC_HPOP_PosEnd( plotIndex, 1 ) - rECIManouverEnd_target(1))],[0 (MC_HPOP_PosEnd( plotIndex, 2 ) - rECIManouverEnd_target(2))],[0 (MC_HPOP_PosEnd( plotIndex, 3 ) - rECIManouverEnd_target(3))])
-    end
+    plot3([0 (MC_HPOP_PosEnd( plotIndex, 1 ) - rECIManouverEnd_target(1))],[0 (MC_HPOP_PosEnd( plotIndex, 2 ) - rECIManouverEnd_target(2))],[0 (MC_HPOP_PosEnd( plotIndex, 3 ) - rECIManouverEnd_target(3))])
 end
 hold off
 
