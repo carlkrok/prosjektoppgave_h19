@@ -7,7 +7,7 @@ close all
 
 %% Load Parameters
 
-global const Cnm Snm AuxParam eopdata swdata SOLdata DTCdata APdata PC
+global const Cnm Snm AuxParam eopdata swdata SOLdata DTCdata APdata PC deltaVManeuverStart_chaser
 
 run earthParameters; 
 run satelliteParameters;
@@ -172,6 +172,7 @@ MCSimplePosStartMean( 1, : ) = MCSimplePosStart( 1, : );
 [ QmatECItoLVLH_chaser ] = ECIToLVLH( rECIExperimentStartSimple_chaser, vECIExperimentStartSimple_chaser );
 QmatLVLHtoECI_chaser = QmatECItoLVLH_chaser';
 deltaVExperimentStart_chaser = QmatLVLHtoECI_chaser * deltaVStartLVLH_chaser;
+deltaVManeuverStart_chaser = deltaVExperimentStart_chaser;
 
 % B's position at first iteration end
 [ rECIExperimentEndSimple_chaser, vECIExperimentEndSimple_chaser ] = nextStateTimeStep( muEarth, rECIExperimentStartSimple_chaser, vECIExperimentStartSimple_chaser + deltaVExperimentStart_chaser, maneuverEndTime - maneuverStartTime - MCdeviationTimes( 1 ), anomalyErrorTolerance, anomalyMaxIterations );
