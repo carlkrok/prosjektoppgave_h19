@@ -126,8 +126,8 @@ AuxParam.Thrust = 0;
 AuxParam.VelocityChange = 0;
 
 Mjd0   = Mjd_UTC;
-Step   = 60;   % [s]
-N_Step = 2880; % 24 hours
+Step   = 3600*24;   % [s]
+N_Step = 365; % 24 hours
 
 AuxParam.thrustTime = [2002, 04, 24, 12, 00, 00];
 
@@ -185,6 +185,8 @@ height = zeros(n,1);
 for i=1:n
     [lamda(i),phi(i),height(i)] = Geodetic(Eph_ecef(i,2:4));
 end
+
+%%
 
 figure(4)
 geoshow('landareas.shp','FaceColor',[0.5 1 0.5]);
