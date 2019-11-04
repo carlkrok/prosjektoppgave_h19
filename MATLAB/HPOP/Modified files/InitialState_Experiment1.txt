@@ -1,0 +1,12 @@
+2002/04/24-00:00:00.000
++6952136.23
++0.0
++0.0
++0.0
++660.76998
++7552.63548
+satellite's effective area for solar radiation: 0.2
+satellite's effective area for drag: 0.1
+satellite's mass: 2.0
+Cr: 1.0
+Cd: 2.2

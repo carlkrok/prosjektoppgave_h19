@@ -126,8 +126,9 @@ AuxParam.Thrust = 0;
 AuxParam.VelocityChange = 0;
 
 Mjd0   = Mjd_UTC;
-Step   = 3600*24;   % [s]
-N_Step = 365; % 24 hours
+
+Step   = 60;   % [s]
+N_Step = 60; % 24 hours
 
 AuxParam.thrustTime = [2002, 04, 24, 12, 00, 00];
 
