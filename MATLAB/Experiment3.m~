@@ -707,14 +707,9 @@ relEndPosMeasurement_45 = absDeviationEndPosHPOP_5 - absDeviationEndPosHPOP_4;
 
 
 
-%% Additoinal Trajectories
 
 
-% A's trajectory
-[rXECITrajectory_target, rYECITrajectory_target, rZECITrajectory_target, vXECITrajectory_target, vYECITrajectory_target, vZECITrajectory_target, sampleTECITrajectory_target] = ECITrajectory( r0ECI_target, v0ECI_target, anomalyErrorTolerance, anomalyMaxIterations, orbitPeriod_chaser, 1, 1000, muEarth );
 
-% B's old trajectory
-[rXECITrajectory_chaserOld, rYECITrajectory_chaserOld, rZECITrajectory_chaserOld, vXECITrajectory_chaserOld, vYECITrajectory_chaserOld, vZECITrajectory_chaserOld, sampleTECITrajectory_chaserOld] = ECITrajectory( r0ECI_chaser, v0ECI_chaser, anomalyErrorTolerance, anomalyMaxIterations, orbitPeriod_chaser, 1, 1000, muEarth );
 
 
 
@@ -760,14 +755,9 @@ figure(3)
 hold on
 grid on
 title('ECI Trajectories')
-axis equal
-xlabel('X [km]')
-ylabel('Y [km]')
-zlabel('Z [km]')
-h1 = plot3( rXECITrajectory_target, rYECITrajectory_target, rZECITrajectory_target, '-.')
-h2 = plot3( rXECITrajectory_chaserOld, rYECITrajectory_chaserOld, rZECITrajectory_chaserOld, '-.')
-[ sx, sy, sz ] = sphere;
-surf( sx*rEarth, sy*rEarth, sz*rEarth, 'FaceAlpha', 0.05, 'EdgeAlpha', 0.05 );
+plot3( r0ECI_chaser(1), r0ECI_chaser(2), r0ECI_chaser(3), '*k' )
+plot3( rECIExperimentStartSimple_chaser(1), rECIExperimentStartSimple_chaser(2), rECIExperimentStartSimple_chaser(3), '*k' )
+plot3( rECIExperimentEndSimple_chaser(1), rECIExperimentEndSimple_chaser(2), rECIExperimentEndSimple_chaser(3), '*k' )
 for plotIndex = 1 : MCsampleNum
     plot3( MCSimpleECI_X_Trajectories(plotIndex, :), MCSimpleECI_Y_Trajectories(plotIndex, :), MCSimpleECI_Z_Trajectories(plotIndex, :), 'b')
     plot3( MC_1_HPOP_ECI_X_Trajectories(plotIndex, :), MC_1_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_1_HPOP_ECI_Z_Trajectories(plotIndex, :), 'r')
@@ -776,20 +766,13 @@ for plotIndex = 1 : MCsampleNum
     plot3( MC_4_HPOP_ECI_X_Trajectories(plotIndex, :), MC_4_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_4_HPOP_ECI_Z_Trajectories(plotIndex, :), 'c')
     plot3( MC_5_HPOP_ECI_X_Trajectories(plotIndex, :), MC_5_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_5_HPOP_ECI_Z_Trajectories(plotIndex, :), 'm')
 end
-plot3( r0ECI_chaser(1), r0ECI_chaser(2), r0ECI_chaser(3), '*k' )
-plot3( rECIExperimentStartSimple_chaser(1), rECIExperimentStartSimple_chaser(2), rECIExperimentStartSimple_chaser(3), '*k' )
-plot3( rECIExperimentEndSimple_chaser(1), rECIExperimentEndSimple_chaser(2), rECIExperimentEndSimple_chaser(3), '*k' )
-text( r0ECI_chaser(1), r0ECI_chaser(2), r0ECI_chaser(3), 'Chaser Experiment Start' )
-text( rECIExperimentStartSimple_chaser(1), rECIExperimentStartSimple_chaser(2), rECIExperimentStartSimple_chaser(3), 'Chaser Ideal Maneuver Start' )
-text( rECIExperimentEndSimple_chaser(1), rECIExperimentEndSimple_chaser(2), rECIExperimentEndSimple_chaser(3), 'Chaser Ideal Maneuver End' )
-%legend('Simple Model initial point', 'Simple Model maneuver start', 'Simple Model maneuver end')
-legend([h1, h2], 'Target Trajectory', 'Chaser Initial Trajectory')
+legend('Simple Model initial point', 'Simple Model maneuver start', 'Simple Model maneuver end')
 hold off
 
 figure(4)
 hold on
 grid on
-title('HPOP End Pos Error Difference with Acceleration Duration 20s vs. 10s, Delay Uniform +/- 2s')
+title('HPOP End Pos Error Difference with Acceleration Duration 20s vs. 10s')
 plot( abs(relEndPosMeasurement_12))
 plot( abs(relEndPosMeasurement_45))
 legend('Reduced Model', 'Full Model')

@@ -119,7 +119,7 @@ if (AuxParam.Thrust)
     if MJD_UTC >= AuxParam.thrustStartTime && MJD_UTC <= (AuxParam.thrustStartTime + (AuxParam.thrustDuration/86400))
         QmatECItoLVLH = ECIToLVLH( Y(1:3), Y(4:6) );
         QmatLVLHtoECI = QmatECItoLVLH';
-        a = a + (QmatLVLHtoECI * deltaVManeuverStart_chaser);
+        a = a + (QmatLVLHtoECI * AuxParam.thrustLVLHAcceleration);%(QmatLVLHtoECI * deltaVManeuverStart_chaser);
     end
 end
 
