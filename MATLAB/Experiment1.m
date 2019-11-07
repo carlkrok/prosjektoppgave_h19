@@ -16,7 +16,7 @@ run satelliteParameters;
 AuxParam = struct('Mjd_UTC',0,'area_solar',0,'area_drag',0,'mass',0,'Cr',0,...
                   'Cd',0,'n',0,'m',0,'sun',0,'moon',0,'sRad',0,'drag',0,...
                   'planets',0,'SolidEarthTides',0,'OceanTides',0,'Relativity',0,...
-                  'Thrust',0, 'stepCounter', 0, 'thrustStartTime', 0, 'thrustEndTime', 0, 'VelocityChange', 0, 'thrustAcceleration', 0);
+                  'Thrust',0, 'stepCounter', 0, 'thrustStartTime', 0, 'thrustEndTime', 0, 'velocityChangeLVLH', 0, 'thrustLVLHAcceleration', 0);
 
 anomalyErrorTolerance = 10^(-12);
 anomalyMaxIterations = 2000;
@@ -138,8 +138,7 @@ AuxParam.drag    = 0;
 AuxParam.SolidEarthTides = 0;
 AuxParam.OceanTides = 0;
 AuxParam.Relativity = 0;
-AuxParam.Thrust = 1;
-AuxParam.VelocityChange = 0;              
+AuxParam.Thrust = 1;          
               
 Mjd0   = Mjd_UTC;
 
@@ -209,6 +208,7 @@ orbitPeriod_chaser = orbitPeriod( muEarth, hNorm_chaser, e_chaser );
 deltaVStartLVLH_chaser = QmatECItoLVLH_chaser * deltaVStartECI_chaser;
 deltaVEndLVLH_chaser = QmatECItoLVLH_chaser * deltaVEndECI_chaser;
 
+AuxParam.velocityChangeLVLH = deltaVStartLVLH_chaser*1000;
 
 %% Monte Carlo Experimetns
 
@@ -281,9 +281,9 @@ MCSimpleVelEndMean( 1, : ) = MCSimpleVelEnd( 1, : );
 
 %%%%%%%%%%%%%  HPOP MODEL
 % propagation
-AuxParam.thrustAcceleration = (deltaVExperimentStart_chaser*1000)./AuxParam.thrustDuration;
+AuxParam.thrustLVLHAcceleration = AuxParam.velocityChangeLVLH./AuxParam.thrustDuration;
 AuxParam.thrustStartTime = Mjd0 + ((maneuverTime + MCdeviationTimes( 1 ))/86400);
-[Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
+[Eph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
 MC_HPOP_PosEnd( 1, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
 MC_HPOP_VelEnd( 1, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
 
@@ -335,9 +335,9 @@ for experimentIndex = 2 : MCsampleNum
     
     %%%%%%%%%%%%%  HPOP MODEL
     % propagation
-    AuxParam.thrustAcceleration = (deltaVManeuverStart_chaser*1000)./AuxParam.thrustDuration;
+    AuxParam.thrustLVLHAcceleration = AuxParam.velocityChangeLVLH./AuxParam.thrustDuration;
     AuxParam.thrustStartTime = Mjd0 + ((maneuverTime + thisDeviationTime)/86400);
-    [Eph, stats] = ephemeris_Experiment1(Y0, N_Step, Step);
+    [Eph, stats] = ephemeris_Experiment2(Y0, N_Step, Step);
     MC_HPOP_PosEnd( experimentIndex, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
     MC_HPOP_VelEnd( experimentIndex, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
 

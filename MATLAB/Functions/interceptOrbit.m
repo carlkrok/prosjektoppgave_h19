@@ -1,4 +1,4 @@
-function [ deltaVStart, deltaVEnd, vIntersectOrbit ] = interceptOrbit( posStart, vStart, posEnd, vEnd, deltaTime, orbitTypeDebris, mu, tolerance, nMax )
+function [ deltaVStart, deltaVEnd, vIntersectOrbit ] = interceptOrbit( posStart, vStart, posEnd, vEnd, deltaTime, orbitType, mu, tolerance, nMax )
 
 
    rStart = norm( posStart );
@@ -7,7 +7,7 @@ function [ deltaVStart, deltaVEnd, vIntersectOrbit ] = interceptOrbit( posStart,
    deltaTheta = acosd( dot( posStart, posEnd ) / (rStart * rEnd) );
 
    wOrbit = cross( posStart, posEnd );
-   if ((wOrbit(3) < 0 && orbitTypeDebris == "prograde") || (~(wOrbit(3) < 0 ) && orbitTypeDebris == "retrograde"))
+   if ((wOrbit(3) < 0 && orbitType == "prograde") || (~(wOrbit(3) < 0 ) && orbitType == "retrograde"))
        deltaTheta = 360 - deltaTheta;
    end
 

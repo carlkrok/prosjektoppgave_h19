@@ -24,7 +24,7 @@ function varargout = radau(OdeFcn,tspan,y0,options,varargin)
 %     Matlab version:
 %     Denis Bichsel
 %     Rue des Deurres 58
-%     2000 Neuchâtel
+%     2000 Neuchï¿½tel
 %     Suisse
 %     dbichsel@infomaniak.ch
 %     Version of end 2015
@@ -906,8 +906,14 @@ while (Stat.StepNbr <= MaxNbrStep && PosNeg*t < PosNeg*tfinal) % ligne 849 fortr
     cq     = C*hquot;            
     for q = 1:NbrStg
       z(:,q) = (cq(q)-C(1)+1)* cont(:,NbrStg);
+      if z ~= real(z)
+        disp('Wait a sec...')
+      end
       for q1 = 2:NbrStg
         z(:,q) = (z(:,q) + cont(:,NbrStg+1-q1))*(cq(q)-C(q1)+1);
+        if z ~= real(z)
+            disp('Wait a sec...')
+        end
       end
     end    
     for n = 1:Ny                 %   w <-> FF   cont c <-> AK   cq(1) <-> C1Q  
@@ -955,6 +961,15 @@ while (Stat.StepNbr <= MaxNbrStep && PosNeg*t < PosNeg*tfinal) % ligne 849 fortr
       if Arg.Ode
         f(:,q) = feval(OdeFcn,t+C(q)*h, y+z(:,q),varargin{:}); % OdeFcn needs parameters
       else
+        if f ~= real(f)
+            disp('Wait a sec...')
+        end
+        if y ~= real(y)
+            disp('Wait a sec...')
+        end
+        if z ~= real(z)
+            disp('Wait a sec...')
+        end
         f(:,q) = feval(OdeFcn,t+C(q)*h, y+z(:,q));         % OdeFcn needs no parameters
       end
       if any(isnan(f))
@@ -1023,9 +1038,16 @@ while (Stat.StepNbr <= MaxNbrStep && PosNeg*t < PosNeg*tfinal) % ligne 849 fortr
     w      = w+z;                % w  <-> FF,  z  <->  ZZ     
     
     for n = 1:Ny 
+                
       z(n,:) = T(1,:) * w(n,1);
+      if z ~= real(z)
+        disp('Wait a sec...')
+      end
       for q = 2:NbrStg              
         z(n,:) = z(n,:) + T(q,:) * w(n,q); 
+        if z ~= real(z)
+            disp('Wait a sec...')
+        end
       end
     end    
 	  if (FacConv*NewNrm > FNewt)
@@ -1190,7 +1212,7 @@ while (Stat.StepNbr <= MaxNbrStep && PosNeg*t < PosNeg*tfinal) % ligne 849 fortr
     
     NeedNewJac = true;      % Ligne 1613
     if (Last),
-      h = hopt;             % Est-ce défini????
+      h = hopt;             % Est-ce dï¿½fini????
       Stat.StepRejNbr = Stat.StepRejNbr + 1;
       break;
     end
@@ -1846,7 +1868,7 @@ if RealYN
   ValP5(4) =  0.5700953298671789419170D+01;
   ValP5(5) = 0.3210265600308549888425D+01; 
   % Le signe - ci-dessus n'existe pas dans la version fortran.
-  % Il améliore le changement de "stage" dans Robertson
+  % Il amï¿½liore le changement de "stage" dans Robertson
   
 else
   

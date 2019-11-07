@@ -22,7 +22,11 @@
 % Last modified:   2018/02/11   M. Mahooti
 % 
 %--------------------------------------------------------------------------
-function dY = Accel_Experiment2(t, Y)
+function dY = Accel_v3(t, Y)
+
+if Y ~= real(Y)
+    disp('Wait a sec...')
+end
 
 global const AuxParam eopdata deltaVManeuverStart_chaser
 
@@ -66,6 +70,9 @@ MJD_TDB = Mjday_TDB(TT);
 
 % Acceleration due to harmonic gravity field
 %a = AccelHarmonic_ElasticEarth(MJD_UTC,r_Sun,r_Moon,Y(1:3),E,UT1_UTC,TT_UTC,x_pole,y_pole);
+if Y(1:3) ~= real(Y(1:3))
+    disp('Wait a sec...')
+end
 a = AccelHarmonic_AnelasticEarth(MJD_UTC,r_Sun,r_Moon,Y(1:3),E,UT1_UTC,TT_UTC,x_pole,y_pole);
 
 % Luni-solar perturbations
@@ -116,11 +123,9 @@ end
 
 % Thrust 
 if (AuxParam.Thrust)
-    if MJD_UTC >= AuxParam.thrustStartTime && MJD_UTC <= (AuxParam.thrustStartTime + (AuxParam.thrustDuration/86400))
-        QmatECItoLVLH = ECIToLVLH( Y(1:3), Y(4:6) );
-        QmatLVLHtoECI = QmatECItoLVLH';
-        a = a + (QmatLVLHtoECI * AuxParam.thrustLVLHAcceleration);%(QmatLVLHtoECI * deltaVManeuverStart_chaser);
-    end
+    QmatECItoLVLH = ECIToLVLH( Y(1:3), Y(4:6) );
+    QmatLVLHtoECI = QmatECItoLVLH';
+    a = a + (QmatLVLHtoECI * AuxParam.thrustLVLHAcceleration);
 end
 
 

@@ -28,6 +28,10 @@
 %--------------------------------------------------------------------------
 function [a] = AccelHarmonic_AnelasticEarth(Mjd_UTC,r_Sun,r_Moon,r,E,UT1_UTC,TT_UTC,x_pole,y_pole)
 
+if r ~= real(r)
+    disp('Wait a sec...')
+end
+
 global Cnm Snm AuxParam const
 
 r_ref = 6378.1366e3;   % Earth's radius [m]; ITG-Grace03
@@ -420,6 +424,9 @@ end
 
 % Body-fixed position 
 r_bf = E * r;
+if r_bf ~= real(r_bf)
+    disp('Wait a sec...')
+end
 
 % Auxiliary quantities
 d = norm(r_bf);                     % distance
