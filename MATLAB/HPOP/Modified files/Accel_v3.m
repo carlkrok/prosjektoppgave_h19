@@ -28,7 +28,7 @@ if Y ~= real(Y)
     disp('Wait a sec...')
 end
 
-global const AuxParam eopdata deltaVManeuverStart_chaser
+global const AuxParam eopdata 
 
 AuxParam.stepCounter = AuxParam.stepCounter + 1;
 
@@ -123,6 +123,8 @@ end
 
 % Thrust 
 if (AuxParam.Thrust)
+    %AuxParam.accelIntegral = AuxParam.accelIntegral + ( t - AuxParam.prevTimeStep ) * AuxParam.thrustLVLHAcceleration;
+    %AuxParam.prevTimeStep = t;
     QmatECItoLVLH = ECIToLVLH( Y(1:3), Y(4:6) );
     QmatLVLHtoECI = QmatECItoLVLH';
     a = a + (QmatLVLHtoECI * AuxParam.thrustLVLHAcceleration);
