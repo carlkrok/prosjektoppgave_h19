@@ -1,8 +1,8 @@
 %% Clear Workspace
-clc
+%clc
 clear all
 format long g
-close all
+%close all
 
 disp('Workspace Cleared')
 
@@ -142,12 +142,12 @@ swdata = swdata(:,i-3:i+num);
 
 orbitType_chaser = "retrograde";
 
-thrustDuration = 6*Step;
+thrustDuration = 2*Step;
 
 
 %% Monte Carlo Experiment Setup
 
-MCsampleNum = 3;
+MCsampleNum = 1;
 
 meanDeviationTimeSetup = 0;
 %maxDeviationTimeSetup = 1.5;
@@ -358,7 +358,7 @@ for experimentIndex = 1 : MCsampleNum
     
     AuxParam.Thrust = 1;
     AuxParam.thrustInitiated = 0;
-    AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime  + thisDeviationTime )/const.DAYSEC);
+    AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime  -0.5*thrustDuration + thisDeviationTime )/const.DAYSEC);
     AuxParam.prevTimeStep = 0;
     AuxParam.stepCounter = 0;
     [thrustEph] = ephemeris_v4(currY, N_Step_Thrust, Step);
@@ -586,10 +586,10 @@ figure(1)
 hold on
 grid on
 title('Error in ECI XYZ-Position of MC Simulations')
+%plot3(0,0,0,'m+', 'linewidth',8)
+%plot3( relEndPosECIHPOP_2_chaser( :, 1 ).*10^3, relEndPosECIHPOP_2_chaser( :, 2 ).*10^3, relEndPosECIHPOP_2_chaser( :, 3 ).*10^3, '*' )
 plot3( relEndPosECIHPOP_1_chaser( :, 1 ).*10^3, relEndPosECIHPOP_1_chaser( :, 2 ).*10^3, relEndPosECIHPOP_1_chaser( :, 3 ).*10^3, '*' )
-plot3( relEndPosECIHPOP_2_chaser( :, 1 ).*10^3, relEndPosECIHPOP_2_chaser( :, 2 ).*10^3, relEndPosECIHPOP_2_chaser( :, 3 ).*10^3, '*' )
-plot3(0,0,0,'m+', 'linewidth',8)
-legend('Thrust', 'Instant Velocity Change', 'Goal Position')
+%legend('Thrust', 'Instant Velocity Change', 'Goal Position')
 xlabel('X [m]')
 ylabel('Y [m]')
 zlabel('Z [m]')
@@ -601,10 +601,10 @@ figure(2)
 hold on
 grid on
 title('Maneuver End Position LVLH')
+%plot3(0,0,0,'m+', 'linewidth',8)
+%plot3( relEndPosLVLHHPOP_2_chaser( :, 1 ).*10^3, relEndPosLVLHHPOP_2_chaser( :, 2 ).*10^3, relEndPosLVLHHPOP_2_chaser( :, 3 ).*10^3, '*' )
 plot3( relEndPosLVLHHPOP_1_chaser( :, 1 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 2 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 3 ).*10^3, '*' )
-plot3( relEndPosLVLHHPOP_2_chaser( :, 1 ).*10^3, relEndPosLVLHHPOP_2_chaser( :, 2 ).*10^3, relEndPosLVLHHPOP_2_chaser( :, 3 ).*10^3, '*' )
-plot3(0,0,0,'m+', 'linewidth',8)
-legend('Thrust', 'Instant Velocity Change', 'Goal Position')
+%legend('Thrust', 'Instant Velocity Change', 'Goal Position')
 xlabel('X [m]')
 ylabel('Y [m]')
 zlabel('Z [m]')
@@ -612,36 +612,36 @@ hold off
 
 %%
 
-figure(3)
-hold on
-grid on
-title('Norm of Error in Point of Rendezvous of MC Simulations')
-plot( absDeviationEndPosHPOP_1.*10^3 )
-plot( absDeviationEndPosHPOP_2.*10^3 )
-legend('Thrust', 'Instant Velocity Change')
-xlabel('Sample')
-ylabel('Distance [m]')
-hold off
+% figure(3)
+% hold on
+% grid on
+% title('Norm of Error in Point of Rendezvous of MC Simulations')
+% plot( absDeviationEndPosHPOP_1.*10^3 )
+% plot( absDeviationEndPosHPOP_2.*10^3 )
+% legend('Thrust', 'Instant Velocity Change')
+% xlabel('Sample')
+% ylabel('Distance [m]')
+% hold off
+ 
 
-
-figure(4)
-hold on
-grid on
-title('ECI Trajectories')
-%axis equal
-xlabel('X [km]')
-ylabel('Y [km]')
-zlabel('Z [km]')
-%[ sx, sy, sz ] = sphere;
-%surf( sx*rEarth, sy*rEarth, sz*rEarth, 'FaceAlpha', 0.05, 'EdgeAlpha', 0.05 );
-for plotIndex = 1 : MCsampleNum
-    plot3( MC_1_HPOP_ECI_X_Trajectories(plotIndex, :), MC_1_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_1_HPOP_ECI_Z_Trajectories(plotIndex, :))
-    plot3( MC_2_HPOP_ECI_X_Trajectories(plotIndex, :), MC_2_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_2_HPOP_ECI_Z_Trajectories(plotIndex, :))
-end
-%plot3( targetPreciseEph( 1:N_Step, 2 )./10^3, targetPreciseEph( 1:N_Step, 3 )./10^3, targetPreciseEph( 1:N_Step, 4 )./10^3 )
-plot3( rECIManouverEnd_targetPrecise(1), rECIManouverEnd_targetPrecise(2), rECIManouverEnd_targetPrecise(3), '*k' )
-text( rECIManouverEnd_targetPrecise(1), rECIManouverEnd_targetPrecise(2), rECIManouverEnd_targetPrecise(3), 'Chaser Ideal Maneuver End' )
-hold off
+% figure(4)
+% hold on
+% grid on
+% title('ECI Trajectories')
+% %axis equal
+% xlabel('X [km]')
+% ylabel('Y [km]')
+% zlabel('Z [km]')
+% %[ sx, sy, sz ] = sphere;
+% %surf( sx*rEarth, sy*rEarth, sz*rEarth, 'FaceAlpha', 0.05, 'EdgeAlpha', 0.05 );
+% for plotIndex = 1 : MCsampleNum
+%     plot3( MC_1_HPOP_ECI_X_Trajectories(plotIndex, :), MC_1_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_1_HPOP_ECI_Z_Trajectories(plotIndex, :))
+%     plot3( MC_2_HPOP_ECI_X_Trajectories(plotIndex, :), MC_2_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_2_HPOP_ECI_Z_Trajectories(plotIndex, :))
+% end
+% %plot3( targetPreciseEph( 1:N_Step, 2 )./10^3, targetPreciseEph( 1:N_Step, 3 )./10^3, targetPreciseEph( 1:N_Step, 4 )./10^3 )
+% plot3( rECIManouverEnd_targetPrecise(1), rECIManouverEnd_targetPrecise(2), rECIManouverEnd_targetPrecise(3), '*k' )
+% text( rECIManouverEnd_targetPrecise(1), rECIManouverEnd_targetPrecise(2), rECIManouverEnd_targetPrecise(3), 'Chaser Ideal Maneuver End' )
+% hold off
 
 
 figure(5)
@@ -652,26 +652,27 @@ title('Target LVLH Trajectories')
 xlabel('X [km]')
 ylabel('Y [km]')
 zlabel('Z [km]')
+%plot3(0,0,0,'m+', 'linewidth',8)
 for plotIndex = 1 : MCsampleNum
+    %plot3( relXTrajectoryHPOP_2_chaser(plotIndex, :), relYTrajectoryHPOP_2_chaser(plotIndex, :), relZTrajectoryHPOP_2_chaser(plotIndex, :), 'b')
     plot3( relXTrajectoryHPOP_1_chaser(plotIndex, :), relYTrajectoryHPOP_1_chaser(plotIndex, :), relZTrajectoryHPOP_1_chaser(plotIndex, :), 'r')
-    plot3( relXTrajectoryHPOP_2_chaser(plotIndex, :), relYTrajectoryHPOP_2_chaser(plotIndex, :), relZTrajectoryHPOP_2_chaser(plotIndex, :), 'b')
 end
-plot3(0,0,0,'m+', 'linewidth',8)
 hold off
 
 %%
 
-figure(7)
-hold on
-grid on
-title('Mean Norm of End Position Error')
-plot( absMeanDeviationEndPosHPOP_1.*10^3 )
-plot( absMeanDeviationEndPosHPOP_2.*10^3 )
-legend('Thrust', 'Instant Velocity Chagnge')
-xlabel('Sample')
-ylabel('Distance [m]')
-hold off
-
+% figure(7)
+% hold on
+% grid on
+% title('Mean Norm of End Position Error')
+%plot( absMeanDeviationEndPosHPOP_2.*10^3 )
+% plot( absMeanDeviationEndPosHPOP_1.*10^3 )
+%legend('Thrust', 'Instant Velocity Chagnge')
+% xlabel('Sample')
+% ylabel('Distance [m]')
+% hold off
+absMeanDeviationEndPosHPOP_1.*10^3
+absMeanDeviationEndPosHPOP_2.*10^3
 
 %%
 
@@ -687,34 +688,32 @@ hold off
 %%
 
 
-posErrorX = MC_1_HPOP_ECI_X_Trajectories( 1, 502:520 ) - MC_2_HPOP_ECI_X_Trajectories( 1, 502:520 );
-posErrorY = MC_1_HPOP_ECI_Y_Trajectories( 1, 502:520 ) - MC_2_HPOP_ECI_Y_Trajectories( 1, 502:520 );
-posErrorZ = MC_1_HPOP_ECI_Z_Trajectories( 1, 502:520 ) - MC_2_HPOP_ECI_Z_Trajectories( 1, 502:520 );
-
-velErrorX = MC_1_HPOP_ECI_velX( 1, 502:520 ) - MC_2_HPOP_ECI_velX( 1, 502:520 );
-velErrorY = MC_1_HPOP_ECI_velY( 1, 502:520 ) - MC_2_HPOP_ECI_velY( 1, 502:520 );
-velErrorZ = MC_1_HPOP_ECI_velZ( 1, 502:520 ) - MC_2_HPOP_ECI_velZ( 1, 502:520 );
-
-
-figure(8)
-hold on
-plot(posErrorX)
-plot(posErrorY)
-plot(posErrorZ)
-title('Position Errors')
-legend('X', 'Y', 'Z')
-hold off
-
-figure(9)
-hold on
-plot(velErrorX)
-plot(velErrorY)
-plot(velErrorZ)
-title('Velocity Errors')
-legend('X', 'Y', 'Z')
-hold off
-
-
+% posErrorX = MC_1_HPOP_ECI_X_Trajectories( 1, 502:520 ) - MC_2_HPOP_ECI_X_Trajectories( 1, 502:520 );
+% posErrorY = MC_1_HPOP_ECI_Y_Trajectories( 1, 502:520 ) - MC_2_HPOP_ECI_Y_Trajectories( 1, 502:520 );
+% posErrorZ = MC_1_HPOP_ECI_Z_Trajectories( 1, 502:520 ) - MC_2_HPOP_ECI_Z_Trajectories( 1, 502:520 );
+% 
+% velErrorX = MC_1_HPOP_ECI_velX( 1, 502:520 ) - MC_2_HPOP_ECI_velX( 1, 502:520 );
+% velErrorY = MC_1_HPOP_ECI_velY( 1, 502:520 ) - MC_2_HPOP_ECI_velY( 1, 502:520 );
+% velErrorZ = MC_1_HPOP_ECI_velZ( 1, 502:520 ) - MC_2_HPOP_ECI_velZ( 1, 502:520 );
+% 
+% 
+% figure(8)
+% hold on
+% plot(posErrorX)
+% plot(posErrorY)
+% plot(posErrorZ)
+% title('Position Errors')
+% legend('X', 'Y', 'Z')
+% hold off
+% 
+% figure(9)
+% hold on
+% plot(velErrorX)
+% plot(velErrorY)
+% plot(velErrorZ)
+% title('Velocity Errors')
+% legend('X', 'Y', 'Z')
+% hold off
 
 
 
