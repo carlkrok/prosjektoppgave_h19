@@ -113,7 +113,7 @@ AuxParam.Mjd_UTC = Mjd_UTC;
 
 maneuverEndTime = 2500;
 maneuverStartTime = 500;
-Step   = 0.5;   % [s]
+Step   = 0.001;   % [s]
 N_Step = round(maneuverEndTime*1/Step); 
 N_Step_Initial = round(maneuverStartTime *1/Step);
               
@@ -137,7 +137,7 @@ orbitType_chaser = "retrograde";
 
 %% Monte Carlo Experiment Setup
 
-MCsampleNum = 10;
+MCsampleNum = 3;
 
 meanDeviationTimeSetup = 0;
 %maxDeviationTimeSetup = 1.5;

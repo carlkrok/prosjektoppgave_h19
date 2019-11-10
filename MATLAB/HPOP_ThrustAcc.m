@@ -116,7 +116,7 @@ disp('Parameters Loaded')
 
 maneuverEndTime = 2500;
 maneuverStartTime = 500;
-Step   = 0.05;   % [s]
+Step   = 1;   % [s]
 N_Step = round(maneuverEndTime*1/Step); 
 N_Step_Initial = round(maneuverStartTime *1/Step);
               
@@ -138,12 +138,12 @@ swdata = swdata(:,i-3:i+num);
 
 orbitType_chaser = "retrograde";
 
-thrustDuration = Step;
+thrustDuration = 2*Step;
 
 
 %% Monte Carlo Experiment Setup
 
-MCsampleNum = 5;
+MCsampleNum = 3;
 
 meanDeviationTimeSetup = 0;
 %maxDeviationTimeSetup = 1.5;
@@ -322,18 +322,18 @@ for experimentIndex = 1 : MCsampleNum
     AuxParam.Thrust = 1;
     AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime  + thisDeviationTime )/const.DAYSEC);
     
-    preciseFactor = 100;
-    thrustPreciseEph = ephemeris_v3(currY, N_Step_Thrust*preciseFactor, Step/preciseFactor);
+    %preciseFactor = 1;
+    %thrustPreciseEph = ephemeris_v3(currY, N_Step_Thrust*preciseFactor, Step/preciseFactor);
     
-    thrustEph = zeros(N_Step_Thrust+1, 7);
+    %thrustEph = zeros(N_Step_Thrust+1, 7);
     
-    for stepCounter = 1:N_Step_Thrust*preciseFactor+1
-        thisModulo = mod(stepCounter, preciseFactor);
-        if thisModulo == 1
-            thrustEph(1 + floor(stepCounter / preciseFactor), :) = thrustPreciseEph( stepCounter, : );
-        end
-    end
-    
+%     for stepCounter = 1:N_Step_Thrust*preciseFactor+1
+%         thisModulo = mod(stepCounter, preciseFactor);
+%         if thisModulo == 1
+%             thrustEph(1 + floor(stepCounter / preciseFactor), :) = thrustPreciseEph( stepCounter, : );
+%         end
+%     end
+    [thrustEph] = ephemeris_v3(currY, N_Step_Thrust, Step);
     currY = [ thrustEph(N_Step_Thrust+1, 2), thrustEph(N_Step_Thrust+1, 3), thrustEph(N_Step_Thrust+1, 4), thrustEph(N_Step_Thrust+1, 5), thrustEph(N_Step_Thrust+1, 6), thrustEph(N_Step_Thrust+1, 7) ];
     
         
@@ -598,14 +598,4 @@ xlabel('Performance Factor')
 ylabel('Probability')
 title('Normalized Histogram Thrust Output Deviation')
 hold off
-
-
-%%
-
-
-deltaVStartLVLH_chaser
-
-AuxParam.accelIntegral ./ 10^3
-
-error = AuxParam.accelIntegral./ 10^3 - deltaVStartLVLH_chaser
 
