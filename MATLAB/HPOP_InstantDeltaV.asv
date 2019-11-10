@@ -137,7 +137,7 @@ orbitType_chaser = "retrograde";
 
 %% Monte Carlo Experiment Setup
 
-MCsampleNum = 10;
+MCsampleNum = 3000;
 
 meanDeviationTimeSetup = 0;
 %maxDeviationTimeSetup = 1.5;
@@ -305,33 +305,15 @@ for experimentIndex = 1 : MCsampleNum
     N_Step_Thrust = round(( AuxParam.thrustDuration ) * 1 / Step ) ; %  
     N_Step_Final = N_Step - N_Step_Initial - N_Step_Thrust; %  
     
-    ErronousVelocityChangeLVLH = AuxParam.velocityChangeLVLH .* MCthrustOutputDeviation( experimentIndex );
-
-    AuxParam.thrustLVLHAcceleration = ErronousVelocityChangeLVLH ./ ( AuxParam.thrustDuration  );
-    
-    
-    AuxParam.thrustLVLHAcceleration = RMatThrustDeviation * AuxParam.thrustLVLHAcceleration;
-
     AuxParam.Thrust = 0;
     [initialEph] = ephemeris_v3(Y0, N_Step_Initial, Step);
     currY = [ initialEph(N_Step_Initial+1, 2), initialEph(N_Step_Initial+1, 3), initialEph(N_Step_Initial+1, 4), initialEph(N_Step_Initial+1, 5), initialEph(N_Step_Initial+1, 6), initialEph(N_Step_Initial+1, 7) ];
-
-%     AuxParam.Thrust = 1;
-%     AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime  + thisDeviationTime )/const.DAYSEC);
-%     [thrustEph] = ephemeris_v3(currY, N_Step_Thrust, Step);
-%     currY = [ thrustEph(N_Step_Thrust+1, 2), thrustEph(N_Step_Thrust+1, 3), thrustEph(N_Step_Thrust+1, 4), thrustEph(N_Step_Thrust+1, 5), thrustEph(N_Step_Thrust+1, 6), thrustEph(N_Step_Thrust+1, 7) ];
-
-%     AuxParam.Thrust = 0;
-%     AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime + AuxParam.thrustDuration + thisDeviationTime )/const.DAYSEC);
-%     [finalEph] = ephemeris_v3(currY, N_Step_Final, Step);
-
-%     Eph = [initialEph(1:N_Step_Initial, :); thrustEph(1:N_Step_Thrust, :); finalEph(1:N_Step_Final+1, :)];
 
     RMatThrustDeviation = RotMatXYZEulerDeg(MCthrustDirectionRollDeviationDeg( experimentIndex ), MCthrustDirectionPitchDeviationDeg( experimentIndex ), MCthrustDirectionYawDeviationDeg( experimentIndex ));
     rCurrChaser = [ initialEph(N_Step_Initial+1, 2); initialEph(N_Step_Initial+1, 3); initialEph(N_Step_Initial+1, 4) ] ./ 10^3;
     vCurrChaser = [ initialEph(N_Step_Initial+1, 5); initialEph(N_Step_Initial+1, 6); initialEph(N_Step_Initial+1, 7) ] ./ 10^3;
     QmatECItoLVLH_chaser = ECIToLVLH( rCurrChaser, vCurrChaser );
-    deltaVChaserECI = (QmatECItoLVLH_chaser') * ( deltaVStartLVLH_chaser .* MCthrustOutputDeviation( experimentIndex ))); 
+    deltaVChaserECI = (QmatECItoLVLH_chaser') * ( RMatThrustDeviation * ( deltaVStartLVLH_chaser .* MCthrustOutputDeviation( experimentIndex ))); 
     currY( 1, 4:6 ) = currY( 1, 4:6 ) + ((deltaVChaserECI') * 10^3);
 
     AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime + thisDeviationTime )/const.DAYSEC);
@@ -593,4 +575,25 @@ histogram(MCthrustOutputDeviation,'Normalization','probability')
 xlabel('Performance Factor')
 ylabel('Probability')
 title('Normalized Histogram Thrust Output Deviation')
+hold off
+
+
+%%
+
+
+coeff = pca( relEndPosLVLHHPOP_1_chaser ).*10^3
+
+figure(13)
+hold on
+grid on
+title('Maneuver End Position LVLH')
+plot3( relEndPosLVLHHPOP_1_chaser( :, 1 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 2 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 3 ).*10^3, '*' )
+plot3( [0 coeff(1,1)], [0 coeff(1,2)], [0 coeff(1,3)] )
+plot3( [0 coeff(2,1)], [0 coeff(2,2)], [0 coeff(2,3)] )
+plot3( [0 coeff(3,1)], [0 coeff(3,2)], [0 coeff(3,3)] )
+plot3(0,0,0,'m+', 'linewidth',8)
+legend('HPOP 1', 'Goal Position')
+xlabel('X [m]')
+ylabel('Y [m]')
+zlabel('Z [m]')
 hold off
