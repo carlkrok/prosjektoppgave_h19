@@ -203,13 +203,13 @@ AuxParam.Relativity = 0;
 targetY0 = [ r0ECI_target', v0ECI_target' ].*10^3;
 
 targetInitalEph = ephemeris_v3(targetY0, N_Step_Initial, Step);
-targetYManeuverStart = targetInitalEph( N_Step_Initial + 1, 2:end );
+targetYManeuverStartPrecise = targetInitalEph( end, 2:end );
 
 % B's ideal position at experiment start
 chaserY0 = [ r0ECI_chaser', v0ECI_chaser' ].*10^3;
 chaserInitialEph = ephemeris_v3(chaserY0, N_Step_Initial, Step);
-rECIManeuverStartIdeal_chaser = [ chaserInitialEph( N_Step_Initial+1, 2 ); chaserInitialEph( N_Step_Initial+1, 3 ); chaserInitialEph( N_Step_Initial+1, 4 ) ]./10^3;
-vECIManeuverStartIdeal_chaser = [ chaserInitialEph( N_Step_Initial+1, 5 ); chaserInitialEph( N_Step_Initial+1, 6 ); chaserInitialEph( N_Step_Initial+1, 7 ) ]./10^3;
+rECIManeuverStartPrecise_chaser = chaserInitialEph( end, 2:4 )'./10^3;
+vECIManeuverStartPrecise_chaser = chaserInitialEph( end, 5:7 )'./10^3;
 
 
 AuxParam.n       = 0;
@@ -224,24 +224,23 @@ AuxParam.OceanTides = 0;
 AuxParam.Relativity = 0;
 
 
-targetManeuverKeplerianEph = ephemeris_v3(targetYManeuverStart, N_Step - N_Step_Initial, Step);
+targetManeuverKeplerianEph = ephemeris_v3(targetYManeuverStartPrecise, N_Step - N_Step_Initial, Step);
 
-%targetKeplerianEph = ephemeris_v3(targetY0, N_Step, Step);
-targetKeplerianEph = [ targetInitalEph( 1:N_Step_Initial, :); targetManeuverKeplerianEph ];
+targetMixedEph = [ targetInitalEph( 1:N_Step_Initial, :); targetManeuverKeplerianEph ];
 
-rECIManouverEnd_targetKeplerian = [ targetKeplerianEph( N_Step+1, 2 ); targetKeplerianEph( N_Step+1, 3 ); targetKeplerianEph( N_Step+1, 4 ) ]./10^3;
-vECIManouverEnd_targetKeplerian = [ targetKeplerianEph( N_Step+1, 5 ); targetKeplerianEph( N_Step+1, 6 ); targetKeplerianEph( N_Step+1, 7 ) ]./10^3;
+rECIManouverEnd_targetKeplerian = targetMixedEph( end, 2:4 )'./10^3;
+vECIManouverEnd_targetKeplerian = targetMixedEph( end, 5:7 )'./10^3;
 
 
 % B's ideal position at experiment start
-[chaserKeplerianEph] = ephemeris_v3(chaserY0, N_Step_Initial, Step);
-rECIManeuverStartIdeal_chaserKeplerian = [ chaserKeplerianEph( N_Step_Initial+1, 2 ); chaserKeplerianEph( N_Step_Initial+1, 3 ); chaserKeplerianEph( N_Step_Initial+1, 4 ) ]./10^3;
-vECIManeuverStartIdeal_chaserKeplerian = [ chaserKeplerianEph( N_Step_Initial+1, 5 ); chaserKeplerianEph( N_Step_Initial+1, 6 ); chaserKeplerianEph( N_Step_Initial+1, 7 ) ]./10^3;
+%[chaserKeplerianEph] = ephemeris_v3(chaserY0, N_Step_Initial, Step);
+%rECIManeuverStartIdeal_chaserKeplerian = chaserKeplerianEph( end, 2:4 )'./10^3;
+%vECIManeuverStartIdeal_chaserKeplerian = chaserKeplerianEph( end, 5:7 )'./10^3;
 
 % Required velocity change satellite B
-[ deltaVStartECI_chaser, deltaVEndECI_chaser, vIntersectOrbit_chaser ] = interceptOrbit( rECIManeuverStartIdeal_chaserKeplerian, vECIManeuverStartIdeal_chaserKeplerian, rECIManouverEnd_targetKeplerian, vECIManouverEnd_targetKeplerian, maneuverEndTime - maneuverStartTime , orbitType_chaser, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
+[ deltaVStartECI_chaser, deltaVEndECI_chaser, vIntersectOrbit_chaser ] = interceptOrbit( rECIManeuverStartPrecise_chaser, vECIManeuverStartPrecise_chaser, rECIManouverEnd_targetKeplerian, vECIManouverEnd_targetKeplerian, maneuverEndTime - maneuverStartTime , orbitType_chaser, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
 
-[ QmatECItoLVLH_chaser ] = ECIToLVLH( rECIManeuverStartIdeal_chaserKeplerian, vECIManeuverStartIdeal_chaserKeplerian );
+[ QmatECItoLVLH_chaser ] = ECIToLVLH( rECIManeuverStartPrecise_chaser, vECIManeuverStartPrecise_chaser );
 deltaVStartLVLH_chaser = QmatECItoLVLH_chaser * deltaVStartECI_chaser;
 
 AuxParam.velocityChangeLVLH = deltaVStartLVLH_chaser*1000;
@@ -262,8 +261,8 @@ AuxParam.OceanTides = 0;
 AuxParam.Relativity = 0;
 
 targetPreciseEph = ephemeris_v3(targetY0, N_Step, Step);
-rECIManouverEnd_targetPrecise = [ targetPreciseEph( N_Step+1, 2 ); targetPreciseEph( N_Step+1, 3 ); targetPreciseEph( N_Step+1, 4 ) ]./10^3;
-vECIManouverEnd_targetPrecise = [ targetPreciseEph( N_Step+1, 5 ); targetPreciseEph( N_Step+1, 6 ); targetPreciseEph( N_Step+1, 7 ) ]./10^3;
+rECIManouverEnd_targetPrecise = targetPreciseEph( end, 2:4 )'./10^3;
+vECIManouverEnd_targetPrecise = targetPreciseEph( end, 5:7 )'./10^3;
 
 %%%%%%%%%%%%%  HPOP MODEL
 
@@ -304,7 +303,7 @@ for experimentIndex = 1 : MCsampleNum
     %%%%%%%%%%%%%  HPOP MODEL
     % propagation
     
-    N_Step_Initial = floor((maneuverStartTime + thisDeviationTime) *1/Step); % 
+    N_Step_Initial = floor((maneuverStartTime - 0.5*thrustDuration + thisDeviationTime) *1/Step); % 
     N_Step_Thrust = round(( AuxParam.thrustDuration ) * 1 / Step ) ; %  
     N_Step_Final = N_Step - N_Step_Initial - N_Step_Thrust; %  
     
@@ -317,8 +316,8 @@ for experimentIndex = 1 : MCsampleNum
 
     AuxParam.Thrust = 0;
     [initialEph] = ephemeris_v3(Y0, N_Step_Initial, Step);
-    currY = [ initialEph(N_Step_Initial+1, 2), initialEph(N_Step_Initial+1, 3), initialEph(N_Step_Initial+1, 4), initialEph(N_Step_Initial+1, 5), initialEph(N_Step_Initial+1, 6), initialEph(N_Step_Initial+1, 7) ];
-
+    currY = initialEph(end, 2:7);
+    
     AuxParam.Thrust = 1;
     AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime  + thisDeviationTime )/const.DAYSEC);
     
@@ -334,22 +333,22 @@ for experimentIndex = 1 : MCsampleNum
 %         end
 %     end
     [thrustEph] = ephemeris_v3(currY, N_Step_Thrust, Step);
-    currY = [ thrustEph(N_Step_Thrust+1, 2), thrustEph(N_Step_Thrust+1, 3), thrustEph(N_Step_Thrust+1, 4), thrustEph(N_Step_Thrust+1, 5), thrustEph(N_Step_Thrust+1, 6), thrustEph(N_Step_Thrust+1, 7) ];
-    
+    currY = thrustEph(end, 2:7);
         
     AuxParam.Thrust = 0;
     AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime + AuxParam.thrustDuration + thisDeviationTime )/const.DAYSEC);
     [finalEph] = ephemeris_v3(currY, N_Step_Final, Step);
 
-    Eph = [initialEph(1:N_Step_Initial, :); thrustEph(1:N_Step_Thrust, :); finalEph(1:N_Step_Final+1, :)];
+    Eph = [initialEph(1:N_Step_Initial, :); thrustEph(1:N_Step_Thrust, :); finalEph];
 
 
-    MC_1_HPOP_PosEnd( experimentIndex, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
-    MC_1_HPOP_VelEnd( experimentIndex, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
+    MC_1_HPOP_PosEnd( experimentIndex, : ) = Eph( end, 2:4 )./10^3;
+    MC_1_HPOP_VelEnd( experimentIndex, : ) = Eph( end, 5:7 )./10^3;
 
-    MC_1_HPOP_ECI_X_Trajectories(experimentIndex, :) = Eph( 1:N_Step+1 , 2)'./10^3;
-    MC_1_HPOP_ECI_Y_Trajectories(experimentIndex, :) = Eph( 1:N_Step+1 , 3)'./10^3;
-    MC_1_HPOP_ECI_Z_Trajectories(experimentIndex, :) = Eph( 1:N_Step+1 , 4)'./10^3;
+    MC_1_HPOP_ECI_X_Trajectories(experimentIndex, :) = Eph( 1:end , 2)'./10^3;
+    MC_1_HPOP_ECI_Y_Trajectories(experimentIndex, :) = Eph( 1:end , 3)'./10^3;
+    MC_1_HPOP_ECI_Z_Trajectories(experimentIndex, :) = Eph( 1:end , 4)'./10^3;
+    
     
 end
 

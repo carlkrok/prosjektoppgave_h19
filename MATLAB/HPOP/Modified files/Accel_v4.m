@@ -22,7 +22,7 @@
 % Last modified:   2018/02/11   M. Mahooti
 % 
 %--------------------------------------------------------------------------
-function dY = Accel_v3(t, Y)
+function dY = Accel_v4(t, Y)
 
 if Y ~= real(Y)
     disp('Wait a sec...')
@@ -122,12 +122,18 @@ if (AuxParam.Relativity)
 end
 
 % Thrust 
-if (AuxParam.Thrust)
-    %AuxParam.accelIntegral = AuxParam.accelIntegral + ( t - AuxParam.prevTimeStep ) * AuxParam.thrustLVLHAcceleration;
-    %AuxParam.prevTimeStep = t;
-    QmatECItoLVLH = ECIToLVLH( Y(1:3)./10^3, Y(4:6)./10^3 );
-    QmatLVLHtoECI = QmatECItoLVLH';
-    a = a + (QmatLVLHtoECI * AuxParam.thrustLVLHAcceleration);
+if AuxParam.Thrust
+    if ~AuxParam.thrustInitiated
+        QmatECItoLVLH = ECIToLVLH( Y(1:3)./10^3, Y(4:6)./10^3 );
+        QmatLVLHtoECI = QmatECItoLVLH';
+        currECIDir = (QmatLVLHtoECI * AuxParam.velocityChangeLVLH)./norm(AuxParam.velocityChangeLVLH);
+        idealDir = AuxParam.thrustECIStartDir;
+        AuxParam.thrustRotMat = RotationFromTwoVectors( idealDir, currECIDir );
+        AuxParam.thrustInitiated = 1;
+    end
+    AuxParam.accelIntegral = AuxParam.accelIntegral + ( t - AuxParam.prevTimeStep ) .* AuxParam.thrustECIAcceleration;
+    AuxParam.prevTimeStep = t;
+    a = a + AuxParam.thrustRotMat * AuxParam.thrustECIAcceleration; %
 end
 
 
