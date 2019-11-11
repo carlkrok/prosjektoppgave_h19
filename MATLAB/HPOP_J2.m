@@ -113,7 +113,7 @@ AuxParam.Mjd_UTC = Mjd_UTC;
 
 maneuverEndTime = 2500;
 maneuverStartTime = 500;
-Step   = 0.001;   % [s]
+Step   = 0.05;   % [s]
 N_Step = round(maneuverEndTime*1/Step); 
 N_Step_Initial = round(maneuverStartTime *1/Step);
               
@@ -137,11 +137,11 @@ orbitType_chaser = "retrograde";
 
 %% Monte Carlo Experiment Setup
 
-MCsampleNum = 3;
+MCsampleNum = 10;
 
 meanDeviationTimeSetup = 0;
 %maxDeviationTimeSetup = 1.5;
-stdDeviationTimeSetup = 0.15;
+stdDeviationTimeSetup = 0;%0.1;
 
 %MCtimeDeviation = meanDeviationTimeSetup - stdDeviationTimeSetup + ( 2 * stdDeviationTimeSetup * rand( MCsampleNum, 1 ) );
 %MCtimeDeviation = (meanDeviationTimeSetup-maxDeviationTimeSetup : (2*maxDeviationTimeSetup)/(MCsampleNum-1) : meanDeviationTimeSetup+maxDeviationTimeSetup)';
@@ -149,7 +149,7 @@ MCtimeDeviation = meanDeviationTimeSetup + stdDeviationTimeSetup .* randn( MCsam
 
 
 meanThrustOutputFactor = 1;
-stdThrustOutputUncertaintyFactor = 0.001;
+stdThrustOutputUncertaintyFactor = 0; %0.001;
 
 %MCthrustOutputDeviation = meanThrustOutputFactor - stdThrustOutputUncertaintyFactor + ( 2 * stdThrustOutputUncertaintyFactor * rand( MCsampleNum, 1 ) );
 %MCthrustOutputDeviation = (meanThrustOutputFactor-stdThrustOutputUncertaintyFactor : (2*stdThrustOutputUncertaintyFactor)/(MCsampleNum-1) : meanThrustOutputFactor+stdThrustOutputUncertaintyFactor)';
@@ -157,7 +157,7 @@ MCthrustOutputDeviation = meanThrustOutputFactor + stdThrustOutputUncertaintyFac
 
 
 meanThrustDirectionErrorRollDeg = 0;
-stdThrustDirectionErrorRollDeg = 0.001;
+stdThrustDirectionErrorRollDeg = 0; %0.001;
 
 %MCthrustDirectionRollDeviationDeg = meanThrustDirectionErrorRollDeg - stdThrustDirectionErrorRollDeg + ( 2 * stdThrustDirectionErrorRollDeg * rand( MCsampleNum, 1 ) );
 %MCthrustDirectionRollDeviationRad = (meanThrustDirectionErrorRollDeg-maxThrustDirectionErrorRollDeg : (2*maxThrustDirectionErrorRollDeg)/(MCsampleNum-1) : meanThrustDirectionErrorRollDeg+maxThrustDirectionErrorRollDeg)'*pi/180;
@@ -165,7 +165,7 @@ MCthrustDirectionRollDeviationDeg = meanThrustDirectionErrorRollDeg + stdThrustD
 
 
 meanThrustDirectionErrorPitchDeg = 0;
-stdThrustDirectionErrorPitchDeg = 0.001;
+stdThrustDirectionErrorPitchDeg = 0; %0.001;
 
 %MCthrustDirectionPitchDeviationDeg = meanThrustDirectionErrorPitchDeg - stdThrustDirectionErrorPitchDeg + ( 2 * stdThrustDirectionErrorPitchDeg * rand( MCsampleNum, 1 ) );
 %MCthrustDirectionPitchDeviationRad = (meanThrustDirectionErrorPitchDeg-maxThrustDirectionErrorPitchDeg : (2*maxThrustDirectionErrorPitchDeg)/(MCsampleNum-1) : meanThrustDirectionErrorPitchDeg+maxThrustDirectionErrorPitchDeg)'*pi/180;
@@ -173,7 +173,7 @@ MCthrustDirectionPitchDeviationDeg = meanThrustDirectionErrorPitchDeg + stdThrus
 
 
 meanThrustDirectionErrorYawDeg = 0;
-stdThrustDirectionErrorYawDeg = 0.001;
+stdThrustDirectionErrorYawDeg = 0; %0.001;
 
 %MCthrustDirectionYawDeviationDeg = meanThrustDirectionErrorYawDeg - stdThrustDirectionErrorYawDeg + ( 2 * stdThrustDirectionErrorYawDeg * rand( MCsampleNum, 1 ) );
 %MCthrustDirectionYawDeviationRad = (meanThrustDirectionErrorYawDeg-maxThrustDirectionErrorYawDeg : (2*maxThrustDirectionErrorYawDeg)/(MCsampleNum-1) : meanThrustDirectionErrorYawDeg+maxThrustDirectionErrorYawDeg)'*pi/180;
@@ -194,7 +194,6 @@ AuxParam.SolidEarthTides = 0;
 AuxParam.OceanTides = 0;
 AuxParam.Relativity = 0;
 
-
 targetY0 = [ r0ECI_target', v0ECI_target' ].*10^3;
 
 targetInitalEph = ephemeris_v3(targetY0, N_Step_Initial, Step);
@@ -203,8 +202,8 @@ targetYManeuverStart = targetInitalEph( N_Step_Initial + 1, 2:end );
 % B's ideal position at experiment start
 chaserY0 = [ r0ECI_chaser', v0ECI_chaser' ].*10^3;
 chaserInitialEph = ephemeris_v3(chaserY0, N_Step_Initial, Step);
-rECIManeuverStartPrecise_chaser = [ chaserInitialEph( N_Step_Initial+1, 2 ); chaserInitialEph( N_Step_Initial+1, 3 ); chaserInitialEph( N_Step_Initial+1, 4 ) ]./10^3;
-vECIManeuverStartPrecise_chaser = [ chaserInitialEph( N_Step_Initial+1, 5 ); chaserInitialEph( N_Step_Initial+1, 6 ); chaserInitialEph( N_Step_Initial+1, 7 ) ]./10^3;
+rECIManeuverStartIdeal_chaser = chaserInitialEph( end, 2:4 )'./10^3;
+vECIManeuverStartIdeal_chaser = chaserInitialEph( end, 5:7 )'./10^3;
 
 
 AuxParam.n       = 0;
@@ -222,24 +221,21 @@ AuxParam.Relativity = 0;
 targetManeuverKeplerianEph = ephemeris_v3(targetYManeuverStart, N_Step - N_Step_Initial, Step);
 
 %targetKeplerianEph = ephemeris_v3(targetY0, N_Step, Step);
-targetMixedEph = [ targetInitalEph( 1:N_Step_Initial, :); targetManeuverKeplerianEph ];
+targetKeplerianEph = [ targetInitalEph( 1:N_Step_Initial, :); targetManeuverKeplerianEph ];
 
-rECIManouverEnd_targetMixed = [ targetMixedEph( N_Step+1, 2 ); targetMixedEph( N_Step+1, 3 ); targetMixedEph( N_Step+1, 4 ) ]./10^3;
-vECIManouverEnd_targetMixed = [ targetMixedEph( N_Step+1, 5 ); targetMixedEph( N_Step+1, 6 ); targetMixedEph( N_Step+1, 7 ) ]./10^3;
+rECIManouverEnd_targetKeplerian = [ targetKeplerianEph( N_Step+1, 2 ); targetKeplerianEph( N_Step+1, 3 ); targetKeplerianEph( N_Step+1, 4 ) ]./10^3;
+vECIManouverEnd_targetKeplerian = [ targetKeplerianEph( N_Step+1, 5 ); targetKeplerianEph( N_Step+1, 6 ); targetKeplerianEph( N_Step+1, 7 ) ]./10^3;
 
 
 % B's ideal position at experiment start
 [chaserKeplerianEph] = ephemeris_v3(chaserY0, N_Step_Initial, Step);
-rECIManeuverStartIdeal_chaserKeplerian = [ chaserKeplerianEph( N_Step_Initial+1, 2 ); chaserKeplerianEph( N_Step_Initial+1, 3 ); chaserKeplerianEph( N_Step_Initial+1, 4 ) ]./10^3;
-vECIManeuverStartIdeal_chaserKeplerian = [ chaserKeplerianEph( N_Step_Initial+1, 5 ); chaserKeplerianEph( N_Step_Initial+1, 6 ); chaserKeplerianEph( N_Step_Initial+1, 7 ) ]./10^3;
+rECIManeuverStartIdeal_chaserKeplerian = chaserKeplerianEph( end, 2:4 )'./10^3;
+vECIManeuverStartIdeal_chaserKeplerian = chaserKeplerianEph( end, 5:7 )'./10^3;
 
 % Required velocity change satellite B
-%[ deltaVStartECI_chaser, deltaVEndECI_chaser, vIntersectOrbit_chaser ] = interceptOrbit( rECIManeuverStartIdeal_chaserKeplerian, vECIManeuverStartIdeal_chaserKeplerian, rECIManouverEnd_targetKeplerian, vECIManouverEnd_targetKeplerian, maneuverEndTime - maneuverStartTime, orbitType_chaser, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
-[ deltaVStartECI_chaser, deltaVEndECI_chaser, vIntersectOrbit_chaser ] = interceptOrbit( rECIManeuverStartPrecise_chaser, vECIManeuverStartPrecise_chaser, rECIManouverEnd_targetMixed, vECIManouverEnd_targetMixed, maneuverEndTime - maneuverStartTime, orbitType_chaser, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
+[ deltaVStartECI_chaser, deltaVEndECI_chaser, vIntersectOrbit_chaser ] = interceptOrbit( rECIManeuverStartIdeal_chaserKeplerian, vECIManeuverStartIdeal_chaserKeplerian, rECIManouverEnd_targetKeplerian, vECIManouverEnd_targetKeplerian, maneuverEndTime - maneuverStartTime, orbitType_chaser, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
 
-%[ QmatECItoLVLH_chaser ] = ECIToLVLH( rECIManeuverStartIdeal_chaserKeplerian, vECIManeuverStartIdeal_chaserKeplerian );
-[ QmatECItoLVLH_chaser ] = ECIToLVLH( rECIManeuverStartPrecise_chaser, vECIManeuverStartPrecise_chaser );
-
+[ QmatECItoLVLH_chaser ] = ECIToLVLH( rECIManeuverStartIdeal_chaserKeplerian, vECIManeuverStartIdeal_chaserKeplerian );
 deltaVStartLVLH_chaser = QmatECItoLVLH_chaser * deltaVStartECI_chaser;
 
 AuxParam.velocityChangeLVLH = deltaVStartLVLH_chaser*1000;
@@ -258,10 +254,9 @@ AuxParam.SolidEarthTides = 0;
 AuxParam.OceanTides = 0;
 AuxParam.Relativity = 0;
 
-
 targetPreciseEph = ephemeris_v3(targetY0, N_Step, Step);
-rECIManouverEnd_targetPrecise = [ targetPreciseEph( N_Step+1, 2 ); targetPreciseEph( N_Step+1, 3 ); targetPreciseEph( N_Step+1, 4 ) ]./10^3;
-vECIManouverEnd_targetPrecise = [ targetPreciseEph( N_Step+1, 5 ); targetPreciseEph( N_Step+1, 6 ); targetPreciseEph( N_Step+1, 7 ) ]./10^3;
+rECIManouverEnd_targetPrecise = targetPreciseEph( end, 2:4 )'./10^3;
+vECIManouverEnd_targetPrecise = targetPreciseEph( end, 5:7 )'./10^3;
 
 %%%%%%%%%%%%%  HPOP MODEL
 
@@ -269,18 +264,17 @@ vECIManouverEnd_targetPrecise = [ targetPreciseEph( N_Step+1, 5 ); targetPrecise
 %%%%%%%  Experiment 1 Only Thrust effect d = 1s
 
 
-AuxParam.thrustDuration = 0.5;
-AuxParam.Mjd_UTC = Mjd_UTC;
-AuxParam.n       = 0;
-AuxParam.m       = 0;
-AuxParam.sun     = 0;
-AuxParam.moon    = 0;
-AuxParam.planets = 0;
-AuxParam.sRad    = 0;
-AuxParam.drag    = 0;
-AuxParam.SolidEarthTides = 0;
-AuxParam.OceanTides = 0;
-AuxParam.Relativity = 0;
+ AuxParam.Mjd_UTC = Mjd_UTC;
+% AuxParam.n       = 40;
+% AuxParam.m       = 40;
+% AuxParam.sun     = 1;
+% AuxParam.moon    = 1;
+% AuxParam.planets = 1;
+% AuxParam.sRad    = 1;
+% AuxParam.drag    = 1;
+% AuxParam.SolidEarthTides = 0;
+% AuxParam.OceanTides = 0;
+% AuxParam.Relativity = 0;
 
 
 MC_1_HPOP_PosEnd = zeros( MCsampleNum, 3);
@@ -296,39 +290,36 @@ MC_1_HPOP_ECI_Z_Trajectories = zeros(MCsampleNum, N_Step+1);
 
 for experimentIndex = 1 : MCsampleNum
     
-    fprintf('Iteration %d of %d\n',experimentIndex,MCsampleNum)
-    
     thisDeviationTime = MCtimeDeviation( experimentIndex );
 
     %%%%%%%%%%%%%  HPOP MODEL
     % propagation
     
     N_Step_Initial = floor((maneuverStartTime + thisDeviationTime) *1/Step); % 
-    N_Step_Final = N_Step - N_Step_Initial; %  
+    N_Step_Final = N_Step - N_Step_Initial;
     
     AuxParam.Thrust = 0;
     [initialEph] = ephemeris_v3(Y0, N_Step_Initial, Step);
-    currY = [ initialEph(N_Step_Initial+1, 2), initialEph(N_Step_Initial+1, 3), initialEph(N_Step_Initial+1, 4), initialEph(N_Step_Initial+1, 5), initialEph(N_Step_Initial+1, 6), initialEph(N_Step_Initial+1, 7) ];
+    currY = initialEph(end, 2:7);
 
-    RMatThrustDeviation = RotMatXYZEulerDeg(MCthrustDirectionRollDeviationDeg( experimentIndex ), MCthrustDirectionPitchDeviationDeg( experimentIndex ), MCthrustDirectionYawDeviationDeg( experimentIndex ));
     rCurrChaser = [ initialEph(N_Step_Initial+1, 2); initialEph(N_Step_Initial+1, 3); initialEph(N_Step_Initial+1, 4) ] ./ 10^3;
     vCurrChaser = [ initialEph(N_Step_Initial+1, 5); initialEph(N_Step_Initial+1, 6); initialEph(N_Step_Initial+1, 7) ] ./ 10^3;
     QmatECItoLVLH_chaser = ECIToLVLH( rCurrChaser, vCurrChaser );
-    deltaVChaserECI = (QmatECItoLVLH_chaser') * ( RMatThrustDeviation * ( deltaVStartLVLH_chaser .* MCthrustOutputDeviation( experimentIndex ))); 
-    currY( 1, 4:6 ) = currY( 1, 4:6 ) + ((deltaVChaserECI') * 10^3);
+    deltaVChaserECI = (QmatECItoLVLH_chaser') * deltaVStartLVLH_chaser; 
+    currY( 1, 4:6 ) = currY( 1, 4:6 ) + ((deltaVChaserECI') .* 10^3);
 
     AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime + thisDeviationTime )/const.DAYSEC);
     finalEph = ephemeris_v3(currY, N_Step_Final, Step);
 
-    Eph = [initialEph(1:N_Step_Initial, :); finalEph];
+    Eph = [initialEph(1:(end-1), :); finalEph];
 
 
-    MC_1_HPOP_PosEnd( experimentIndex, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;
-    MC_1_HPOP_VelEnd( experimentIndex, : ) = [Eph(N_Step+1, 5), Eph(N_Step+1, 6), Eph(N_Step+1, 7)]./10^3;
+    MC_1_HPOP_PosEnd( experimentIndex, : ) = Eph( end, 2:4 )./10^3;
+    MC_1_HPOP_VelEnd( experimentIndex, : ) = Eph( end, 5:7 )./10^3;
 
-    MC_1_HPOP_ECI_X_Trajectories(experimentIndex, :) = Eph( 1:N_Step+1 , 2)'./10^3;
-    MC_1_HPOP_ECI_Y_Trajectories(experimentIndex, :) = Eph( 1:N_Step+1 , 3)'./10^3;
-    MC_1_HPOP_ECI_Z_Trajectories(experimentIndex, :) = Eph( 1:N_Step+1 , 4)'./10^3;
+    MC_1_HPOP_ECI_X_Trajectories(experimentIndex, :) = Eph( 1:end , 2)'./10^3;
+    MC_1_HPOP_ECI_Y_Trajectories(experimentIndex, :) = Eph( 1:end , 3)'./10^3;
+    MC_1_HPOP_ECI_Z_Trajectories(experimentIndex, :) = Eph( 1:end , 4)'./10^3;
     
 end
 
@@ -443,11 +434,9 @@ zlabel('Z [km]')
 for plotIndex = 1 : MCsampleNum
     plot3( MC_1_HPOP_ECI_X_Trajectories(plotIndex, :), MC_1_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_1_HPOP_ECI_Z_Trajectories(plotIndex, :))
 end
-plot3( targetPreciseEph( :, 2 )./10^3, targetPreciseEph( :, 3 )./10^3, targetPreciseEph( :, 4 )./10^3 )
+%plot3( targetPreciseEph( 1:N_Step, 2 )./10^3, targetPreciseEph( 1:N_Step, 3 )./10^3, targetPreciseEph( 1:N_Step, 4 )./10^3 )
 plot3( rECIManouverEnd_targetPrecise(1), rECIManouverEnd_targetPrecise(2), rECIManouverEnd_targetPrecise(3), '*k' )
-text( rECIManouverEnd_targetPrecise(1), rECIManouverEnd_targetPrecise(2), rECIManouverEnd_targetPrecise(3), 'Target Precise Maneuver End' )
-plot3( rECIManouverEnd_targetMixed(1), rECIManouverEnd_targetMixed(2), rECIManouverEnd_targetMixed(3), '*m' )
-text( rECIManouverEnd_targetMixed(1), rECIManouverEnd_targetMixed(2), rECIManouverEnd_targetMixed(3), 'Target Keplerian Calculated Maneuver End' )
+text( rECIManouverEnd_targetPrecise(1), rECIManouverEnd_targetPrecise(2), rECIManouverEnd_targetPrecise(3), 'Chaser Ideal Maneuver End' )
 hold off
 
 
@@ -516,6 +505,7 @@ legend(ax3,'Z-axis')
 
 % Link the axes
 linkaxes([ax1,ax2, ax3],'x');
+linkaxes([ax1,ax2, ax3],'y');
 
 title(t,'Normalized Histogram Target LVLH End Position Error')
 xlabel(t,'Distance [m]')
@@ -560,6 +550,7 @@ legend(ax3,'Yaw')
 
 % Link the axes
 linkaxes([ax1,ax2, ax3],'x');
+linkaxes([ax1,ax2, ax3],'y');
 
 title(t,'Normalized Histogram Thrust Direction Deviation')
 xlabel(t,'Deviation [Deg]')
