@@ -120,6 +120,9 @@ disp('Parameters Loaded')
 
 maneuverEndTime = 2500;
 maneuverStartTime = 500;
+maneuverTimeBuffer = 50;
+thrustPrecisionFactor = 100;
+
 Step   = 1;   % [s]
 N_Step = round(maneuverEndTime*1/Step); 
 N_Step_Initial = round(maneuverStartTime *1/Step);
@@ -147,7 +150,7 @@ thrustDuration = 2*Step;
 
 %% Monte Carlo Experiment Setup
 
-MCsampleNum = 11;
+MCsampleNum = 100;
 
 meanDeviationTimeSetup = 0;
 maxDeviationTimeSetup = 1;
@@ -338,9 +341,10 @@ for experimentIndex = 1 : MCsampleNum
     %%%%%%%%%%%%%  HPOP MODEL
     % propagation
     
-    N_Step_Initial = round((maneuverStartTime - 0.5*thrustDuration + thisDeviationTime) *1/Step); % 
-    N_Step_Thrust = round(( AuxParam.thrustDuration ) * 1 / Step ) ; %  
+    N_Step_Initial = round((maneuverStartTime - 0.5 * maneuverTimeBuffer ) *1/Step); % 
+    N_Step_Thrust =  round(maneuverTimeBuffer *1/Step); %  
     N_Step_Final = N_Step - N_Step_Initial - N_Step_Thrust; %  
+   
     
     ErronousVelocityChangeECI = AuxParam.velocityChangeECI .* MCthrustOutputDeviation( experimentIndex );
     AuxParam.thrustECIAcceleration = (ErronousVelocityChangeECI ./ ( AuxParam.thrustDuration  ));
@@ -355,24 +359,49 @@ for experimentIndex = 1 : MCsampleNum
     AuxParam.Mjd_UTC = Mjd0;
     [initialEph] = ephemeris_v4(Y0, N_Step_Initial, Step);
     currY = initialEph(end, 2:7);
+
+    precisionStep = Step / thrustPrecisionFactor;
     
-    AuxParam.Thrust = 1;
+    AuxParam.Thrust = 0;
     AuxParam.thrustInitiated = 0;
-    AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime  -0.5*thrustDuration + thisDeviationTime )/const.DAYSEC);
+    AuxParam.accelIntegral = zeros(3,1);
+    AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime  -0.5*maneuverTimeBuffer -0.5*thrustDuration )/const.DAYSEC);
     AuxParam.prevTimeStep = 0;
     AuxParam.stepCounter = 0;
-    [thrustEph] = ephemeris_v4(currY, N_Step_Thrust, Step);
+    N_Step_BeforeThrust = round((0.5 * maneuverTimeBuffer - 0.5*thrustDuration + thisDeviationTime) *1/precisionStep);
+    [beforeThrustEph] = ephemeris_v4(currY, N_Step_BeforeThrust, precisionStep);
+    currY = [ beforeThrustEph(end, 2), beforeThrustEph(end, 3), beforeThrustEph(end, 4), beforeThrustEph(end, 5), beforeThrustEph(end, 6), beforeThrustEph(end, 7) ];
+  
+    AuxParam.Thrust = 1;
+    AuxParam.thrustInitiated = 0;
+    AuxParam.accelIntegral = zeros(3,1);
+    AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime + 0.5*maneuverTimeBuffer -0.5*thrustDuration + thisDeviationTime )/const.DAYSEC);
+    AuxParam.prevTimeStep = 0;
+    AuxParam.stepCounter = 0;
+    N_Step_PrecisionThrust = round((thrustDuration) *1/precisionStep);
+    [precisionThrustEph] = ephemeris_v4(currY, N_Step_PrecisionThrust, precisionStep);
+    currY = [ precisionThrustEph(end, 2), precisionThrustEph(end, 3), precisionThrustEph(end, 4), precisionThrustEph(end, 5), precisionThrustEph(end, 6), precisionThrustEph(end, 7) ];
     
-    currY = thrustEph(end, 2:7);
+    AuxParam.Thrust = 0;
+    AuxParam.thrustInitiated = 0;
+    AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime + 0.5*maneuverTimeBuffer +0.5*thrustDuration + thisDeviationTime )/const.DAYSEC);
+    AuxParam.prevTimeStep = 0;
+    AuxParam.stepCounter = 0;
+    N_Step_AfterThrust = round((0.5 * maneuverTimeBuffer -0.5*thrustDuration - thisDeviationTime) *1/precisionStep);
+    [afterThrustEph] = ephemeris_v4(currY, N_Step_AfterThrust, precisionStep);
+    currY = [ afterThrustEph(end, 2), afterThrustEph(end, 3), afterThrustEph(end, 4), afterThrustEph(end, 5), afterThrustEph(end, 6), afterThrustEph(end, 7) ];
 
     
     AuxParam.Thrust = 0;
-    AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime + AuxParam.thrustDuration + thisDeviationTime )/const.DAYSEC);
+    AuxParam.thrustInitiated = 0;
+    AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime + maneuverTimeBuffer + thisDeviationTime )/const.DAYSEC);
     AuxParam.prevTimeStep = 0;
     AuxParam.stepCounter = 0;
     [finalEph] = ephemeris_v4(currY, N_Step_Final, Step);
 
-    Eph = [initialEph(1:N_Step_Initial, :); thrustEph(1:N_Step_Thrust, :); finalEph];
+    Eph = [initialEph(1:N_Step_Initial, :); beforeThrustEph(1:thrustPrecisionFactor:floor(N_Step_BeforeThrust/thrustPrecisionFactor)*thrustPrecisionFactor, :);...
+        precisionThrustEph(1:thrustPrecisionFactor:floor(N_Step_PrecisionThrust/thrustPrecisionFactor)*thrustPrecisionFactor, :);...
+        afterThrustEph(1:thrustPrecisionFactor:ceil(N_Step_AfterThrust/thrustPrecisionFactor)*thrustPrecisionFactor, :); finalEph]; %
 
 
     MC_1_HPOP_PosEnd( experimentIndex, : ) = Eph( end, 2:4 )./10^3;
@@ -654,8 +683,9 @@ ylabel('Y [km]')
 zlabel('Z [km]')
 plot3(0,0,0,'m+', 'linewidth',8)
 for plotIndex = 1 : MCsampleNum
-    plot3( relXTrajectoryHPOP_2_chaser(plotIndex, :), relYTrajectoryHPOP_2_chaser(plotIndex, :), relZTrajectoryHPOP_2_chaser(plotIndex, :), 'b')
+    %plot3( relXTrajectoryHPOP_2_chaser(plotIndex, :), relYTrajectoryHPOP_2_chaser(plotIndex, :), relZTrajectoryHPOP_2_chaser(plotIndex, :), 'b')
     plot3( relXTrajectoryHPOP_1_chaser(plotIndex, :), relYTrajectoryHPOP_1_chaser(plotIndex, :), relZTrajectoryHPOP_1_chaser(plotIndex, :), 'r')
+    plot3( relXTrajectoryHPOP_2_chaser(plotIndex, :), relYTrajectoryHPOP_2_chaser(plotIndex, :), relZTrajectoryHPOP_2_chaser(plotIndex, :), 'b')
 end
 hold off
 
