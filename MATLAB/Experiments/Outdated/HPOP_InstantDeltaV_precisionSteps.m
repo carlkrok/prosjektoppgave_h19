@@ -113,7 +113,9 @@ AuxParam.Mjd_UTC = Mjd_UTC;
 
 maneuverEndTime = 2500;
 maneuverStartTime = 500;
-Step   = 0.001;   % [s]
+maneuverStartTimeBuffer = 50;
+
+Step   = 1;   % [s]
 N_Step = round(maneuverEndTime*1/Step); 
 N_Step_Initial = round(maneuverStartTime *1/Step);
               
@@ -137,7 +139,7 @@ orbitType_chaser = "retrograde";
 
 %% Monte Carlo Experiment Setup
 
-MCsampleNum = 3;
+MCsampleNum = 5;
 
 meanDeviationTimeSetup = 0;
 %maxDeviationTimeSetup = 1.5;
@@ -301,25 +303,39 @@ for experimentIndex = 1 : MCsampleNum
     %%%%%%%%%%%%%  HPOP MODEL
     % propagation
     
-    N_Step_Initial = floor((maneuverStartTime + thisDeviationTime) *1/Step); % 
-    N_Step_Thrust = round(( AuxParam.thrustDuration ) * 1 / Step ) ; %  
+    N_Step_Initial = floor((maneuverStartTime - 0.5 * maneuverStartTimeBuffer ) *1/Step); % 
+    N_Step_Thrust =  ceil(maneuverStartTimeBuffer *1/Step); %  
     N_Step_Final = N_Step - N_Step_Initial - N_Step_Thrust; %  
     
     AuxParam.Thrust = 0;
     [initialEph] = ephemeris_v3(Y0, N_Step_Initial, Step);
     currY = [ initialEph(N_Step_Initial+1, 2), initialEph(N_Step_Initial+1, 3), initialEph(N_Step_Initial+1, 4), initialEph(N_Step_Initial+1, 5), initialEph(N_Step_Initial+1, 6), initialEph(N_Step_Initial+1, 7) ];
 
+    AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime - 0.5 * maneuverStartTimeBuffer )/const.DAYSEC);
+    thrustPrecisionFactor = 100;
+    precisionStep = Step / thrustPrecisionFactor;
+    N_Step_BeforeThrust = floor((0.5 * maneuverStartTimeBuffer + thisDeviationTime) *1/precisionStep);
+    [beforeThrustEph] = ephemeris_v3(currY, N_Step_BeforeThrust, precisionStep);
+    currY = [ beforeThrustEph(end, 2), beforeThrustEph(end, 3), beforeThrustEph(end, 4), beforeThrustEph(end, 5), beforeThrustEph(end, 6), beforeThrustEph(end, 7) ];
+    
     RMatThrustDeviation = RotMatXYZEulerDeg(MCthrustDirectionRollDeviationDeg( experimentIndex ), MCthrustDirectionPitchDeviationDeg( experimentIndex ), MCthrustDirectionYawDeviationDeg( experimentIndex ));
-    rCurrChaser = [ initialEph(N_Step_Initial+1, 2); initialEph(N_Step_Initial+1, 3); initialEph(N_Step_Initial+1, 4) ] ./ 10^3;
-    vCurrChaser = [ initialEph(N_Step_Initial+1, 5); initialEph(N_Step_Initial+1, 6); initialEph(N_Step_Initial+1, 7) ] ./ 10^3;
+    rCurrChaser = [ currY(1); currY(2); currY(3) ] ./ 10^3;
+    vCurrChaser = [ currY(4); currY(5); currY(6) ] ./ 10^3;
     QmatECItoLVLH_chaser = ECIToLVLH( rCurrChaser, vCurrChaser );
     deltaVChaserECI = (QmatECItoLVLH_chaser') * ( RMatThrustDeviation * ( deltaVStartLVLH_chaser .* MCthrustOutputDeviation( experimentIndex ))); 
     currY( 1, 4:6 ) = currY( 1, 4:6 ) + ((deltaVChaserECI') * 10^3);
 
     AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime + thisDeviationTime )/const.DAYSEC);
+    N_Step_AfterThrust = ceil((0.5 * maneuverStartTimeBuffer - thisDeviationTime) *1/precisionStep);
+    [afterThrustEph] = ephemeris_v3(currY, N_Step_AfterThrust, precisionStep);
+    currY = [ afterThrustEph(end, 2), afterThrustEph(end, 3), afterThrustEph(end, 4), afterThrustEph(end, 5), afterThrustEph(end, 6), afterThrustEph(end, 7) ];
+
+    
+    AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime + 0.5 * maneuverStartTimeBuffer )/const.DAYSEC);
     finalEph = ephemeris_v3(currY, N_Step - N_Step_Initial, Step);
 
-    Eph = [initialEph(1:N_Step_Initial, :); finalEph];
+    Eph = [initialEph(1:N_Step_Initial, :); beforeThrustEph( 1:thrustPrecisionFactor:N_Step_BeforeThrust, :);...
+          afterThrustEph( 1:thrustPrecisionFactor:N_Step_AfterThrust, :); finalEph];
 
 
     MC_1_HPOP_PosEnd( experimentIndex, : ) = [Eph(N_Step+1, 2), Eph(N_Step+1, 3), Eph(N_Step+1, 4)]./10^3;

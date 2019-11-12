@@ -113,7 +113,7 @@ AuxParam.Mjd_UTC = Mjd_UTC;
 
 maneuverEndTime = 2500;
 maneuverStartTime = 500;
-Step   = 0.5;   % [s]
+Step   = 0.001;   % [s]
 N_Step = round(maneuverEndTime*1/Step); 
 N_Step_Initial = round(maneuverStartTime *1/Step);
               
@@ -137,11 +137,11 @@ orbitType_chaser = "retrograde";
 
 %% Monte Carlo Experiment Setup
 
-MCsampleNum = 3000;
+MCsampleNum = 3;
 
 meanDeviationTimeSetup = 0;
 %maxDeviationTimeSetup = 1.5;
-stdDeviationTimeSetup = 0.1;
+stdDeviationTimeSetup = 0.15;
 
 %MCtimeDeviation = meanDeviationTimeSetup - stdDeviationTimeSetup + ( 2 * stdDeviationTimeSetup * rand( MCsampleNum, 1 ) );
 %MCtimeDeviation = (meanDeviationTimeSetup-maxDeviationTimeSetup : (2*maxDeviationTimeSetup)/(MCsampleNum-1) : meanDeviationTimeSetup+maxDeviationTimeSetup)';
@@ -296,14 +296,15 @@ MC_1_HPOP_ECI_Z_Trajectories = zeros(MCsampleNum, N_Step+1);
 
 for experimentIndex = 1 : MCsampleNum
     
+    fprintf('Iteration %d of %d\n',experimentIndex,MCsampleNum)
+    
     thisDeviationTime = MCtimeDeviation( experimentIndex );
 
     %%%%%%%%%%%%%  HPOP MODEL
     % propagation
     
     N_Step_Initial = floor((maneuverStartTime + thisDeviationTime) *1/Step); % 
-    N_Step_Thrust = round(( AuxParam.thrustDuration ) * 1 / Step ) ; %  
-    N_Step_Final = N_Step - N_Step_Initial - N_Step_Thrust; %  
+    N_Step_Final = N_Step - N_Step_Initial; %  
     
     AuxParam.Thrust = 0;
     [initialEph] = ephemeris_v3(Y0, N_Step_Initial, Step);
@@ -317,7 +318,7 @@ for experimentIndex = 1 : MCsampleNum
     currY( 1, 4:6 ) = currY( 1, 4:6 ) + ((deltaVChaserECI') * 10^3);
 
     AuxParam.Mjd_UTC = Mjd0 + ((maneuverStartTime + thisDeviationTime )/const.DAYSEC);
-    finalEph = ephemeris_v3(currY, N_Step - N_Step_Initial, Step);
+    finalEph = ephemeris_v3(currY, N_Step_Final, Step);
 
     Eph = [initialEph(1:N_Step_Initial, :); finalEph];
 
@@ -575,25 +576,4 @@ histogram(MCthrustOutputDeviation,'Normalization','probability')
 xlabel('Performance Factor')
 ylabel('Probability')
 title('Normalized Histogram Thrust Output Deviation')
-hold off
-
-
-%%
-
-
-coeff = pca( relEndPosLVLHHPOP_1_chaser ).*10^3
-
-figure(13)
-hold on
-grid on
-title('Maneuver End Position LVLH')
-plot3( relEndPosLVLHHPOP_1_chaser( :, 1 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 2 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 3 ).*10^3, '*' )
-plot3( [0 coeff(1,1)], [0 coeff(1,2)], [0 coeff(1,3)] )
-plot3( [0 coeff(2,1)], [0 coeff(2,2)], [0 coeff(2,3)] )
-plot3( [0 coeff(3,1)], [0 coeff(3,2)], [0 coeff(3,3)] )
-plot3(0,0,0,'m+', 'linewidth',8)
-legend('HPOP 1', 'Goal Position')
-xlabel('X [m]')
-ylabel('Y [m]')
-zlabel('Z [m]')
 hold off
