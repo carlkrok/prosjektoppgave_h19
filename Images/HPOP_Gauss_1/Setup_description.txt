@@ -1,0 +1,43 @@
+r0ECI_target = [ 6990.1366, 0.0, 0.0 ]
+v0ECI_target = [ 0.0, -1.04884571201957, 7.50091780930118 ]
+
+r0ECI_chaser = [ 6952.1366, 0.0, 0.0 ]
+v0ECI_chaser = [ 0.0, -0.976461903728063, 7.51834019814233 ]
+
+
+maneuverEndTime = 2500
+maneuverStartTime = 500
+maneuverTimeBuffer = 10
+thrustPrecisionFactor = 1000
+thrustDuration = 5
+
+Step   = 1
+
+MCsampleNum = 3000
+
+meanDeviationTimeSetup = 0
+stdDeviationTimeSetup = 0.1
+
+meanThrustOutputFactor = 1;
+stdThrustOutputUncertaintyFactor = 0.0001;
+
+meanThrustDirectionErrorRollDeg = 0;
+stdThrustDirectionErrorRollDeg = 0.001;
+
+meanThrustDirectionErrorPitchDeg = 0;
+stdThrustDirectionErrorPitchDeg = 0.001;
+
+meanThrustDirectionErrorYawDeg = 0;
+stdThrustDirectionErrorYawDeg = 0.001;
+
+Precise propagation setup:
+AuxParam.n       = 40;
+AuxParam.m       = 40;
+AuxParam.sun     = 1;
+AuxParam.moon    = 1;
+AuxParam.planets = 1;
+AuxParam.sRad    = 1;
+AuxParam.drag    = 1;
+AuxParam.SolidEarthTides = 0;
+AuxParam.OceanTides = 0;
+AuxParam.Relativity = 0;
