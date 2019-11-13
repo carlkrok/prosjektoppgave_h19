@@ -197,7 +197,7 @@ disp('Experiment Defined')
 
 %% Initial Orbit Determination
 
-AuxParam.n       = 0;
+AuxParam.n       = 2;
 AuxParam.m       = 0;
 AuxParam.sun     = 0;
 AuxParam.moon    = 0;
@@ -278,7 +278,7 @@ disp('Initial Orbits Determined')
 
 %% Experiments
 
-AuxParam.n       = 0;
+AuxParam.n       = 2;
 AuxParam.m       = 0;
 AuxParam.sun     = 0;
 AuxParam.moon    = 0;
@@ -393,14 +393,14 @@ end
 %%%%%%%  Experiment 2 Intant Velocity Change
 
 
- AuxParam.Mjd_UTC = Mjd0;
-% AuxParam.n       = 40;
-% AuxParam.m       = 40;
-% AuxParam.sun     = 1;
-% AuxParam.moon    = 1;
-% AuxParam.planets = 1;
-% AuxParam.sRad    = 1;
-% AuxParam.drag    = 1;
+%  AuxParam.Mjd_UTC = Mjd0;
+% AuxParam.n       = 0;
+% AuxParam.m       = 0;
+% AuxParam.sun     = 0;
+% AuxParam.moon    = 0;
+% AuxParam.planets = 0;
+% AuxParam.sRad    = 0;
+% AuxParam.drag    = 0;
 % AuxParam.SolidEarthTides = 0;
 % AuxParam.OceanTides = 0;
 % AuxParam.Relativity = 0;
@@ -589,7 +589,7 @@ title('Error in ECI XYZ-Position of MC Simulations')
 plot3(0,0,0,'m+', 'linewidth',8)
 plot3( relEndPosECIHPOP_2_chaser( :, 1 ).*10^3, relEndPosECIHPOP_2_chaser( :, 2 ).*10^3, relEndPosECIHPOP_2_chaser( :, 3 ).*10^3, '*' )
 plot3( relEndPosECIHPOP_1_chaser( :, 1 ).*10^3, relEndPosECIHPOP_1_chaser( :, 2 ).*10^3, relEndPosECIHPOP_1_chaser( :, 3 ).*10^3, '*' )
-legend('Thrust', 'Instant Velocity Change', 'Goal Position')
+legend('Goal Position', 'Instant Velocity Change', 'Thrust')
 xlabel('X [m]')
 ylabel('Y [m]')
 zlabel('Z [m]')
@@ -604,7 +604,7 @@ title('Maneuver End Position LVLH')
 plot3(0,0,0,'m+', 'linewidth',8)
 plot3( relEndPosLVLHHPOP_2_chaser( :, 1 ).*10^3, relEndPosLVLHHPOP_2_chaser( :, 2 ).*10^3, relEndPosLVLHHPOP_2_chaser( :, 3 ).*10^3, '*' )
 plot3( relEndPosLVLHHPOP_1_chaser( :, 1 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 2 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 3 ).*10^3, '*' )
-legend('Thrust', 'Instant Velocity Change', 'Goal Position')
+legend('Goal Position', 'Instant Velocity Change', 'Thrust')
 xlabel('X [m]')
 ylabel('Y [m]')
 zlabel('Z [m]')
@@ -671,8 +671,10 @@ legend('Thrust', 'Instant Velocity Chagnge')
 xlabel('Sample')
 ylabel('Distance [m]')
 hold off
+
 % absMeanDeviationEndPosHPOP_1.*10^3
 % absMeanDeviationEndPosHPOP_2.*10^3
+
 
 %%
 
