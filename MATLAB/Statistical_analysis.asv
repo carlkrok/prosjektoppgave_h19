@@ -26,4 +26,4 @@ kurt1 = kurtosis(x1)
 
 %% 
 
-cov(relEndPosLVLHHPOP_1_chaser.*10^3)
+cov(cov(MC_1_HPOP_PosEnd.*10^3).*10^3)
