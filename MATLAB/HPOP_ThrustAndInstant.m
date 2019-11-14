@@ -106,7 +106,7 @@ AuxParam.area_solar = 0.2;
 AuxParam.area_drag = 0.1;
 AuxParam.mass = 2.0;
 AuxParam.Cr = 1.0;
-AuxParam.Cd = 1.0;
+AuxParam.Cd = 2.2;
 
 % epoch
 Mjd_UTC = Mjday(year, mon, day, hour, min, sec);
