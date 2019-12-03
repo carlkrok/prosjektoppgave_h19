@@ -1,4 +1,4 @@
-function [rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ, rLVLH_RelNorm, sampleT, lastECIPos_B, lastECIVel_B ] = relativeTrajectory( r0_A, v0_A, r0_B, v0_B, anomalyTolerance, nMax, orbitPeriod_A, numPeriods, numSamples, muEarth )
+function [rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ, rLVLH_RelNorm, sampleT, lastECIPos_B, lastECIVel_B ] = relativeTrajectory( r0_A, v0_A, r0_B, v0_B, anomalyTolerance, nMax, timeHorizon, numPeriods, numSamples, muEarth )
 
    r_A = r0_A;
    v_A = v0_A;
@@ -7,8 +7,8 @@ function [rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ, rLVLH_RelNorm, sampleT, lastECIPos
    v_B = v0_B;
 
    currTime = 0;
-   endTime = currTime + orbitPeriod_A * numPeriods;
-   sampleInterval = (orbitPeriod_A * numPeriods) / numSamples;
+   endTime = currTime + timeHorizon; % * numPeriods;
+   sampleInterval = (timeHorizon) / numSamples; %  * numPeriods
 
    r0LVLH_Rel = BPosRelativeToA( r0_A, v0_A, r0_B );
 

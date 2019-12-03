@@ -1,5 +1,5 @@
 
-function [rXECI, rYECI, rZECI, vXECI, vYECI, vZECI, sampleT] = ECITrajectory( r0, v0, anomalyTolerance, nMax, orbitPeriod_A, numPeriods, numSamples, muEarth )
+function [rXECI, rYECI, rZECI, vXECI, vYECI, vZECI, sampleT] = ECITrajectory( r0, v0, anomalyTolerance, nMax, timeHorizon, numPeriods, numSamples, muEarth )
 
    r = r0;
    v = v0;
@@ -9,8 +9,8 @@ function [rXECI, rYECI, rZECI, vXECI, vYECI, vZECI, sampleT] = ECITrajectory( r0
    end
    
    currTime = 0;
-   endTime = currTime + orbitPeriod_A * numPeriods;
-   sampleInterval = (orbitPeriod_A * numPeriods) / (numSamples-1);
+   endTime = currTime + timeHorizon * numPeriods;
+   sampleInterval = (timeHorizon * numPeriods) / (numSamples-1);
 
    rXECI = [numSamples];
    rYECI = [numSamples];
