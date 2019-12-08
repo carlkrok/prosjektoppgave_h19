@@ -1,9 +1,6 @@
 
 function [rXECI, rYECI, rZECI, vXECI, vYECI, vZECI, sampleT] = ECITrajectory( r0, v0, anomalyTolerance, nMax, timeHorizon, numPeriods, numSamples, muEarth )
 
-   r = r0;
-   v = v0;
-
    if numSamples < 2
        return
    end

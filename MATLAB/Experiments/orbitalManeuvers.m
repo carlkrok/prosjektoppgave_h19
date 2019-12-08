@@ -133,7 +133,7 @@ firstECIVel_E3 = [ vECI_E2X( numSamplesManeuver ), vECI_E2Y( numSamplesManeuver 
 
 %%
 
-[timeDifferenceIndexA, indexManeuverTimeA] = min(abs(sampleT_ECIA-maneuverTime));
+%[timeDifferenceIndexA, indexManeuverTimeA] = min(abs(sampleT_ECIA-maneuverTime));
 
 figure(4)
 hold on
@@ -190,10 +190,10 @@ axis equal
 % Draw the initial position vectors:
 plot3( [0 rECI_AX( 1 ) ], [0 rECI_AY( 1 ) ], [0 rECI_AZ( 1 ) ], '-.' )
 plot3( [0 rECI_B1X(1) ], [0 rECI_B1Y(1) ], [0 rECI_B1Z(1) ], '-.' )
-plot3( [0 rECI_AX( indexManeuverTimeA ) ], [0 rECI_AY( indexManeuverTimeA ) ], [0 rECI_AZ( indexManeuverTimeA ) ], '-.' )
+%plot3( [0 rECI_AX( indexManeuverTimeA ) ], [0 rECI_AY( indexManeuverTimeA ) ], [0 rECI_AZ( indexManeuverTimeA ) ], '-.' )
 text( rECI_AX( 1 ), rECI_AY( 1 ), rECI_AZ( 1 ), 'A0' )
 text( rECI_B1X(1), rECI_B1Y(1), rECI_B1Z(1), 'B0')
-text( rECI_AX( indexManeuverTimeA ), rECI_AY( indexManeuverTimeA ), rECI_AZ( indexManeuverTimeA ), 'A at maneuverTime' )
+%text( rECI_AX( indexManeuverTimeA ), rECI_AY( indexManeuverTimeA ), rECI_AZ( indexManeuverTimeA ), 'A at maneuverTime' )
 axis on
 grid on
 hold off

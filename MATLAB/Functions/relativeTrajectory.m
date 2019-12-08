@@ -8,7 +8,7 @@ function [rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ, rLVLH_RelNorm, sampleT, lastECIPos
 
    currTime = 0;
    endTime = currTime + timeHorizon; % * numPeriods;
-   sampleInterval = (timeHorizon) / numSamples; %  * numPeriods
+   sampleInterval = (timeHorizon) / (numSamples - 1); %  * numPeriods
 
    r0LVLH_Rel = BPosRelativeToA( r0_A, v0_A, r0_B );
 
@@ -39,8 +39,8 @@ function [rLVLH_RelX, rLVLH_RelY, rLVLH_RelZ, rLVLH_RelNorm, sampleT, lastECIPos
        sampleT( sampleIter ) = currTime;
 
        if sampleIter == numSamples
-           lastECIPos_B = r_B;
-           lastECIVel_B = v_B;
+           lastECIPos_B = r_B
+           lastECIVel_B = v_B
        end
 
    end
