@@ -3,12 +3,10 @@ run SatelliteInitialPositions1;
 
 run earthParametersHPOP;
 
-TOLERANCE = 10^(-6);
-
 anomalyErrorTolerance = 10^(-12);
 anomalyMaxIterations = 1000;
 
-MAXDELTAV = 10;
+MAXDELTAV = 0.5;
 
 maneuverLengths = 60 : 60 : period_target;
 
@@ -35,9 +33,9 @@ for thisManeuverStartTimeIndex = 1 : numStartTimes
 
         [rECIEnd_target, vECIEnd_target] = nextStateTimeStep( muEarth, rStartECI_target, vStartECI_target, thisManouverLength, anomalyErrorTolerance, anomalyMaxIterations );
 
-        [ deltaVStart, deltaVEnd, vIntersectOrbit ] = interceptOrbit( rStartECI_chaser, vStartECI_chaser, rECIEnd_target, vECIEnd_target,  thisManouverLength, orbitType, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
+        [ deltaVStart, deltaVEnd, vIntersectOrbit ] = interceptOrbit( rStartECI_chaser, vStartECI_chaser, rECIEnd_target, vECIEnd_target, thismaneuverStartTime + thisManouverLength, orbitType, muEarth, anomalyErrorTolerance, anomalyMaxIterations );
 
-        [rECIEnd_chaser, vECIEnd_chaser] = nextStateTimeStep( muEarth, rStartECI_chaser, vStartECI_chaser + deltaVStart, thisManouverLength, anomalyErrorTolerance, anomalyMaxIterations );
+        [rECIEnd_chaser, vECIEnd_chaser] = nextStateTimeStep( muEarth, rStartECI_chaser, vStartECI_chaser, thisManouverLength, anomalyErrorTolerance, anomalyMaxIterations );
 
             
         if ( norm( deltaVStart ) > MAXDELTAV ) 
@@ -55,12 +53,7 @@ for thisManeuverStartTimeIndex = 1 : numStartTimes
             deltaVEnd = [MAXDELTAV, 0, 0];
         end
         
-        if norm( rECIEndRef_target - rECIEnd_chaser ) > TOLERANCE
-            deltaVStart = [MAXDELTAV, 0, 0];
-            deltaVEnd = [MAXDELTAV, 0, 0];
-        end
-        
-        if norm( rECIEnd_target - rECIEnd_chaser ) > TOLERANCE
+        if norm( rECIEndRef_target - rECIEnd_target ) > TOLERANCE
             deltaVStart = [MAXDELTAV, 0, 0];
             deltaVEnd = [MAXDELTAV, 0, 0];
         end

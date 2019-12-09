@@ -444,6 +444,7 @@ disp('Statistical Analysis HPOP1 Started')
 [ QmatECItoLVLH_targetEnd ] = ECIToLVLH( rECIManouverEnd_targetPrecise, vECIManouverEnd_targetPrecise );
 
 absDeviationEndPosHPOP_1 = zeros( MCsampleNum, 1 );
+absDeviationEndPosLVLH_1 = zeros( MCsampleNum, 1 );
 relEndPosECIHPOP_1_chaser = MC_1_HPOP_PosEnd - ones(MCsampleNum,1)*rECIManouverEnd_targetPrecise';
 relEndPosLVLHHPOP_1_chaser = zeros(MCsampleNum,3);
 for posIter = 1:MCsampleNum
@@ -481,6 +482,7 @@ for dataIndex = 1 : MCsampleNum
     thisEndPosHPOP_1 = MC_1_HPOP_PosEnd( dataIndex, : );
 
     absDeviationEndPosHPOP_1( dataIndex ) = norm( rECIManouverEnd_targetPrecise - thisEndPosHPOP_1' );
+    absDeviationEndPosLVLH_1( dataIndex ) = norm( relEndPosLVLHHPOP_1_chaser( dataIndex, : ) );
 
 end
 
@@ -528,11 +530,12 @@ hold off
 
 %%
 
-figure(3)
+figure(33)
 hold on
 grid on
 title('Norm of Error in Point of Rendezvous')
 plot( MCtimeDeviation,absDeviationEndPosHPOP_1.*10^3, '*' )
+plot( MCtimeDeviation,absDeviationEndPosLVLH_1.*10^3, '*' )
 %plot( MCtimeDeviation(99:103),absDeviationEndPosHPOP_1(99:103).*10^3 )
 %plot( MCtimeDeviation(99:103),absDeviationEndPosHPOP_1(99:103).*10^3 ,'*')
 xlabel('Delay Time [s]')
