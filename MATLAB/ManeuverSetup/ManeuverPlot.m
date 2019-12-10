@@ -1,5 +1,5 @@
 
-run SatelliteInitialPositions1;
+run SatelliteInitialPositions2;
 
 run earthParametersHPOP;
 
@@ -74,8 +74,10 @@ else
 end
 rECIcurr_chaser = rECIManeuverStart_chaser; %[ rECI_chaserX0( end ); rECI_chaserY0( end ); rECI_chaserZ0( end ) ];
 vECIcurr_chaser = vECIManeuverStart_chaser; %[ vECI_chaserX0( end ); vECI_chaserY0( end ); vECI_chaserZ0( end ) ];
-vECIcurr_chaser = vECIcurr_chaser + deltaVStart_chaser;
-[rECI_chaserX, rECI_chaserY, rECI_chaserZ, vECI_chaserX, vECI_chaserY, vECI_chaserZ, sampleT_ECIchaser] = ECITrajectory( rECIcurr_chaser, vECIcurr_chaser, anomalyErrorTolerance, anomalyMaxIterations, maneuverTime, numPeriods, maneuverTime + 1, muEarth );
+vECIcurr_chaser = vECIcurr_chaser;
+[rECI_chaserX, rECI_chaserY, rECI_chaserZ, vECI_chaserX, vECI_chaserY, vECI_chaserZ, sampleT_ECIchaser] = ECITrajectory( rECIcurr_chaser, vECIcurr_chaser + deltaVStart_chaser, anomalyErrorTolerance, anomalyMaxIterations, maneuverTime, numPeriods, maneuverTime + 1, muEarth );
+
+[rECI_chaserX_unactuated, rECI_chaserY_unactuated, rECI_chaserZ_unactuated, vECI_chaserX_unactuated, vECI_chaserY_unactuated, vECI_chaserZ_unactuated, sampleT_ECIchaser_unactuated] = ECITrajectory( rECIcurr_chaser, vECIcurr_chaser, anomalyErrorTolerance, anomalyMaxIterations, maneuverTime, numPeriods, maneuverTime + 1, muEarth );
 
 
 %% Relative motion
@@ -89,6 +91,8 @@ else
     [rLVLH_chaserX0, rLVLH_chaserY0, rLVLH_chaserZ0, rLVLH_chaserNorm0, sampleTchaser0, lastECIPos_chaser0, lastECIVel_chaser0 ] = relativeTrajectory( r0ECI_target, v0ECI_target, r0ECI_chaser, v0ECI_chaser, anomalyErrorTolerance, anomalyMaxIterations, maneuverStartDelay, numPeriods, maneuverStartDelay + 1, muEarth );
 end
 [rLVLH_chaserX1, rLVLH_chaserY1, rLVLH_chaserZ1, rLVLH_chaserNorm1, sampleTchaser1, lastECIPos_chaser1, lastECIVel_chaser1 ] = relativeTrajectory( rECIManeuverStart_target, vECIManeuverStart_target, rECIManeuverStart_chaser, vECIManeuverStart_chaser + deltaVStart_chaser, anomalyErrorTolerance, anomalyMaxIterations, maneuverTime, numPeriods, maneuverTime + 1, muEarth );
+
+[rLVLH_chaserX1_unactuated, rLVLH_chaserY1_unactuated, rLVLH_chaserZ1_unactuated, rLVLH_chaserNorm1_unactuated, sampleTchaser1_unactuated, lastECIPos_chaser1_unactuated, lastECIVel_chaser1_unactuated ] = relativeTrajectory( rECIManeuverStart_target, vECIManeuverStart_target, rECIManeuverStart_chaser, vECIManeuverStart_chaser, anomalyErrorTolerance, anomalyMaxIterations, maneuverTime, numPeriods, maneuverTime + 1, muEarth );
 
 
 %%
@@ -105,7 +109,7 @@ end
 figure(1)
 hold on
 title('ECI Trajectories')
-axis equal
+%axis equal
 xlabel('X [km]')
 ylabel('Y [km]')
 zlabel('Z [km]')
@@ -133,17 +137,19 @@ hold off
 
 figure(2)
 hold on
-title('Chaser Motion Relative to Target')
-plot3( rLVLH_chaserX0, rLVLH_chaserY0, rLVLH_chaserZ0 )
-plot3( rLVLH_chaserX1, rLVLH_chaserY1, rLVLH_chaserZ1 )
+title('Experiment 1, 2 \& 3 Chaser Motion in Target LVLH')
+plot3( rLVLH_chaserX0, rLVLH_chaserY0, rLVLH_chaserZ0, 'b' )
+plot3( rLVLH_chaserX1, rLVLH_chaserY1, rLVLH_chaserZ1, 'g' )
+plot3( rLVLH_chaserX1_unactuated, rLVLH_chaserY1_unactuated, rLVLH_chaserZ1_unactuated, 'b-.' )
+plot3( 0, 0, 0, 'r*' )
 axis equal
 axis on
 grid on
-xlabel('[km]')
-ylabel('[km]')
-zlabel('[km]')
+xlabel('X [km]')
+ylabel('Y [km]')
+zlabel('Z [km]')
 % Label the origin of the moving frame attached to A:
-text (0, 0, 0, 'Target')
+%text (0, 0, 0, 'Target')
 % Label the start of relative trajectories:
 text(rLVLH_chaserX0(1), rLVLH_chaserY0(1), rLVLH_chaserZ0(1), 'Chaser Initial Position')
 text(rLVLH_chaserX1( end ), rLVLH_chaserY1( end ), rLVLH_chaserZ1( end ), 'Chaser Final Position')

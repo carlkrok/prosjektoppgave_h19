@@ -1,13 +1,13 @@
 
 run earthParametersHPOP;
 
-T = -10; % 
-i = 100; % 
+T = 0; % 
+i = 98; % 
 O = 0;
-w = 5;
+w = 0;
 
-rSat_a = rEarth + 637
-rSat_p = rEarth + 620
+rSat_a = rEarth + 632
+rSat_p = rEarth + 615
 
 aSat = 0.5 * (rSat_a + rSat_p)
 
