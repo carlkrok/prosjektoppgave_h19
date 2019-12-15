@@ -1,5 +1,5 @@
 
-run SatelliteInitialPositions1;
+run SatelliteInitialPositions2;
 
 run earthParametersHPOP;
 
@@ -138,9 +138,9 @@ hold off
 figure(2)
 hold on
 title('Experiment 1, 2 \& 3 Chaser Motion in Target LVLH')
-plot3( rLVLH_chaserX0, rLVLH_chaserY0, rLVLH_chaserZ0 )
-plot3( rLVLH_chaserX1, rLVLH_chaserY1, rLVLH_chaserZ1 )
-plot3( rLVLH_chaserX1_unactuated, rLVLH_chaserY1_unactuated, rLVLH_chaserZ1_unactuated, '-. )
+plot3( rLVLH_chaserX0, rLVLH_chaserY0, rLVLH_chaserZ0, 'b' )
+plot3( rLVLH_chaserX1, rLVLH_chaserY1, rLVLH_chaserZ1, 'g' )
+plot3( rLVLH_chaserX1_unactuated, rLVLH_chaserY1_unactuated, rLVLH_chaserZ1_unactuated, 'b-.' )
 plot3( 0, 0, 0, 'r*' )
 axis equal
 axis on
@@ -177,4 +177,15 @@ hold off
 diffECItargetEnd = rECIManeuverEnd_target - [rECI_targetX( end ), rECI_targetY( end ), rECI_targetZ( end )]'
 
 rendezvousErrorECIEnd = [rECI_chaserX( end ), rECI_chaserY( end ), rECI_chaserZ( end )]' - [rECI_targetX( end ), rECI_targetY( end ), rECI_targetZ( end )]'
+
+%%
+
+
+endPosECIAltitude = zeros(maneuverTime + 1, 1)
+
+for pointIter = 1 : maneuverTime + 1 
+    endPosECIAltitude = norm(rECI_chaserX(
+
+
+
 

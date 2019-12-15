@@ -178,3 +178,16 @@ diffECItargetEnd = rECIManeuverEnd_target - [rECI_targetX( end ), rECI_targetY( 
 
 rendezvousErrorECIEnd = [rECI_chaserX( end ), rECI_chaserY( end ), rECI_chaserZ( end )]' - [rECI_targetX( end ), rECI_targetY( end ), rECI_targetZ( end )]'
 
+%%
+
+
+trajECIAltitude = zeros(maneuverTime + 1, 1);
+
+for pointIter = 1 : maneuverTime + 1 
+    trajECIAltitude = norm([rECI_chaserX(pointIter), rECI_chaserY(pointIter), rECI_chaserZ(pointIter)]) - rEarth;
+end
+
+minAltitude = min(trajECIAltitude)
+
+
+
