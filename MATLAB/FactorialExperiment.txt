@@ -1,0 +1,20 @@
+
+Factors to investigate:
+1. Thrust timing
+2. Thrust output
+3. Roll
+4. Pitch
+5. Yaw
+
+States for each factor:
+-1: Low
+0:  Normal
+1:  High
+
+Number of Experiments needed:
+3^5 = 243
+
+ 243 / 3  = 81
+ 81 / 3   = 27
+ 27 / 3   = 9
+ 9 / 3    = 3

@@ -147,52 +147,65 @@ orbitType_chaser = orbitType;
 
 %% Monte Carlo Experiment Setup
 
-MCsampleNum = 3000;
+MCsampleNum = 243;
 
 meanDeviationTimeSetup = 0;
 %maxDeviationTimeSetup = 0.1;
 stdDeviationTimeSetup = 0.01;
 
-%MCtimeDeviation = meanDeviationTimeSetup - stdDeviationTimeSetup + ( 2 * stdDeviationTimeSetup * rand( MCsampleNum, 1 ) );
-%MCtimeDeviation = (meanDeviationTimeSetup-maxDeviationTimeSetup : (2*maxDeviationTimeSetup)/(MCsampleNum-1) : meanDeviationTimeSetup+maxDeviationTimeSetup)';
-MCtimeDeviation = meanDeviationTimeSetup + stdDeviationTimeSetup .* randn( MCsampleNum, 1 );
+MCtimeDeviation = zeros(MCsampleNum, 1);
 
 
 meanThrustOutputFactor = 1;
 stdThrustOutputUncertaintyFactor = 0.0001;
 
-%MCthrustOutputDeviation = meanThrustOutputFactor - stdThrustOutputUncertaintyFactor + ( 2 * stdThrustOutputUncertaintyFactor * rand( MCsampleNum, 1 ) );
-%MCthrustOutputDeviation = (meanThrustOutputFactor-stdThrustOutputUncertaintyFactor : (2*stdThrustOutputUncertaintyFactor)/(MCsampleNum-1) : meanThrustOutputFactor+stdThrustOutputUncertaintyFactor)';
-MCthrustOutputDeviation = meanThrustOutputFactor + stdThrustOutputUncertaintyFactor...
-    .* randn( MCsampleNum, 1 );
+MCthrustOutputDeviation = zeros(MCsampleNum, 1);
 
 
 meanThrustDirectionErrorRollDeg = 0;
 stdThrustDirectionErrorRollDeg = 0.01;
 
-%MCthrustDirectionRollDeviationDeg = meanThrustDirectionErrorRollDeg - stdThrustDirectionErrorRollDeg + ( 2 * stdThrustDirectionErrorRollDeg * rand( MCsampleNum, 1 ) );
-%MCthrustDirectionRollDeviationRad = (meanThrustDirectionErrorRollDeg-maxThrustDirectionErrorRollDeg : (2*maxThrustDirectionErrorRollDeg)/(MCsampleNum-1) : meanThrustDirectionErrorRollDeg+maxThrustDirectionErrorRollDeg)'*pi/180;
-MCthrustDirectionRollDeviationDeg = meanThrustDirectionErrorRollDeg + ...
-    stdThrustDirectionErrorRollDeg .* randn( MCsampleNum, 1 );
+MCthrustDirectionRollDeviationDeg = zeros(MCsampleNum, 1);
 
 
 meanThrustDirectionErrorPitchDeg = 0;
 stdThrustDirectionErrorPitchDeg = 0.01;
 
-%MCthrustDirectionPitchDeviationDeg = meanThrustDirectionErrorPitchDeg - stdThrustDirectionErrorPitchDeg + ( 2 * stdThrustDirectionErrorPitchDeg * rand( MCsampleNum, 1 ) );
-%MCthrustDirectionPitchDeviationRad = (meanThrustDirectionErrorPitchDeg-maxThrustDirectionErrorPitchDeg : (2*maxThrustDirectionErrorPitchDeg)/(MCsampleNum-1) : meanThrustDirectionErrorPitchDeg+maxThrustDirectionErrorPitchDeg)'*pi/180;
-MCthrustDirectionPitchDeviationDeg = meanThrustDirectionErrorPitchDeg + stdThrustDirectionErrorPitchDeg ...
-    .* randn( MCsampleNum, 1 );
+MCthrustDirectionPitchDeviationDeg = zeros(MCsampleNum, 1);
 
 
 meanThrustDirectionErrorYawDeg = 0;
 stdThrustDirectionErrorYawDeg = 0.01;
 
-%MCthrustDirectionYawDeviationDeg = meanThrustDirectionErrorYawDeg - stdThrustDirectionErrorYawDeg + ( 2 * stdThrustDirectionErrorYawDeg * rand( MCsampleNum, 1 ) );
-%MCthrustDirectionYawDeviationRad = (meanThrustDirectionErrorYawDeg-maxThrustDirectionErrorYawDeg : (2*maxThrustDirectionErrorYawDeg)/(MCsampleNum-1) : meanThrustDirectionErrorYawDeg+maxThrustDirectionErrorYawDeg)'*pi/180;
-MCthrustDirectionYawDeviationDeg = meanThrustDirectionErrorYawDeg + stdThrustDirectionErrorYawDeg...
-    .* randn( MCsampleNum, 1 );
+MCthrustDirectionYawDeviationDeg = zeros(MCsampleNum, 1);
 
+
+factorialStates = [-1, 0, 1];
+
+
+sampleIter = 1;
+for timingIter = 1:3
+    for outputIter = 1:3
+        for rollIter = 1:3
+            for pitchIter = 1:3
+                for yawIter = 1:3
+                    MCtimeDeviation( sampleIter ) = meanDeviationTimeSetup...
+                        + factorialStates( timingIter ) * stdDeviationTimeSetup;
+                    MCthrustOutputDeviation( sampleIter ) = meanThrustOutputFactor...
+                        + factorialStates( outputIter ) * stdThrustOutputUncertaintyFactor;
+                    MCthrustDirectionRollDeviationDeg( sampleIter ) = meanThrustDirectionErrorRollDeg...
+                        + factorialStates( rollIter ) * stdThrustDirectionErrorRollDeg;
+                    MCthrustDirectionPitchDeviationDeg( sampleIter ) = meanThrustDirectionErrorPitchDeg...
+                        + factorialStates( pitchIter ) * stdThrustDirectionErrorPitchDeg;
+                    MCthrustDirectionYawDeviationDeg( sampleIter ) = meanThrustDirectionErrorYawDeg...
+                        + factorialStates( yawIter ) * stdThrustDirectionErrorYawDeg;
+                    sampleIter = sampleIter + 1;
+                end
+            end
+        end
+    end
+end
+                    
 disp('Experiment Defined')
 
 %% Initial Orbit Determination
