@@ -748,7 +748,8 @@ grid on
 for experimentIndex = 1 : MCsampleNum
     RMatThrustDeviation = RotMatXYZEulerDeg(MCthrustDirectionRollDeviationDeg( experimentIndex ), MCthrustDirectionPitchDeviationDeg( experimentIndex ), MCthrustDirectionYawDeviationDeg( experimentIndex ));
     thisVec = RMatThrustDeviation*[0;1;0];
-    plot3(thisVec(1), thisVec(2), thisVec(3), '*')
+    %plot3(thisVec(1), thisVec(2), thisVec(3), '*')
+    plot3([0,thisVec(1)], [0,thisVec(2)], [0,thisVec(3)])
 end
 hold off
 

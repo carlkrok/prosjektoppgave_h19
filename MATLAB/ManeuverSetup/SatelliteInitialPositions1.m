@@ -20,39 +20,39 @@ period_target = 5830.56082013569;
 % maneuverTime = 1980;%5400; % Seconds
 
 
-% CANDIDATE 2!!!!
-% With inclination
-% T = -10; 
-% i = 100; 
-% O = 0;
-% w = 5;
-% rSat_a = rEarth + 637
-% rSat_p = rEarth + 620
-r0ECI_chaser = [6971.63491076541;105.914799473061;-600.672676680026];
-v0ECI_chaser = [0.656573334996848;-1.30633753434018;7.40860830878767];
-period_chaser = [5836.80750425860];
-%maneuverStartDelay = 240; % totDeltaV
-orbitType = "retrograde";
-%maneuverTime = 5460; % totDeltaV - start 0.126
-maneuverStartDelay = 420; % startDeltaV 0.0384
-maneuverTime = 5400; % startDeltaV
-
-% % CANDIDATE 1
+% % CANDIDATE 2!!!!
 % % With inclination
-% % T = 5; 
-% % i = 96; 
+% % T = -10; 
+% % i = 100; 
 % % O = 0;
-% % w = 0;
-% % rSat_a = rEarth + 620
-% % rSat_p = rEarth + 637
-% r0ECI_chaser = [6988.40958720094;-63.9093938930249;608.057265546706];
-% v0ECI_chaser = [-0.657370814907068;-0.784447727793098;7.46352157751033];
-% period_chaser = 5836.8075042586;
-% %maneuverStartDelay = 60; %1860;  totDV
+% % w = 5;
+% % rSat_a = rEarth + 637
+% % rSat_p = rEarth + 620
+% r0ECI_chaser = [6971.63491076541;105.914799473061;-600.672676680026];
+% v0ECI_chaser = [0.656573334996848;-1.30633753434018;7.40860830878767];
+% period_chaser = [5836.80750425860];
+% %maneuverStartDelay = 240; % totDeltaV
 % orbitType = "retrograde";
-% %maneuverTime = 5340;% 3420; % totDV [Seconds] - start 0.1074
-% maneuverStartDelay = 720; % startDeltaV 0.0646
-% maneuverTime = 5100; % startDeltaV
+% %maneuverTime = 5460; % totDeltaV - start 0.126
+% maneuverStartDelay = 420; % startDeltaV 0.0384
+% maneuverTime = 5400; % startDeltaV
+
+% CANDIDATE 1
+% With inclination
+% T = 5; 
+% i = 96; 
+% O = 0;
+% w = 0;
+% rSat_a = rEarth + 620
+% rSat_p = rEarth + 637
+r0ECI_chaser = [6988.40958720094;-63.9093938930249;608.057265546706];
+v0ECI_chaser = [-0.657370814907068;-0.784447727793098;7.46352157751033];
+period_chaser = 5836.8075042586;
+%maneuverStartDelay = 60; %1860;  totDV
+orbitType = "retrograde";
+%maneuverTime = 5340;% 3420; % totDV [Seconds] - start 0.1074
+maneuverStartDelay = 720; % startDeltaV 0.0646
+maneuverTime = 5100; % startDeltaV
 
 % % With inclination
 % % T = -5; 

@@ -297,7 +297,7 @@ end
 
 FACT1 = 1000/RSTAR;
 if ~(exist('AMBAR2'))
-
+    display('ERROR: AMBAR2 does not exist')
 end
 RHO = 3.46e-6 * AMBAR2 * TLOC1 * exp(-FACT1*SUM2)/AMBAR1/TLOC2;
 

@@ -12,7 +12,7 @@ global const Cnm Snm AuxParam eopdata swdata SOLdata DTCdata APdata PC
 
 run earthParametersHPOP; 
 
-run SatelliteInitialPositions2;
+run SatelliteInitialPositions1;
 
 
 % model parameters
@@ -151,31 +151,31 @@ MCsampleNum = 243;
 
 meanDeviationTimeSetup = 0;
 %maxDeviationTimeSetup = 0.1;
-stdDeviationTimeSetup = 0.01;
+stdDeviationTimeSetup = 0.5;
 
 MCtimeDeviation = zeros(MCsampleNum, 1);
 
 
 meanThrustOutputFactor = 1;
-stdThrustOutputUncertaintyFactor = 0.0001;
+stdThrustOutputUncertaintyFactor = 0.001;
 
 MCthrustOutputDeviation = zeros(MCsampleNum, 1);
 
 
 meanThrustDirectionErrorRollDeg = 0;
-stdThrustDirectionErrorRollDeg = 0.01;
+stdThrustDirectionErrorRollDeg = 0.1;
 
 MCthrustDirectionRollDeviationDeg = zeros(MCsampleNum, 1);
 
 
 meanThrustDirectionErrorPitchDeg = 0;
-stdThrustDirectionErrorPitchDeg = 0.01;
+stdThrustDirectionErrorPitchDeg = 0.1;
 
 MCthrustDirectionPitchDeviationDeg = zeros(MCsampleNum, 1);
 
 
 meanThrustDirectionErrorYawDeg = 0;
-stdThrustDirectionErrorYawDeg = 0.01;
+stdThrustDirectionErrorYawDeg = 0.1;
 
 MCthrustDirectionYawDeviationDeg = zeros(MCsampleNum, 1);
 
@@ -210,26 +210,26 @@ disp('Experiment Defined')
 
 %% Initial Orbit Determination
 
-AuxParam.n       = 40;
-AuxParam.m       = 40;
-AuxParam.sun     = 1;
-AuxParam.moon    = 1;
-AuxParam.planets = 1;
-AuxParam.sRad    = 1;
-AuxParam.drag    = 1;
-AuxParam.SolidEarthTides = 0;
-AuxParam.OceanTides = 0;
-AuxParam.Relativity = 0;
-% AuxParam.n       = 0;
-% AuxParam.m       = 0;
-% AuxParam.sun     = 0;
-% AuxParam.moon    = 0;
-% AuxParam.planets = 0;
-% AuxParam.sRad    = 0;
-% AuxParam.drag    = 0;
+% AuxParam.n       = 40;
+% AuxParam.m       = 40;
+% AuxParam.sun     = 1;
+% AuxParam.moon    = 1;
+% AuxParam.planets = 1;
+% AuxParam.sRad    = 1;
+% AuxParam.drag    = 1;
 % AuxParam.SolidEarthTides = 0;
 % AuxParam.OceanTides = 0;
 % AuxParam.Relativity = 0;
+AuxParam.n       = 0;
+AuxParam.m       = 0;
+AuxParam.sun     = 0;
+AuxParam.moon    = 0;
+AuxParam.planets = 0;
+AuxParam.sRad    = 0;
+AuxParam.drag    = 0;
+AuxParam.SolidEarthTides = 0;
+AuxParam.OceanTides = 0;
+AuxParam.Relativity = 0;
 
 targetY0 = [ r0ECI_target', v0ECI_target' ].*10^3;
 
@@ -295,26 +295,26 @@ disp('Initial Orbits Determined')
 
 %% Experiments
 
-AuxParam.n       = 40;
-AuxParam.m       = 40;
-AuxParam.sun     = 1;
-AuxParam.moon    = 1;
-AuxParam.planets = 1;
-AuxParam.sRad    = 1;
-AuxParam.drag    = 1;
-AuxParam.SolidEarthTides = 0;
-AuxParam.OceanTides = 0;
-AuxParam.Relativity = 0;
-% AuxParam.n       = 0;
-% AuxParam.m       = 0;
-% AuxParam.sun     = 0;
-% AuxParam.moon    = 0;
-% AuxParam.planets = 0;
-% AuxParam.sRad    = 0;
-% AuxParam.drag    = 0;
+% AuxParam.n       = 40;
+% AuxParam.m       = 40;
+% AuxParam.sun     = 1;
+% AuxParam.moon    = 1;
+% AuxParam.planets = 1;
+% AuxParam.sRad    = 1;
+% AuxParam.drag    = 1;
 % AuxParam.SolidEarthTides = 0;
 % AuxParam.OceanTides = 0;
 % AuxParam.Relativity = 0;
+AuxParam.n       = 0;
+AuxParam.m       = 0;
+AuxParam.sun     = 0;
+AuxParam.moon    = 0;
+AuxParam.planets = 0;
+AuxParam.sRad    = 0;
+AuxParam.drag    = 0;
+AuxParam.SolidEarthTides = 0;
+AuxParam.OceanTides = 0;
+AuxParam.Relativity = 0;
 
 AuxParam.prevTimeStep = 0;
 AuxParam.stepCounter = 0;
@@ -509,260 +509,94 @@ end
 
 
 
+%% Factorial contribution
+
+
+timingFactorialDevMax = zeros(3,1);
+outputFactorialDevMax = zeros(3,1);
+rollFactorialDevMax = zeros(3,1);
+pitchFactorialDevMax = zeros(3,1);
+yawFactorialDevMax = zeros(3,1);
+
+timingFactorialDevMin = 10^9*ones(3,1);
+outputFactorialDevMin = 10^9*ones(3,1);
+rollFactorialDevMin = 10^9*ones(3,1);
+pitchFactorialDevMin = 10^9*ones(3,1);
+yawFactorialDevMin = 10^9*ones(3,1);
+
+
+sampleIter = 1;
+for timingIter = 1:3
+    for outputIter = 1:3
+        for rollIter = 1:3
+            for pitchIter = 1:3
+                for yawIter = 1:3
+                    thisAbsDev = absDeviationEndPosHPOP_1(sampleIter)*10^3;
+                    
+                    if thisAbsDev > timingFactorialDevMax(timingIter)
+                        timingFactorialDevMax(timingIter) = thisAbsDev;
+                    end
+                    if thisAbsDev > outputFactorialDevMax(outputIter)
+                        outputFactorialDevMax(outputIter) = thisAbsDev;
+                    end
+                    if thisAbsDev > rollFactorialDevMax(rollIter)
+                        rollFactorialDevMax(rollIter) = thisAbsDev;
+                    end
+                    if thisAbsDev > pitchFactorialDevMax(pitchIter)
+                        pitchFactorialDevMax(pitchIter) = thisAbsDev;
+                    end
+                    if thisAbsDev > yawFactorialDevMax(yawIter)
+                        yawFactorialDevMax(yawIter) = thisAbsDev;
+                    end
+                    
+                    if thisAbsDev < timingFactorialDevMin(timingIter)
+                        timingFactorialDevMin(timingIter) = thisAbsDev;
+                    end
+                    if thisAbsDev < outputFactorialDevMin(outputIter)
+                        outputFactorialDevMin(outputIter) = thisAbsDev;
+                    end
+                    if thisAbsDev < rollFactorialDevMin(rollIter)
+                        rollFactorialDevMin(rollIter) = thisAbsDev;
+                    end
+                    if thisAbsDev < pitchFactorialDevMin(pitchIter)
+                        pitchFactorialDevMin(pitchIter) = thisAbsDev;
+                    end
+                    if thisAbsDev < yawFactorialDevMin(yawIter)
+                        yawFactorialDevMin(yawIter) = thisAbsDev;
+                    end
+                    
+                    sampleIter = sampleIter + 1;
+                end
+            end
+        end
+    end
+end
+
+lowMaxTimingDevContribution = timingFactorialDevMax(1) - timingFactorialDevMax(2)
+highMaxTimingDevContribution = timingFactorialDevMax(3) - timingFactorialDevMax(2)
+lowMinTimingDevContribution = timingFactorialDevMin(1) - timingFactorialDevMin(2)
+highMinTimingDevContribution = timingFactorialDevMin(3) - timingFactorialDevMin(2)
+
+lowMaxOutputDevContribution = outputFactorialDevMax(1) - outputFactorialDevMax(2)
+highMaxOutputDevContribution = outputFactorialDevMax(3) - outputFactorialDevMax(2)
+lowMinOutputDevContribution = outputFactorialDevMin(1) - outputFactorialDevMin(2)
+highMinOutputDevContribution = outputFactorialDevMin(3) - outputFactorialDevMin(2)
+
+lowMaxRollDevContribution = rollFactorialDevMax(1) - rollFactorialDevMax(2)
+highMaxRollDevContribution = rollFactorialDevMax(3) - rollFactorialDevMax(2)
+lowMinRollDevContribution = rollFactorialDevMin(1) - rollFactorialDevMin(2)
+highMinRollDevContribution = rollFactorialDevMin(3) - rollFactorialDevMin(2)
+
+lowMaxPitchDevContribution = pitchFactorialDevMax(1) - pitchFactorialDevMax(2)
+highMaxPitchDevContribution = pitchFactorialDevMax(3) - pitchFactorialDevMax(2)
+lowMinPitchDevContribution = pitchFactorialDevMin(1) - pitchFactorialDevMin(2)
+highMinPitchDevContribution = pitchFactorialDevMin(3) - pitchFactorialDevMin(2)
+
+lowMaxYawDevContribution = yawFactorialDevMax(1) - yawFactorialDevMax(2)
+highMaxYawDevContribution = yawFactorialDevMax(3) - yawFactorialDevMax(2)
+lowMinYawDevContribution = yawFactorialDevMin(1) - yawFactorialDevMin(2)
+highMinYawDevContribution = yawFactorialDevMin(3) - yawFactorialDevMin(2)
+
+
 %% Plots
-
-
-figure(1)
-hold on
-grid on
-title('Error in ECI XYZ-Position of MC Simulations')
-plot3(0,0,0,'m+', 'linewidth',8)
-plot3( relEndPosECIHPOP_1_chaser( :, 1 ).*10^3, relEndPosECIHPOP_1_chaser( :, 2 ).*10^3, relEndPosECIHPOP_1_chaser( :, 3 ).*10^3, '*' )
-legend('Thrust', 'Goal Position')
-xlabel('X [m]')
-ylabel('Y [m]')
-zlabel('Z [m]')
-hold off
-
-%%
-
-a = figure(22);
-hold on
-grid on
-%axis equal
-title('Maneuver End Position LVLH')
-%plot3(0,0,0,'c+', 'linewidth',8)
-plot3( relEndPosLVLHHPOP_1_chaser( :, 1 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 2 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 3 ).*10^3, '*' )
-%legend('Thrust', 'Goal Position')
-xlabel('X [m]')
-ylabel('Y [m]')
-zlabel('Z [m]')
-hold off
-
-%matlab2tikz('filename','test.tex','figurehandle',a)
-
-%%
-
-figure(33)
-hold on
-grid on
-title('Norm of Error in Point of Rendezvous')
-plot( MCtimeDeviation,absDeviationEndPosHPOP_1.*10^3, '*' )
-plot( MCtimeDeviation,absDeviationEndPosLVLH_1.*10^3, '*' )
-%plot( MCtimeDeviation(99:103),absDeviationEndPosHPOP_1(99:103).*10^3 )
-%plot( MCtimeDeviation(99:103),absDeviationEndPosHPOP_1(99:103).*10^3 ,'*')
-xlabel('Delay Time [s]')
-ylabel('Distance [m]')
-hold off
- 
-%%
-
-figure(4)
-hold on
-grid on
-title('Norm of Error in Point of Rendezvous')
-plot( MCthrustOutputDeviation,absDeviationEndPosHPOP_1.*10^3, '*' )
-xlabel('Thrust Output Factor')
-ylabel('Distance [m]')
-hold off
-
-
-%%
-
-% figure(4)
-% hold on
-% grid on
-% title('ECI Trajectories')
-% axis equal
-% xlabel('X [km]')
-% ylabel('Y [km]')
-% zlabel('Z [km]')
-% %[ sx, sy, sz ] = sphere;
-% %surf( sx*rEarth, sy*rEarth, sz*rEarth, 'FaceAlpha', 0.05, 'EdgeAlpha', 0.05 );
-% for plotIndex = 1 : MCsampleNum
-%     plot3( MC_1_HPOP_ECI_X_Trajectories(plotIndex, :), MC_1_HPOP_ECI_Y_Trajectories(plotIndex, :), MC_1_HPOP_ECI_Z_Trajectories(plotIndex, :))
-% end
-% %plot3( targetPreciseEph( 1:N_Step, 2 )./10^3, targetPreciseEph( 1:N_Step, 3 )./10^3, targetPreciseEph( 1:N_Step, 4 )./10^3 )
-% plot3( rECIManouverEnd_targetPrecise(1), rECIManouverEnd_targetPrecise(2), rECIManouverEnd_targetPrecise(3), '*k' )
-% text( rECIManouverEnd_targetPrecise(1), rECIManouverEnd_targetPrecise(2), rECIManouverEnd_targetPrecise(3), 'Chaser Ideal Maneuver End' )
-% hold off
-
-
-figure(5)
-hold on
-grid on
-title('Target LVLH Trajectories')
-%axis equal
-xlabel('X [km]')
-ylabel('Y [km]')
-zlabel('Z [km]')
-plot3(0,0,0,'c+', 'linewidth',8)
-for plotIndex = 1 : MCsampleNum
-    plot3( relXTrajectoryHPOP_1_chaser(plotIndex, :), relYTrajectoryHPOP_1_chaser(plotIndex, :), relZTrajectoryHPOP_1_chaser(plotIndex, :), 'r')
-end
-hold off
-
-%%
-
-figure(7)
-hold on
-grid on
-title('Mean Norm of End Position Error')
-plot( absMeanDeviationEndPosHPOP_1.*10^3 )
-legend('Thrust')
-xlabel('Sample')
-ylabel('Distance [m]')
-hold off
-
-
-
-%%
-
-figure(8)
-hold on
-grid on
-histogram(absDeviationEndPosHPOP_1,'Normalization','probability')
-xlabel('Distance [km]')
-ylabel('Probability')
-title('Normalized Histogram End Position Error')
-legend('HPOP')
-hold off
-
-%%
-
-figure(9)
-hold on
-grid on
-
-% Create plots.
-t = tiledlayout(3,1);
-ax1 = nexttile;
-
-histogram(ax1, relEndPosLVLHHPOP_1_chaser(:,1).*10^3,'Normalization','probability')
-legend(ax1,'X-axis')
-
-ax2 = nexttile;
-
-histogram(ax2, relEndPosLVLHHPOP_1_chaser(:,2).*10^3,'Normalization','probability')
-legend(ax2,'Y-axis')
-
-ax3 = nexttile;
-
-histogram(ax3, relEndPosLVLHHPOP_1_chaser(:,3).*10^3,'Normalization','probability')
-legend(ax3,'Z-axis')
-
-
-% Link the axes
-linkaxes([ax1,ax2, ax3],'x');
-linkaxes([ax1,ax2, ax3],'y');
-
-title(t,'Normalized Histogram Target LVLH End Position Error')
-xlabel(t,'Distance [m]')
-ylabel(t,'Probability')
-
-hold off
-
-%%
-
-figure(10)
-hold on
-grid on
-histogram(MCtimeDeviation,'Normalization','probability')
-xlabel('Time [s]')
-ylabel('Probability')
-title('Normalized Histogram Thrust Timing Deviation')
-hold off
-
-%%
-
-figure(11)
-hold on
-grid on
-
-% Create plots.
-t = tiledlayout(3,1);
-ax1 = nexttile;
-
-histogram(ax1, MCthrustDirectionRollDeviationDeg,'Normalization','probability')
-legend(ax1,'Roll')
-
-ax2 = nexttile;
-
-histogram(ax2, MCthrustDirectionPitchDeviationDeg,'Normalization','probability')
-legend(ax2,'Pitch')
-
-ax3 = nexttile;
-
-histogram(ax3, MCthrustDirectionYawDeviationDeg,'Normalization','probability')
-legend(ax3,'Yaw')
-
-
-% Link the axes
-linkaxes([ax1,ax2, ax3],'x');
-linkaxes([ax1,ax2, ax3],'y');
-
-title(t,'Normalized Histogram Thrust Direction Deviation')
-xlabel(t,'Deviation [Deg]')
-ylabel(t,'Probability')
-
-hold off
-
-%%
-
-figure(12)
-hold on
-grid on
-histogram(MCthrustOutputDeviation,'Normalization','probability')
-xlabel('Performance Factor')
-ylabel('Probability')
-title('Normalized Histogram Thrust Output Deviation')
-hold off
-
-%%
-
-figure(13)
-hold on
-grid on
-
-% Create plots.
-t = tiledlayout(3,1);
-ax1 = nexttile;
-
-plot( MCthrustDirectionRollDeviationDeg,absDeviationEndPosHPOP_1.*10^3, '*' )
-legend(ax1,'Roll')
-
-ax2 = nexttile;
-
-plot( MCthrustDirectionPitchDeviationDeg,absDeviationEndPosHPOP_1.*10^3, '*' )
-legend(ax2,'Pitch')
-
-ax3 = nexttile;
-
-plot( MCthrustDirectionYawDeviationDeg,absDeviationEndPosHPOP_1.*10^3, '*' )
-legend(ax3,'Yaw')
-
-
-% Link the axes
-linkaxes([ax1,ax2, ax3],'x');
-linkaxes([ax1,ax2, ax3],'y');
-
-title(t,'End Position Error Norm Thrust Direction')
-xlabel(t,'Deviation [Deg]')
-ylabel(t,'Deviation [m]')
-
-hold off
-
-
-%%
-
-figure(14)
-hold on
-grid on
-for experimentIndex = 1 : MCsampleNum
-    RMatThrustDeviation = RotMatXYZEulerDeg(MCthrustDirectionRollDeviationDeg( experimentIndex ), MCthrustDirectionPitchDeviationDeg( experimentIndex ), MCthrustDirectionYawDeviationDeg( experimentIndex ));
-    thisVec = RMatThrustDeviation*[0;1;0];
-    plot3(thisVec(1), thisVec(2), thisVec(3), '*')
-end
-hold off
-
 
