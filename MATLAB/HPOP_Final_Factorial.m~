@@ -535,7 +535,7 @@ for timingIter = 1:3
                 for yawIter = 1:3
                     thisAbsDev = absDeviationEndPosLVLH_1(sampleIter)*10^3;
                     
-                    if (yawIter == 2) && (pitchIter == 2) && (rollIter == 2) && (outputIter == 2) && (timingIter == 2)
+                    if (yawIter == pitchIter == rollIter == outputIter == timingIter == 2)
                         zeroFactorDeviation = thisAbsDev;
                     end
                     
@@ -603,10 +603,8 @@ highMaxYawDevContribution = yawFactorialDevMax(3) - yawFactorialDevMax(2)
 lowMinYawDevContribution = yawFactorialDevMin(1) - yawFactorialDevMin(2)
 highMinYawDevContribution = yawFactorialDevMin(3) - yawFactorialDevMin(2)
 
-[minDeviation,minDeviationIndex] = min(absDeviationEndPosLVLH_1)
-minDeviation = minDeviation*10^3
-[maxDeviation,maxDeviationIndex] = max(absDeviationEndPosLVLH_1)
-maxDeviation = maxDeviation*10^3
+minDeviation = min(absDeviationEndPosLVLH_1)
+maxDeviation = max(absDeviationEndPosLVLH_1)
 zeroFactorDeviation
 
 %% Plots
