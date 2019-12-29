@@ -1,11 +1,6 @@
-% T = 0; % 
-% i = 24.5; % 
-% O = 0;
-% w = 0;
-% rSat_a = rEarth + 309
-% rSat_p = rEarth + 605
-r0ECI_target = [6983.13660000000;0;0];
-v0ECI_target = [0;6.80006439998294;3.09896788638466];
+
+r0ECI_target = [ 6687.1366, 0, 0 ]';
+v0ECI_target = [ 0, 7.10106304600954, 3.23614087225874 ]';
 period_target = 5623.82474323939;
 
 % % No inclination
@@ -24,15 +19,4 @@ period_target = 5623.82474323939;
 % % orbitType = "prograde";
 % % maneuverTime = 660; %2460; % Seconds
 
-% T = -10; % 
-% i = 24.5; % 
-% O = 0;
-% w = 5;
-% rSat_a = rEarth + 309
-% rSat_p = rEarth + 605
-r0ECI_chaser = [6954.22539968667;-553.634892915761;-252.305956680683];
-v0ECI_chaser = [0.680137104600880;6.77418810194543;3.08717537797298];
-period_chaser = 5623.824743239395623;
-maneuverStartDelay = 3000; % minStartDeltaV = 0.0390689366347962
-orbitType = "prograde";
-maneuverTime = 5220; % Seconds
+
