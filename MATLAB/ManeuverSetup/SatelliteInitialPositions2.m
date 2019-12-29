@@ -33,6 +33,7 @@ period_target = 5623.82474323939;
 r0ECI_chaser = [6954.22539968667;-553.634892915761;-252.305956680683];
 v0ECI_chaser = [0.680137104600880;6.77418810194543;3.08717537797298];
 period_chaser = 5623.824743239395623;
-maneuverStartDelay = 3000; % minStartDeltaV = 0.0390689366347962
+maneuverStartDelay = 3120;%3000; % minStartDeltaV = 0.0390689366347962
 orbitType = "prograde";
-maneuverTime = 5220; % Seconds
+maneuverTime = 4800;%5220; % Seconds
+%minStartDeltaV =0.0439599334915654

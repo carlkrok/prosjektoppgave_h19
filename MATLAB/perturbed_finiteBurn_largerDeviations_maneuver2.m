@@ -12,7 +12,7 @@ global const Cnm Snm AuxParam eopdata swdata SOLdata DTCdata APdata PC
 
 run earthParametersHPOP; 
 
-run SatelliteInitialPositions1;
+run SatelliteInitialPositions2;
 
 
 % model parameters

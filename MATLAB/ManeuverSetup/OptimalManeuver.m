@@ -3,10 +3,10 @@ run SatelliteInitialPositions2;
 
 run earthParametersHPOP;
 
-TOLERANCE = 10^(-6);
+TOLERANCE = 10^(-7);
 
 anomalyErrorTolerance = 10^(-12);
-anomalyMaxIterations = 1000;
+anomalyMaxIterations = 3000;
 
 MAXDELTAV = 10;
 
