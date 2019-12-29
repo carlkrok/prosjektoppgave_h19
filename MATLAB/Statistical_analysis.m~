@@ -142,14 +142,12 @@ coeffLarge = coeff*1000;
 
 plotHandles = zeros(6,1);
 
-figure(80)
+figure(3)
 hold on
 axis equal
 grid on
 title('Experiment 2 Part 2: Chaser final position in target LVLH frame')
-a = scatter3(x1(:,1), x1(:,2), x1(:,3), 'b');
-a.MarkerEdgeAlpha = 0.1;
-a.MarkerFaceAlpha = 0.1;
+a = plot3(x1(:,1), x1(:,2), x1(:,3), 'b*');
 plotHandles(1) = plot3([mean1(1), mean1(1)+coeffLarge(1,1)], [mean1(2), mean1(2)+coeffLarge(2,1)], [mean1(3), mean1(3)+coeffLarge(3,1)], 'g');
 plotHandles(2) = plot3([mean1(1), mean1(1)+coeffLarge(1,2)], [mean1(2), mean1(2)+coeffLarge(2,2)], [mean1(3), mean1(3)+coeffLarge(3,2)], 'g');
 plotHandles(3) = plot3([mean1(1), mean1(1)+coeffLarge(1,3)], [mean1(2), mean1(2)+coeffLarge(2,3)], [mean1(3), mean1(3)+coeffLarge(3,3)], 'g');
@@ -158,7 +156,7 @@ plotHandles(3) = plot3([mean1(1), mean1(1)+coeffLarge(1,3)], [mean1(2), mean1(2)
 b = plot_gaussian_2d_xy(mean1, cov1, 3);
 c = plot_gaussian_2d_xz(mean1, cov1, 3);
 d = plot_gaussian_2d_yz(mean1, cov1, 3);
-legend([plotHandles(1:3); b; c; d],'PC1','PC2','PC3','3\sigma_{xy}', '3\sigma_{xz}', '3\sigma_{yz}')
+legend([plotHandles(1:3); b; c; d],'PC1','PC2','PC3','3\sigma_{xy}', '3\sigma_{xy}')
 xlabel('X [m]')
 ylabel('Y [m]')
 zlabel('Z [m]')

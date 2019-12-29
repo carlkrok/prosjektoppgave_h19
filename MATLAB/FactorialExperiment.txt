@@ -31,3 +31,17 @@ index 21 - 18 = 3
 +1 roll
 -1 Pitch
 +1 Yaw
+
+index 27 -
+-1 timing
+-1 output
++1 Roll
++1 Pitch
++1 Yaw
+
+index 149 - 81 = 68, 68 - 54 = 14, 14 - 9 = 5, 5 - 3 = 2
+0 timing
++1 output
+0 Roll
+0 Pitch
+0 Yaw
