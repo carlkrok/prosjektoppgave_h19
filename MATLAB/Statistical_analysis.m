@@ -138,31 +138,42 @@ explained
 
 %%
 
-coeffLarge = coeff*1000;
+coeffLarge = coeff*150;
 
 plotHandles = zeros(6,1);
 
 figure(80)
+set(gca,'FontSize',20)
 hold on
-axis equal
+%axis equal
 grid on
-title('Experiment 2 Part 2: Chaser final position in target LVLH frame')
-a = scatter3(x1(:,1), x1(:,2), x1(:,3), 'b');
+title({'Experiment 2 Part 4:','Chaser final position in target LVLH frame'})
+
+a = scatter3(x1(:,1), x1(:,2), x1(:,3), '*');
 a.MarkerEdgeAlpha = 0.1;
 a.MarkerFaceAlpha = 0.1;
-plotHandles(1) = plot3([mean1(1), mean1(1)+coeffLarge(1,1)], [mean1(2), mean1(2)+coeffLarge(2,1)], [mean1(3), mean1(3)+coeffLarge(3,1)], 'g');
-plotHandles(2) = plot3([mean1(1), mean1(1)+coeffLarge(1,2)], [mean1(2), mean1(2)+coeffLarge(2,2)], [mean1(3), mean1(3)+coeffLarge(3,2)], 'g');
-plotHandles(3) = plot3([mean1(1), mean1(1)+coeffLarge(1,3)], [mean1(2), mean1(2)+coeffLarge(2,3)], [mean1(3), mean1(3)+coeffLarge(3,3)], 'g');
+plotHandles(1) = plot3([mean1(1), mean1(1)+coeffLarge(1,1)], [mean1(2), mean1(2)+coeffLarge(2,1)], [mean1(3), mean1(3)+coeffLarge(3,1)],'LineWidth',1.5);
+plotHandles(2) = plot3([mean1(1), mean1(1)+coeffLarge(1,2)], [mean1(2), mean1(2)+coeffLarge(2,2)], [mean1(3), mean1(3)+coeffLarge(3,2)],'LineWidth',1.5);
+plotHandles(3) = plot3([mean1(1), mean1(1)+coeffLarge(1,3)], [mean1(2), mean1(2)+coeffLarge(2,3)], [mean1(3), mean1(3)+coeffLarge(3,3)],'LineWidth',1.5);
 %plotHandles(4) = plot_gaussian_ellipsoid(mean1, cov1, 3);
 %b = plot_gaussian_ellipsoid(mean1(1:2), cov1(1:2,1:2), 3);
 b = plot_gaussian_2d_xy(mean1, cov1, 3);
 c = plot_gaussian_2d_xz(mean1, cov1, 3);
 d = plot_gaussian_2d_yz(mean1, cov1, 3);
-legend([plotHandles(1:3); b; c; d],'PC1','PC2','PC3','3\sigma_{xy}', '3\sigma_{xz}', '3\sigma_{yz}')
+legend([plotHandles(1:3); b; c; d],'PC1','PC2','PC3','3\sigma_{xy}', '3\sigma_{xz}', '3\sigma_{yz}','Location','eastoutside')
+%legend([plotHandles(1:3); b],'PC1','PC2','PC3','3\sigma_{xy}')
+%legend([plotHandles(1:3); c],'PC1','PC2','PC3','3\sigma_{xz}')
+%legend([plotHandles(1:3); d],'PC1','PC2','PC3','3\sigma_{yz}')
 xlabel('X [m]')
 ylabel('Y [m]')
 zlabel('Z [m]')
 %a.MarkerFaceAlpha = 0.2;
+
+view([-15 10])
+%ylim([9000 14000])
+%xlim([0 500])
+%zlim([-2100 -1650])
+
 hold off
 
 
