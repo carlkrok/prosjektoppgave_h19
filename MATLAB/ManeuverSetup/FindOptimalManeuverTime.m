@@ -1,5 +1,5 @@
 
-run SatelliteInitialPositions1;
+run SatelliteInitialPositions2;
 
 run earthParametersHPOP;
 

@@ -791,58 +791,58 @@ end
 
 
 figure(71)
-set(gca,'FontSize',30);
+set(gca,'FontSize',18);
 hold on
 grid on
-title('Chaser X-axis Deviation Target LVLH')
+title('Chaser Motion Target LVLH X-axis')
 xlabel('Time [s]')
 ylabel('Deviation [km]')
 for plotIndex = 2 : 12
-    h1 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'r','LineWidth',3);
+    h1 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'r');
 end
 for plotIndex = 13 : 23
-    h2 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'g','LineWidth',3);
+    h2 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'g');
 end
 for plotIndex = 24 : 34
-    h3 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'b','LineWidth',3);
+    h3 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'b');
 end
 legend([h1,h2,h3],'Roll','Pitch','Yaw','Location','northwest')
 hold off
 
 figure(72)
-set(gca,'FontSize',30);
+set(gca,'FontSize',18);
 hold on
 grid on
-title('Chaser Y-axis Deviation Target LVLH')
+title('Chaser Motion Target LVLH Y-axis')
 xlabel('Time [s]')
 ylabel('Deviation [km]')
 for plotIndex = 2 : 12
-    h1 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'r','LineWidth',3);
+    h1 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'r');
 end
 for plotIndex = 13 : 23
-    h2 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'g','LineWidth',3);
+    h2 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'g');
 end
 for plotIndex = 24 : 34
-    h3 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'b','LineWidth',3);
+    h3 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'b');
 end
 legend([h1,h2,h3],'Roll','Pitch','Yaw','Location','northwest')
 hold off
 
 figure(73)
-set(gca,'FontSize',30);
+set(gca,'FontSize',18);
 hold on
 grid on
-title('Chaser Z-axis Deviation Target LVLH')
+title('Chaser Motion Target LVLH Z-axis')
 xlabel('Time [s]')
 ylabel('Deviation [km]')
 for plotIndex = 2 : 12
-    h1 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'r','LineWidth',3);
+    h1 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'r');
 end
 for plotIndex = 13 : 23
-    h2 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'g','LineWidth',3);
+    h2 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'g');
 end
 for plotIndex = 24 : 34
-    h3 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'b','LineWidth',3);
+    h3 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'b');
 end
 legend([h1,h2,h3],'Roll','Pitch','Yaw','Location','northwest')
 hold off

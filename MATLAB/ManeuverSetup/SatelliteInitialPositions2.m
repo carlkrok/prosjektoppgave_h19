@@ -25,15 +25,15 @@ period_target = 5623.82474323939;
 % % maneuverTime = 660; %2460; % Seconds
 
 % T = -10; % 
-% i = 24.5; % 
+% i = 22; % 
 % O = 0;
 % w = 5;
 % rSat_a = rEarth + 309
 % rSat_p = rEarth + 605
-r0ECI_chaser = [6954.22539968667;-553.634892915761;-252.305956680683];
-v0ECI_chaser = [0.680137104600880;6.77418810194543;3.08717537797298];
-period_chaser = 5623.824743239395623;
-maneuverStartDelay = 3120;%3000; % minStartDeltaV = 0.0390689366347962
+r0ECI_chaser = [6954.22539968667;-564.113386432189;-227.916602463287];
+v0ECI_chaser = [0.680137104600880;6.90240127458609;2.78875113617079];
+period_chaser = 5623.82474323939;
+maneuverStartDelay = 3660;%3000; % minStartDeltaV = 0.0390689366347962
 orbitType = "prograde";
 maneuverTime = 4800;%5220; % Seconds
-%minStartDeltaV =0.0439599334915654
+%minStartDeltaV =0.0521387832193322
