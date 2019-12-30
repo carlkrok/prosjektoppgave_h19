@@ -11,4 +11,4 @@ ap = [x(:) y(:)]';
 [v,d]=eig(C(2:3,2:3)); 
 d = sdwidth * sqrt(d); % convert variance to sdwidth*sd
 bp = (v*d*ap) + repmat(means23, 1, size(ap,2)); 
-h = plot3(ones(npts)*means1, bp(1,:), bp(2,:), '-', 'parent', axh);
+h = plot3(ones(npts)*means1, bp(1,:), bp(2,:), '-', 'parent', axh,'LineWidth',1.5);

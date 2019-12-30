@@ -4,19 +4,16 @@
 %  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
 %where you can also make suggestions and rate matlab2tikz.
 %
-\definecolor{mycolor1}{rgb}{0.00000,0.44706,0.74118}%
-\definecolor{mycolor2}{rgb}{0.85098,0.32549,0.09804}%
-%
 \begin{tikzpicture}
 
 \begin{axis}[%
-width=3.511in,
-height=2.988in,
-at={(0.644in,0.77in)},
+width=2.822in,
+height=3.911in,
+at={(0.744in,0.654in)},
 scale only axis,
-plot box ratio=1 1.32 1.098,
-xmin=-248.13086860014,
-xmax=257.517438437078,
+plot box ratio=1 2.068 1.931,
+xmin=-226.62735617586,
+xmax=96.2179312834852,
 tick align=outside,
 xlabel style={font=\color{white!15!black}},
 xlabel={X [km]},
@@ -24,14 +21,14 @@ ymin=-658.61331386411,
 ymax=9.00978957784358,
 ylabel style={font=\color{white!15!black}},
 ylabel={Y [km]},
-zmin=-290.60224626098,
-zmax=264.793527256485,
+zmin=-308.461880588999,
+zmax=314.948796975784,
 zlabel style={font=\color{white!15!black}},
 zlabel={Z [km]},
-view={62.4838509457876}{12.2048928564855},
+view={147.576514034869}{24.6182098521565},
 axis background/.style={fill=white},
 title style={font=\bfseries},
-title={Experiment 1, 2 \\& 3 Chaser Motion in Target LVLH},
+title={Experiment 2 Maneuver 1 in Target LVLH},
 axis x line*=bottom,
 axis y line*=left,
 axis z line*=left,
@@ -40,7 +37,7 @@ ymajorgrids,
 zmajorgrids,
 legend style={at={(1.03,1)}, anchor=north west, legend cell align=left, align=left, draw=white!15!black}
 ]
-\addplot3 [color=mycolor1]
+\addplot3 [color=blue]
  table[row sep=crcr] {%
 -21.5016892345902	-609.567462561988	-21.2865648497965\\
 -21.5036061391374	-609.580255941894	-21.0240071678037\\
@@ -466,7 +463,7 @@ legend style={at={(1.03,1)}, anchor=north west, legend cell align=left, align=le
 };
  \addlegendentry{data1}
 
-\addplot3 [color=mycolor2]
+\addplot3 [color=green]
  table[row sep=crcr] {%
 -22.9848991373761	-614.574679168929	87.3977062490522\\
 -22.9928332029062	-614.622246734077	87.6344468742619\\
@@ -5872,7 +5869,7 @@ legend style={at={(1.03,1)}, anchor=north west, legend cell align=left, align=le
 };
  \addlegendentry{data2}
 
-\addplot3 [color=mycolor1, dashed]
+\addplot3 [color=blue, dashdotted]
  table[row sep=crcr] {%
 -22.9848991373761	-614.574679168929	87.3977062490522\\
 -22.9900478389085	-614.585148190299	87.6437776231107\\
@@ -11285,16 +11282,16 @@ legend style={at={(1.03,1)}, anchor=north west, legend cell align=left, align=le
  \addlegendentry{data4}
 
 \node[right, align=left]
-at (axis cs:-16.409,-612.465,-42.107) {Chaser Initial Position};
+at (axis cs:-21.502,-609.567,-21.287) {Chaser Initial Position};
 \node[right, align=left]
-at (axis cs:-40.827,-51.698,39.559) {Chaser Final Position};
+at (axis cs:-0,-0,-0) {Chaser Final Position};
 \node[right, align=left]
-at (axis cs:-17.907,-604.366,89.48) {Chaser Maneuver Start};
+at (axis cs:-22.985,-614.575,87.398) {Chaser Maneuver Start};
 \end{axis}
 
 \begin{axis}[%
-width=5.833in,
-height=4.375in,
+width=5.403in,
+height=5.042in,
 at={(0in,0in)},
 scale only axis,
 xmin=0,
