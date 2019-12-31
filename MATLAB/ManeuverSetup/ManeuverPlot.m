@@ -109,6 +109,7 @@ end
 figure(1)
 hold on
 set(gca,'FontSize',20)
+set(gcf,'renderer','Painters')
 title('ECI Trajectories')
 %axis equal
 xlabel('X [km]')
@@ -140,6 +141,7 @@ hold off
 figure(2)
 hold on
 set(gca,'FontSize',20)
+set(gcf,'renderer','Painters')
 title('Chaser 2 Maneuver in Target LVLH')
 h1 = plot3( rLVLH_chaserX0, rLVLH_chaserY0, rLVLH_chaserZ0,'LineWidth',1.5 )
 h2 = plot3( rLVLH_chaserX1, rLVLH_chaserY1, rLVLH_chaserZ1,'LineWidth',1.5 )

@@ -145,7 +145,7 @@ plotHandles = zeros(6,1);
 figure(80)
 set(gca,'FontSize',20)
 hold on
-axis equal
+%axis equal
 grid on
 title({'Experiment 2 Part 4:','Chaser final position in target LVLH frame'})
 
@@ -170,17 +170,108 @@ zlabel('Z [m]')
 %a.MarkerFaceAlpha = 0.2;
 
 view([-15 10])
-ylim([10000 14000])
+%ylim([9000 14000])
 %xlim([0 500])
-%zlim([-200 -1500])
+%zlim([-2100 -1650])
 
 hold off
 
 
+%%
 
 
+chaserTrajNormDev = zeros(MCsampleNum, length(MC_1_HPOP_ECI_X_Trajectories));
+
+for timeIter = 1:length(MC_1_HPOP_ECI_X_Trajectories)
+    
+    thisPointVector = [MC_1_HPOP_ECI_X_Trajectories(:,timeIter),...
+        MC_1_HPOP_ECI_Y_Trajectories(:,timeIter),...
+        MC_1_HPOP_ECI_Z_Trajectories(:,timeIter)];
+    
+    thisAvrgPoint = mean(thisPointVector);
+    
+    for chaserIter = 1:MCsampleNum
+        chaserTrajNormDev(chaserIter,timeIter) = norm(thisPointVector(chaserIter,:) - thisAvrgPoint);
+    end
+end
 
 
+figure(81)
+hold on
+grid on
+title('Deviations from Chaser Average Trajectory')
+for chaserIter = 1:MCsampleNum
+    plot(1:length(MC_1_HPOP_ECI_X_Trajectories),chaserTrajNormDev(chaserIter,:));
+end
+xlabel('Time [s]')
+ylabel('Deviation [km]')
+hold off
 
 
+%%
 
+
+chaserTrajNormDevX = zeros(MCsampleNum, length(MC_1_HPOP_ECI_X_Trajectories));
+chaserTrajNormDevY = zeros(MCsampleNum, length(MC_1_HPOP_ECI_Y_Trajectories));
+chaserTrajNormDevZ = zeros(MCsampleNum, length(MC_1_HPOP_ECI_Z_Trajectories));
+
+for timeIter = 1:length(MC_1_HPOP_ECI_X_Trajectories)
+    
+    thisPointVector = [MC_1_HPOP_ECI_X_Trajectories(:,timeIter),...
+        MC_1_HPOP_ECI_Y_Trajectories(:,timeIter),...
+        MC_1_HPOP_ECI_Z_Trajectories(:,timeIter)];
+    
+    thisAvrgPoint = mean(thisPointVector);
+    
+    thisVelVector = [MC_1_HPOP_ECI_velX(:,timeIter),...
+        MC_1_HPOP_ECI_velY(:,timeIter),...
+        MC_1_HPOP_ECI_velZ(:,timeIter)];
+    
+    thisAvrgVel = mean(thisVelVector).*10^-3;
+    
+    QmatECItoLVLH = ECIToLVLH( thisAvrgPoint', thisAvrgVel' );
+
+    for chaserIter = 1:MCsampleNum
+        thisChaserLVLHPoint = QmatECItoLVLH*(thisPointVector(chaserIter,:)'-thisAvrgPoint');
+        chaserTrajNormDevX(chaserIter,timeIter) = thisChaserLVLHPoint(1);
+        chaserTrajNormDevY(chaserIter,timeIter) = thisChaserLVLHPoint(2);
+        chaserTrajNormDevZ(chaserIter,timeIter) = thisChaserLVLHPoint(3);
+    end
+end
+
+
+figure(81)
+set(gca,'FontSize',20)
+hold on
+grid on
+title({'Deviations in X-axis','from Chaser Average Trajectory'})
+for chaserIter = 1:MCsampleNum
+    plot(1:length(MC_1_HPOP_ECI_X_Trajectories),chaserTrajNormDevX(chaserIter,:));
+end
+xlabel('Time [s]')
+ylabel('Deviation [km]')
+hold off
+
+figure(82)
+set(gca,'FontSize',20)
+hold on
+grid on
+title({'Deviations in Y-axis','from Chaser Average Trajectory'})
+for chaserIter = 1:MCsampleNum
+    plot(1:length(MC_1_HPOP_ECI_Y_Trajectories),chaserTrajNormDevY(chaserIter,:));
+end
+xlabel('Time [s]')
+ylabel('Deviation [km]')
+hold off
+
+figure(83)
+set(gca,'FontSize',20)
+hold on
+grid on
+title({'Deviations in Z-axis','from Chaser Average Trajectory'})
+for chaserIter = 1:MCsampleNum
+    plot(1:length(MC_1_HPOP_ECI_Z_Trajectories),chaserTrajNormDevZ(chaserIter,:));
+end
+xlabel('Time [s]')
+ylabel('Deviation [km]')
+hold off
