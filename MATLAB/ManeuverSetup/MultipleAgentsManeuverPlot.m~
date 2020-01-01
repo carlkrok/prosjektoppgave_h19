@@ -111,23 +111,18 @@ vECIcurr_chaser4 = vECIManeuverStart_chaser4;
 
 figure(2)
 hold on
-set(gca,'FontSize',24)
-set(gcf,'renderer','Painters','Position', [10 10 1300 500])
-title('Chaser Maneuvers in Target LVLH frame')
+set(gca,'FontSize',20)
+set(gcf,'renderer','Painters','Position', [10 10 1300 300])
+title('Chaser Maneuvers in Target LVLH')
 %h1 = plot3( rLVLH_chaser1_X0, rLVLH_chaser1_Y0, rLVLH_chaser1_Z0,'LineWidth',1.5,'Color','r' )
-h2 = plot3( rLVLH_chaser1_X1, rLVLH_chaser1_Y1, rLVLH_chaser1_Z1,'LineWidth',0.75)
-h2.Color(4) = 0.5;
+h2 = plot3( rLVLH_chaser1_X1, rLVLH_chaser1_Y1, rLVLH_chaser1_Z1,'LineWidth',1.5)
 %h3 = plot3( rLVLH_chaser2_X0, rLVLH_chaser2_Y0, rLVLH_chaser2_Z0,'LineWidth',1.5,'Color','b' )
-h4 = plot3( rLVLH_chaser2_X1, rLVLH_chaser2_Y1, rLVLH_chaser2_Z1,'LineWidth',0.75)
-h4.Color(4) = 0.5;
+h4 = plot3( rLVLH_chaser2_X1, rLVLH_chaser2_Y1, rLVLH_chaser2_Z1,'LineWidth',1.5)
 %h5 = plot3( rLVLH_chaser3_X0, rLVLH_chaser3_Y0, rLVLH_chaser3_Z0,'LineWidth',1.5,'Color','g' )
-h6 = plot3( rLVLH_chaser3_X1, rLVLH_chaser3_Y1, rLVLH_chaser3_Z1,'LineWidth',0.75 )
-h6.Color(4) = 0.5;
+h6 = plot3( rLVLH_chaser3_X1, rLVLH_chaser3_Y1, rLVLH_chaser3_Z1,'LineWidth',1.5 )
 %h7 = plot3( rLVLH_chaser4_X0, rLVLH_chaser4_Y0, rLVLH_chaser4_Z0,'LineWidth',1.5,'Color','c' )
-h8 = plot3( rLVLH_chaser4_X1, rLVLH_chaser4_Y1, rLVLH_chaser4_Z1,'LineWidth',0.75)
-h8.Color(4) = 0.5;
-h9 = plot3( rLVLH_chaserX1_unactuated, rLVLH_chaserY1_unactuated, rLVLH_chaserZ1_unactuated,'LineWidth',0.75)
-h9.Color(4) = 0.5;
+h8 = plot3( rLVLH_chaser4_X1, rLVLH_chaser4_Y1, rLVLH_chaser4_Z1,'LineWidth',1.5)
+h9 = plot3( rLVLH_chaserX1_unactuated, rLVLH_chaserY1_unactuated, rLVLH_chaserZ1_unactuated,'LineWidth',1.5 )
 h0 = plot3( 0, 0, 0, 'r*' )
 axis equal
 axis on
@@ -143,7 +138,7 @@ legend([h0,h2,h4,h6,h8,h9],'Target', 'Chaser 1', 'Chaser 2', 'Chaser 3', 'Chaser
 %text(rLVLH_chaserX1( end ), rLVLH_chaserY1( end ), rLVLH_chaserZ1( end )-40, 'Chaser Final Position','FontSize', 15)
 %text(rLVLH_chaserX1(1), rLVLH_chaserY1(1)+20, rLVLH_chaserZ1(1), 'Chaser Maneuver Start','FontSize', 15)
 view([165 10])
- ylim([-3.3 0.2])
+ ylim([-3.3 0.])
  xlim([-0.9 0.2])
  zlim([-0.1 0.1])
 hold off

@@ -133,7 +133,11 @@ if AuxParam.Thrust
     end
     AuxParam.accelIntegral = AuxParam.accelIntegral + ( t - AuxParam.prevTimeStep ) .* AuxParam.thrustECIAcceleration;
     AuxParam.prevTimeStep = t;
-    a = a + AuxParam.thrustRotMat * AuxParam.thrustECIAcceleration; %
+    QmatECItoLVLH = ECIToLVLH( Y(1:3)./10^3, Y(4:6)./10^3 );
+    thisLVLHacc = QmatECItoLVLH*AuxParam.thrustECIAcceleration;
+    thisRotatedLVLHacc = AuxParam.thrustDeviationRotMat*thisLVLHacc;
+    QmatLVLHtoECI = QmatECItoLVLH';
+    a = a + AuxParam.thrustRotMat*( QmatLVLHtoECI * thisRotatedLVLHacc); %
 end
 
 

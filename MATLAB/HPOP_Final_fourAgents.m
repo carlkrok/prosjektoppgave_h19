@@ -938,35 +938,39 @@ hold off
 figure(5)
 hold on
 set(gca,'FontSize',30)
-set(gcf,'renderer','Painters','Position', [10 10 1200 600])
+%set(gcf,'renderer','Painters','Position', [10 10 1200 600])
 grid on
-title('Target LVLH Trajectories')
+title('Formation maneuver in target LVLH frame')
 axis equal
-xlabel('X [km]')
-ylabel('Y [km]')
-zlabel('Z [km]')
-h0 = plot3(0,0,0,'c+', 'linewidth',8)
+xlabel('X [m]')
+ylabel('Y [m]')
+zlabel('Z [m]')
+h5 = plot3( relEndPosLVLHHPOP_chaser1( :, 1 ).*10^3, relEndPosLVLHHPOP_chaser1( :, 2 ).*10^3, relEndPosLVLHHPOP_chaser1( :, 3 ).*10^3, '*', 'Color', '#0072BD' );
+h6 = plot3( relEndPosLVLHHPOP_chaser2( :, 1 ).*10^3, relEndPosLVLHHPOP_chaser2( :, 2 ).*10^3, relEndPosLVLHHPOP_chaser2( :, 3 ).*10^3, '*', 'Color', '#D95319' );
+h7 = plot3( relEndPosLVLHHPOP_chaser3( :, 1 ).*10^3, relEndPosLVLHHPOP_chaser3( :, 2 ).*10^3, relEndPosLVLHHPOP_chaser3( :, 3 ).*10^3, '*', 'Color', '#EDB120' );
+h8 = plot3( relEndPosLVLHHPOP_chaser4( :, 1 ).*10^3, relEndPosLVLHHPOP_chaser4( :, 2 ).*10^3, relEndPosLVLHHPOP_chaser4( :, 3 ).*10^3, '*', 'Color', '#77AC30' );
+h0 = plot3(0,0,0,'r+', 'linewidth',8)
 for plotIndex = 1 : MCsampleNum
-    h1 = plot3( relXTrajectoryHPOP_chaser1(plotIndex, :), relYTrajectoryHPOP_chaser1(plotIndex, :), relZTrajectoryHPOP_chaser1(plotIndex, :), 'r');
-    h1.Color(4) = 0.25;
+    h1 = plot3( relXTrajectoryHPOP_chaser1(plotIndex, end-120:end).*10^3, relYTrajectoryHPOP_chaser1(plotIndex, end-120:end).*10^3, relZTrajectoryHPOP_chaser1(plotIndex, end-120:end).*10^3, 'Color', '#0072BD');
+    h1.Color(4) = 0.2;
 end
 for plotIndex = 1 : MCsampleNum
-    h2 = plot3( relXTrajectoryHPOP_chaser2(plotIndex, :), relYTrajectoryHPOP_chaser2(plotIndex, :), relZTrajectoryHPOP_chaser2(plotIndex, :), 'g');
-    h1.Color(4) = 0.25;
+    h2 = plot3( relXTrajectoryHPOP_chaser2(plotIndex, end-120:end).*10^3, relYTrajectoryHPOP_chaser2(plotIndex, end-120:end).*10^3, relZTrajectoryHPOP_chaser2(plotIndex, end-120:end).*10^3, 'Color', '#D95319');
+    h2.Color(4) = 0.2;
 end
 for plotIndex = 1 : MCsampleNum
-    h3 = plot3( relXTrajectoryHPOP_chaser3(plotIndex, :), relYTrajectoryHPOP_chaser3(plotIndex, :), relZTrajectoryHPOP_chaser3(plotIndex, :), 'b');
-    h1.Color(4) = 0.25;
+    h3 = plot3( relXTrajectoryHPOP_chaser3(plotIndex, end-120:end).*10^3, relYTrajectoryHPOP_chaser3(plotIndex, end-120:end).*10^3, relZTrajectoryHPOP_chaser3(plotIndex, end-120:end).*10^3, 'Color', '#EDB120');
+    h3.Color(4) = 0.2;
 end
 for plotIndex = 1 : MCsampleNum
-    h4 = plot3( relXTrajectoryHPOP_chaser4(plotIndex, :), relYTrajectoryHPOP_chaser4(plotIndex, :), relZTrajectoryHPOP_chaser4(plotIndex, :), 'c');
-    h1.Color(4) = 0.25;
+    h4 = plot3( relXTrajectoryHPOP_chaser4(plotIndex, end-120:end).*10^3, relYTrajectoryHPOP_chaser4(plotIndex, end-120:end).*10^3, relZTrajectoryHPOP_chaser4(plotIndex, end-120:end).*10^3, 'Color', '#77AC30');
+    h4.Color(4) = 0.2;
 end
+%view([30 5])
+% ylim([-0.05 0.05])
+% xlim([-0.05 0.05])
+% zlim([-0.05 0.05])
 legend([h0,h1,h2,h3,h4],'Target Satellite', 'Chaser 1', 'Chaser 2', 'Chaser 3', 'Chaser 4','Location','eastoutside')
-view([30 5])
- ylim([-0.05 0.05])
- xlim([-0.05 0.05])
- zlim([-0.05 0.05])
 hold off
 
 

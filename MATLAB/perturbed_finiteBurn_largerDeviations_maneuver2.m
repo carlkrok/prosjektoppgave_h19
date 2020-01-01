@@ -12,7 +12,7 @@ global const Cnm Snm AuxParam eopdata swdata SOLdata DTCdata APdata PC
 
 run earthParametersHPOP; 
 
-run SatelliteInitialPositions2;
+run SatelliteInitialPositions1;
 
 
 % model parameters
@@ -24,7 +24,8 @@ AuxParam = struct('Mjd_UTC',0,'area_solar',0,'area_drag',0,'mass',0,'Cr',0,...
                   'accelIntegral', zeros(3,1), 'thrustDuration', 0,...
                   'velocityChangeECI', zeros(3,1), 'thrustInitiated', 0,...
                   'thrustLVLHAcceleration', zeros(3,1),...
-                  'thrustRotMat', 0, 'thrustECIStartDir', zeros(3,1));
+                  'thrustRotMat', 0, 'thrustECIStartDir', zeros(3,1)),...
+                  'thrustDeviationRotMat',[1,0,0;0,1,0;0,0,1];
 
 anomalyErrorTolerance = 10^(-12);
 anomalyMaxIterations = 2000;
@@ -117,7 +118,7 @@ disp('Parameters Loaded')
 
 maneuverEndTime = maneuverStartDelay + maneuverTime;
 maneuverStartTime = maneuverStartDelay;
-maneuverTimeBuffer = 10;
+maneuverTimeBuffer = 20;
 thrustPrecisionFactor = 10000; 
 thrustDuration = 0.001;
 
@@ -147,7 +148,7 @@ orbitType_chaser = orbitType;
 
 %% Monte Carlo Experiment Setup
 
-MCsampleNum = 23;
+MCsampleNum = 34;%23;
 
 meanDeviationTimeSetup = 0;
 %maxDeviationTimeSetup = 0.1;
@@ -155,8 +156,8 @@ stdDeviationTimeSetup = 0;%1;
 
 %MCtimeDeviation = meanDeviationTimeSetup - stdDeviationTimeSetup + ( 2 * stdDeviationTimeSetup * rand( MCsampleNum, 1 ) );
 %MCtimeDeviation = (meanDeviationTimeSetup-maxDeviationTimeSetup : (2*maxDeviationTimeSetup)/(MCsampleNum-1) : meanDeviationTimeSetup+maxDeviationTimeSetup)';
-%MCtimeDeviation = meanDeviationTimeSetup + stdDeviationTimeSetup .* randn( MCsampleNum, 1 );
-MCtimeDeviation = [0,-2:0.4:2,zeros(1,11)];
+MCtimeDeviation = meanDeviationTimeSetup + stdDeviationTimeSetup .* randn( MCsampleNum, 1 );
+%MCtimeDeviation = [0,-5:1:5,zeros(1,11)];
 
 
 meanThrustOutputFactor = 1;
@@ -164,9 +165,9 @@ stdThrustOutputUncertaintyFactor = 0;%0.001;
 
 %MCthrustOutputDeviation = meanThrustOutputFactor - stdThrustOutputUncertaintyFactor + ( 2 * stdThrustOutputUncertaintyFactor * rand( MCsampleNum, 1 ) );
 %MCthrustOutputDeviation = (meanThrustOutputFactor-stdThrustOutputUncertaintyFactor : (2*stdThrustOutputUncertaintyFactor)/(MCsampleNum-1) : meanThrustOutputFactor+stdThrustOutputUncertaintyFactor)';
-%MCthrustOutputDeviation = meanThrustOutputFactor + stdThrustOutputUncertaintyFactor...
-%    .* randn( MCsampleNum, 1 );
-MCthrustOutputDeviation = [1,ones(1,11),0.995:0.001:1.005];
+MCthrustOutputDeviation = meanThrustOutputFactor + stdThrustOutputUncertaintyFactor...
+    .* randn( MCsampleNum, 1 );
+%MCthrustOutputDeviation = [1,ones(1,11),0.995:0.001:1.005];
 
 
 meanThrustDirectionErrorRollDeg = 0;
@@ -174,52 +175,52 @@ stdThrustDirectionErrorRollDeg = 0;%1;
 
 %MCthrustDirectionRollDeviationDeg = meanThrustDirectionErrorRollDeg - stdThrustDirectionErrorRollDeg + ( 2 * stdThrustDirectionErrorRollDeg * rand( MCsampleNum, 1 ) );
 %MCthrustDirectionRollDeviationRad = (meanThrustDirectionErrorRollDeg-maxThrustDirectionErrorRollDeg : (2*maxThrustDirectionErrorRollDeg)/(MCsampleNum-1) : meanThrustDirectionErrorRollDeg+maxThrustDirectionErrorRollDeg)'*pi/180;
-MCthrustDirectionRollDeviationDeg = meanThrustDirectionErrorRollDeg + ...
-    stdThrustDirectionErrorRollDeg .* randn( MCsampleNum, 1 );
-%MCthrustDirectionRollDeviationDeg = [0,-2:0.4:2,zeros(1,22)];
+%MCthrustDirectionRollDeviationDeg = meanThrustDirectionErrorRollDeg + ...
+%    stdThrustDirectionErrorRollDeg .* randn( MCsampleNum, 1 );
+MCthrustDirectionRollDeviationDeg = [0,-2:0.4:2,zeros(1,22)];
 
 meanThrustDirectionErrorPitchDeg = 0;
 stdThrustDirectionErrorPitchDeg = 0;%1;
 
 %MCthrustDirectionPitchDeviationDeg = meanThrustDirectionErrorPitchDeg - stdThrustDirectionErrorPitchDeg + ( 2 * stdThrustDirectionErrorPitchDeg * rand( MCsampleNum, 1 ) );
 %MCthrustDirectionPitchDeviationRad = (meanThrustDirectionErrorPitchDeg-maxThrustDirectionErrorPitchDeg : (2*maxThrustDirectionErrorPitchDeg)/(MCsampleNum-1) : meanThrustDirectionErrorPitchDeg+maxThrustDirectionErrorPitchDeg)'*pi/180;
-MCthrustDirectionPitchDeviationDeg = meanThrustDirectionErrorPitchDeg + stdThrustDirectionErrorPitchDeg ...
-    .* randn( MCsampleNum, 1 );
-%MCthrustDirectionPitchDeviationDeg = [0,zeros(1,11),-2:0.4:2,zeros(1,11)];
+%MCthrustDirectionPitchDeviationDeg = meanThrustDirectionErrorPitchDeg + stdThrustDirectionErrorPitchDeg ...
+%    .* randn( MCsampleNum, 1 );
+MCthrustDirectionPitchDeviationDeg = [0,zeros(1,11),-2:0.4:2,zeros(1,11)];
 
 meanThrustDirectionErrorYawDeg = 0;
 stdThrustDirectionErrorYawDeg = 0;%1;
 
 %MCthrustDirectionYawDeviationDeg = meanThrustDirectionErrorYawDeg - stdThrustDirectionErrorYawDeg + ( 2 * stdThrustDirectionErrorYawDeg * rand( MCsampleNum, 1 ) );
 %MCthrustDirectionYawDeviationRad = (meanThrustDirectionErrorYawDeg-maxThrustDirectionErrorYawDeg : (2*maxThrustDirectionErrorYawDeg)/(MCsampleNum-1) : meanThrustDirectionErrorYawDeg+maxThrustDirectionErrorYawDeg)'*pi/180;
-MCthrustDirectionYawDeviationDeg = meanThrustDirectionErrorYawDeg + stdThrustDirectionErrorYawDeg...
-    .* randn( MCsampleNum, 1 );
-%MCthrustDirectionYawDeviationDeg = [0,zeros(1,22),-2:0.4:2];
+%MCthrustDirectionYawDeviationDeg = meanThrustDirectionErrorYawDeg + stdThrustDirectionErrorYawDeg...
+%    .* randn( MCsampleNum, 1 );
+MCthrustDirectionYawDeviationDeg = [0,zeros(1,22),-2:0.4:2];
 
 disp('Experiment Defined')
 
 %% Initial Orbit Determination
 
-AuxParam.n       = 40;
-AuxParam.m       = 40;
-AuxParam.sun     = 1;
-AuxParam.moon    = 1;
-AuxParam.planets = 1;
-AuxParam.sRad    = 1;
-AuxParam.drag    = 1;
-AuxParam.SolidEarthTides = 0;
-AuxParam.OceanTides = 0;
-AuxParam.Relativity = 0;
-% AuxParam.n       = 0;
-% AuxParam.m       = 0;
-% AuxParam.sun     = 0;
-% AuxParam.moon    = 0;
-% AuxParam.planets = 0;
-% AuxParam.sRad    = 0;
-% AuxParam.drag    = 0;
+% AuxParam.n       = 40;
+% AuxParam.m       = 40;
+% AuxParam.sun     = 1;
+% AuxParam.moon    = 1;
+% AuxParam.planets = 1;
+% AuxParam.sRad    = 1;
+% AuxParam.drag    = 1;
 % AuxParam.SolidEarthTides = 0;
 % AuxParam.OceanTides = 0;
 % AuxParam.Relativity = 0;
+AuxParam.n       = 0;
+AuxParam.m       = 0;
+AuxParam.sun     = 0;
+AuxParam.moon    = 0;
+AuxParam.planets = 0;
+AuxParam.sRad    = 0;
+AuxParam.drag    = 0;
+AuxParam.SolidEarthTides = 0;
+AuxParam.OceanTides = 0;
+AuxParam.Relativity = 0;
 
 targetY0 = [ r0ECI_target', v0ECI_target' ].*10^3;
 
@@ -285,26 +286,26 @@ disp('Initial Orbits Determined')
 
 %% Experiments
 
-AuxParam.n       = 40;
-AuxParam.m       = 40;
-AuxParam.sun     = 1;
-AuxParam.moon    = 1;
-AuxParam.planets = 1;
-AuxParam.sRad    = 1;
-AuxParam.drag    = 1;
-AuxParam.SolidEarthTides = 0;
-AuxParam.OceanTides = 0;
-AuxParam.Relativity = 0;
-% AuxParam.n       = 0;
-% AuxParam.m       = 0;
-% AuxParam.sun     = 0;
-% AuxParam.moon    = 0;
-% AuxParam.planets = 0;
-% AuxParam.sRad    = 0;
-% AuxParam.drag    = 0;
+% AuxParam.n       = 40;
+% AuxParam.m       = 40;
+% AuxParam.sun     = 1;
+% AuxParam.moon    = 1;
+% AuxParam.planets = 1;
+% AuxParam.sRad    = 1;
+% AuxParam.drag    = 1;
 % AuxParam.SolidEarthTides = 0;
 % AuxParam.OceanTides = 0;
 % AuxParam.Relativity = 0;
+AuxParam.n       = 0;
+AuxParam.m       = 0;
+AuxParam.sun     = 0;
+AuxParam.moon    = 0;
+AuxParam.planets = 0;
+AuxParam.sRad    = 0;
+AuxParam.drag    = 0;
+AuxParam.SolidEarthTides = 0;
+AuxParam.OceanTides = 0;
+AuxParam.Relativity = 0;
 
 AuxParam.prevTimeStep = 0;
 AuxParam.stepCounter = 0;
@@ -364,13 +365,8 @@ for experimentIndex = 1 : MCsampleNum
     AuxParam.thrustECIAcceleration = (ErronousVelocityChangeECI ./ ( AuxParam.thrustDuration  ));
     
     RMatThrustDeviation = RotMatXYZEulerDeg(MCthrustDirectionRollDeviationDeg( experimentIndex ), MCthrustDirectionPitchDeviationDeg( experimentIndex ), MCthrustDirectionYawDeviationDeg( experimentIndex ));
-    disp('Before rotation:')
-    disp(AuxParam.thrustECIAcceleration)
-    AuxParam.thrustECIAcceleration = RMatThrustDeviation * AuxParam.thrustECIAcceleration;
-    disp('After rotation:')
-    disp(AuxParam.thrustECIAcceleration)
-    disp('Rotation matrix:')
-    disp(RMatThrustDeviation)
+%    AuxParam.thrustECIAcceleration = RMatThrustDeviation * AuxParam.thrustECIAcceleration;
+    AuxParam.thrustDeviationRotMat = RMatThrustDeviation;
 
     AuxParam.Thrust = 0;
     AuxParam.accelIntegral = zeros(3,1);
@@ -522,18 +518,18 @@ end
 
 %%
 
-a = figure(22);
-hold on
-grid on
-%axis equal
-title('Maneuver End Position LVLH')
-plot3(0,0,0,'c+', 'linewidth',8)
-plot3( relEndPosLVLHHPOP_1_chaser( :, 1 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 2 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 3 ).*10^3, '*' )
-%legend('Thrust', 'Goal Position')
-xlabel('X [m]')
-ylabel('Y [m]')
-zlabel('Z [m]')
-hold off
+% a = figure(22);
+% hold on
+% grid on
+% %axis equal
+% title('Maneuver End Position LVLH')
+% plot3(0,0,0,'c+', 'linewidth',8)
+% plot3( relEndPosLVLHHPOP_1_chaser( :, 1 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 2 ).*10^3, relEndPosLVLHHPOP_1_chaser( :, 3 ).*10^3, '*' )
+% %legend('Thrust', 'Goal Position')
+% xlabel('X [m]')
+% ylabel('Y [m]')
+% zlabel('Z [m]')
+% hold off
 % 
 % %matlab2tikz('filename','test.tex','figurehandle',a)
 % 
@@ -584,19 +580,19 @@ hold off
 % % hold off
 % 
 % 
-figure(5)
-hold on
-grid on
-title('Target LVLH Trajectories')
-%axis equal
-xlabel('X [km]')
-ylabel('Y [km]')
-zlabel('Z [km]')
-plot3(0,0,0,'c+', 'linewidth',8)
-for plotIndex = 1 : MCsampleNum
-    plot3( relXTrajectoryHPOP_1_chaser(plotIndex, :), relYTrajectoryHPOP_1_chaser(plotIndex, :), relZTrajectoryHPOP_1_chaser(plotIndex, :), 'r')
-end
-hold off
+% figure(5)
+% hold on
+% grid on
+% title('Target LVLH Trajectories')
+% %axis equal
+% xlabel('X [km]')
+% ylabel('Y [km]')
+% zlabel('Z [km]')
+% plot3(0,0,0,'c+', 'linewidth',8)
+% for plotIndex = 1 : MCsampleNum
+%     plot3( relXTrajectoryHPOP_1_chaser(plotIndex, :), relYTrajectoryHPOP_1_chaser(plotIndex, :), relZTrajectoryHPOP_1_chaser(plotIndex, :), 'r')
+% end
+% hold off
 
 % %%
 % 
@@ -766,92 +762,118 @@ hold off
 
 
 
+% xChaserDeviation = zeros(length(relXTrajectoryHPOP_1_chaser),MCsampleNum);
+% for pointIter = 1:length(relXTrajectoryHPOP_1_chaser)
+%     thisZeroPoint = relXTrajectoryHPOP_1_chaser(1,pointIter);
+%     for chaserIter = 2:MCsampleNum
+%         xChaserDeviation(pointIter,chaserIter) = relXTrajectoryHPOP_1_chaser(chaserIter,pointIter) - thisZeroPoint;
+%     end
+% end
+% 
+% yChaserDeviation = zeros(length(relYTrajectoryHPOP_1_chaser),MCsampleNum);
+% for pointIter = 1:length(relYTrajectoryHPOP_1_chaser)
+%     thisZeroPoint = relYTrajectoryHPOP_1_chaser(1,pointIter);
+%     for chaserIter = 2:MCsampleNum
+%         yChaserDeviation(pointIter,chaserIter) = relYTrajectoryHPOP_1_chaser(chaserIter,pointIter) - thisZeroPoint;
+%     end
+% end
+% 
+% zChaserDeviation = zeros(length(relZTrajectoryHPOP_1_chaser),MCsampleNum);
+% for pointIter = 1:length(relZTrajectoryHPOP_1_chaser)
+%     thisZeroPoint = relZTrajectoryHPOP_1_chaser(1,pointIter);
+%     for chaserIter = 2:MCsampleNum
+%         zChaserDeviation(pointIter,chaserIter) = relZTrajectoryHPOP_1_chaser(chaserIter,pointIter) - thisZeroPoint;
+%     end
+% end
+
+
 xChaserDeviation = zeros(length(relXTrajectoryHPOP_1_chaser),MCsampleNum);
-for pointIter = 1:length(relXTrajectoryHPOP_1_chaser)
-    thisZeroPoint = relXTrajectoryHPOP_1_chaser(1,pointIter);
-    for chaserIter = 2:MCsampleNum
-        xChaserDeviation(pointIter,chaserIter) = relXTrajectoryHPOP_1_chaser(chaserIter,pointIter) - thisZeroPoint;
-    end
-end
-
 yChaserDeviation = zeros(length(relYTrajectoryHPOP_1_chaser),MCsampleNum);
-for pointIter = 1:length(relYTrajectoryHPOP_1_chaser)
-    thisZeroPoint = relYTrajectoryHPOP_1_chaser(1,pointIter);
+zChaserDeviation = zeros(length(relZTrajectoryHPOP_1_chaser),MCsampleNum);
+
+for pointIter = 1:length(relXTrajectoryHPOP_1_chaser)
+    thisTargetECIPos = [MC_1_HPOP_ECI_X_Trajectories( 1, pointIter );...
+            MC_1_HPOP_ECI_Y_Trajectories( 1, pointIter );...
+            MC_1_HPOP_ECI_Z_Trajectories( 1, pointIter )];
+    thisTargetECIVel = [MC_1_HPOP_ECI_velX( 1, pointIter );...
+            MC_1_HPOP_ECI_velY( 1, pointIter );...
+            MC_1_HPOP_ECI_velZ( 1, pointIter )];
+    QmatECItoLVLH_targetEnd = ECIToLVLH( thisTargetECIPos, thisTargetECIVel );
+
     for chaserIter = 2:MCsampleNum
-        yChaserDeviation(pointIter,chaserIter) = relYTrajectoryHPOP_1_chaser(chaserIter,pointIter) - thisZeroPoint;
+        thisChaserECIPos = [MC_1_HPOP_ECI_X_Trajectories( chaserIter, pointIter );...
+            MC_1_HPOP_ECI_Y_Trajectories( chaserIter, pointIter );...
+            MC_1_HPOP_ECI_Z_Trajectories( chaserIter, pointIter )];
+        thisLVLHDeviation = QmatECItoLVLH_targetEnd*(thisChaserECIPos - thisTargetECIPos);
+        xChaserDeviation(pointIter,chaserIter) =  thisLVLHDeviation(1);
+        yChaserDeviation(pointIter,chaserIter) =  thisLVLHDeviation(2);
+        zChaserDeviation(pointIter,chaserIter) =  thisLVLHDeviation(3);
     end
 end
 
-zChaserDeviation = zeros(length(relZTrajectoryHPOP_1_chaser),MCsampleNum);
-for pointIter = 1:length(relZTrajectoryHPOP_1_chaser)
-    thisZeroPoint = relZTrajectoryHPOP_1_chaser(1,pointIter);
-    for chaserIter = 2:MCsampleNum
-        zChaserDeviation(pointIter,chaserIter) = relZTrajectoryHPOP_1_chaser(chaserIter,pointIter) - thisZeroPoint;
-    end
-end
 
 
 %%
 
-% figure(71)
-% set(gca,'FontSize',30);
-%set(gcf,'renderer','Painters')
-% hold on
-% grid on
-% title('Chaser X-axis Deviation Target LVLH')
-% xlabel('Time [s]')
-% ylabel('Deviation [km]')
-% for plotIndex = 2 : 12
-%     h1 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'r','LineWidth',3);
-% end
-% for plotIndex = 13 : 23
-%     h2 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'g','LineWidth',3);
-% end
-% for plotIndex = 24 : 34
-%     h3 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'b','LineWidth',3);
-% end
-% legend([h1,h2,h3],'Roll','Pitch','Yaw','Location','northwest')
-% hold off
-% 
-% figure(72)
-% set(gca,'FontSize',30);
-%set(gcf,'renderer','Painters')
-% hold on
-% grid on
-% title('Chaser Y-axis Deviation Target LVLH')
-% xlabel('Time [s]')
-% ylabel('Deviation [km]')
-% for plotIndex = 2 : 12
-%     h1 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'r','LineWidth',3);
-% end
-% for plotIndex = 13 : 23
-%     h2 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'g','LineWidth',3);
-% end
-% for plotIndex = 24 : 34
-%     h3 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'b','LineWidth',3);
-% end
-% legend([h1,h2,h3],'Roll','Pitch','Yaw','Location','northwest')
-% hold off
-% 
-% figure(73)
-% set(gca,'FontSize',30);
-%set(gcf,'renderer','Painters')
-% hold on
-% grid on
-% title('Chaser Z-axis Deviation Target LVLH')
-% xlabel('Time [s]')
-% ylabel('Deviation [km]')
-% for plotIndex = 2 : 12
-%     h1 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'r','LineWidth',3);
-% end
-% for plotIndex = 13 : 23
-%     h2 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'g','LineWidth',3);
-% end
-% for plotIndex = 24 : 34
-%     h3 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'b','LineWidth',3);
-% end
-% legend([h1,h2,h3],'Roll','Pitch','Yaw','Location','northwest')
-% hold off
+figure(71)
+set(gca,'FontSize',30);
+set(gcf,'renderer','Painters')
+hold on
+grid on
+title('X-axis Deviation')
+xlabel('Time [s]')
+ylabel('Deviation [km]')
+for plotIndex = 2 : 12
+    h1 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'Color','#D95319','LineWidth',3);
+end
+for plotIndex = 13 : 23
+    h2 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'Color','#77AC30','LineWidth',3);
+end
+for plotIndex = 24 : 34
+    h3 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'Color','#0072BD','LineWidth',3);
+end
+legend([h1,h2,h3],'Roll','Pitch','Yaw','Location','northwest')
+hold off
+
+figure(72)
+set(gca,'FontSize',30);
+set(gcf,'renderer','Painters')
+hold on
+grid on
+title('Y-axis Deviation')
+xlabel('Time [s]')
+ylabel('Deviation [km]')
+for plotIndex = 2 : 12
+    h1 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'Color','#D95319','LineWidth',3);
+end
+for plotIndex = 13 : 23
+    h2 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'Color','#77AC30','LineWidth',3);
+end
+for plotIndex = 24 : 34
+    h3 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'Color','#0072BD','LineWidth',3);
+end
+legend([h1,h2,h3],'Roll','Pitch','Yaw','Location','northwest')
+hold off
+
+figure(73)
+set(gca,'FontSize',30);
+set(gcf,'renderer','Painters')
+hold on
+grid on
+title('Z-axis Deviation')
+xlabel('Time [s]')
+ylabel('Deviation [km]')
+for plotIndex = 2 : 12
+    h1 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'Color','#D95319','LineWidth',3);
+end
+for plotIndex = 13 : 23
+    h2 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'Color','#77AC30','LineWidth',3);
+end
+for plotIndex = 24 : 34
+    h3 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'Color','#0072BD','LineWidth',3);
+end
+legend([h1,h2,h3],'Roll','Pitch','Yaw','Location','northwest')
+hold off
 
 %%
 
@@ -861,14 +883,14 @@ set(gca,'FontSize',30);
 set(gcf,'renderer','Painters')
 hold on
 grid on
-title('Chaser X-axis Deviation Target LVLH')
+title('X-axis Deviation')
 xlabel('Time [s]')
 ylabel('Deviation [km]')
 for plotIndex = 2 : 12
-    h1 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'r','LineWidth',3);
+    h1 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'Color','#D95319','LineWidth',3);
 end
 for plotIndex = 13 : 23
-    h2 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'b','LineWidth',3);
+    h2 = plot( 1:length(relXTrajectoryHPOP_1_chaser), xChaserDeviation(:, plotIndex),'Color','#0072BD','LineWidth',3);
 end
 legend([h1,h2],'Timing','Output')
 hold off
@@ -878,14 +900,14 @@ set(gca,'FontSize',30);
 set(gcf,'renderer','Painters')
 hold on
 grid on
-title('Chaser Y-axis Deviation Target LVLH')
+title('Y-axis Deviation')
 xlabel('Time [s]')
 ylabel('Deviation [km]')
 for plotIndex = 2 : 12
-    h1 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'r','LineWidth',3);
+    h1 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'Color','#D95319','LineWidth',3);
 end
 for plotIndex = 13 : 23
-    h2 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'b','LineWidth',3);
+    h2 = plot( 1:length(relYTrajectoryHPOP_1_chaser), yChaserDeviation(:, plotIndex),'Color','#0072BD','LineWidth',3);
 end
 legend([h1,h2],'Timing','Output')
 hold off
@@ -895,14 +917,14 @@ set(gca,'FontSize',30);
 set(gcf,'renderer','Painters')
 hold on
 grid on
-title('Chaser Z-axis Deviation Target LVLH')
+title('Z-axis Deviation')
 xlabel('Time [s]')
 ylabel('Deviation [km]')
 for plotIndex = 2 : 12
-    h1 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'r','LineWidth',3);
+    h1 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'Color','#D95319','LineWidth',3);
 end
 for plotIndex = 13 : 23
-    h2 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'b','LineWidth',3);
+    h2 = plot( 1:length(relZTrajectoryHPOP_1_chaser), zChaserDeviation(:, plotIndex),'Color','#0072BD','LineWidth',3);
 end
 legend([h1,h2],'Timing','Output')
 hold off
