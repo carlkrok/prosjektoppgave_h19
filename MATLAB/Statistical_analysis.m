@@ -150,7 +150,7 @@ set(gcf,'renderer','Painters','Position', [10 10 800 600])
 hold on
 axis equal
 grid on
-title({'Experiment 2 Part 2:','Chaser final position in target LVLH frame'})
+title({'Experiment 2 Part 4:','Chaser final position in target LVLH frame'})
 
 a = scatter3(x1(:,1), x1(:,2), x1(:,3), 1,'*');
 a.MarkerEdgeAlpha = 0.2;
@@ -174,15 +174,15 @@ zlabel('Z [m]')
 
 %view([-90 0])
 view([-10 15])
-% ylim([9000 14000])
-% xlim([0 500])
-% zlim([-2100 -1650])
+ylim([9000 14000])
+xlim([0 500])
+zlim([-2050 -1550])
 % ylim([-6200 6200])
 % xlim([-1000 1000])
 % zlim([-700 700])
- ylim([-23500 -9500])
- xlim([0 1800])
- zlim([4000 5400])
+%  ylim([-23000 -9000])
+%  xlim([0 1800])
+%  zlim([4000 5400])
 
 
 hold off
@@ -268,6 +268,7 @@ xlabel('Time [s]')
 ylabel('Deviation [km]')
 hold off
 
+%%
 figure(82)
 set(gca,'FontSize',30)
 set(gcf,'renderer','Painters')
@@ -280,8 +281,10 @@ for chaserIter = 1:MCsampleNum
 end
 xlabel('Time [s]')
 ylabel('Deviation [km]')
+%ylim([-8 8])
 hold off
 
+%%
 figure(83)
 set(gca,'FontSize',30)
 set(gcf,'renderer','Painters')
