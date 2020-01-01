@@ -249,7 +249,8 @@ hold on
 grid on
 title({'Deviations in X-axis','from Chaser Average Trajectory'})
 for chaserIter = 1:MCsampleNum
-    plot(1:length(MC_1_HPOP_ECI_X_Trajectories),chaserTrajNormDevX(chaserIter,:));
+    h = plot(1:length(MC_1_HPOP_ECI_X_Trajectories),chaserTrajNormDevX(chaserIter,:));
+    h.Color(4) = 0.25;
 end
 xlabel('Time [s]')
 ylabel('Deviation [km]')
@@ -262,7 +263,8 @@ hold on
 grid on
 title({'Deviations in Y-axis','from Chaser Average Trajectory'})
 for chaserIter = 1:MCsampleNum
-    plot(1:length(MC_1_HPOP_ECI_Y_Trajectories),chaserTrajNormDevY(chaserIter,:));
+    h = plot(1:length(MC_1_HPOP_ECI_Y_Trajectories),chaserTrajNormDevY(chaserIter,:));
+    h.Color(4) = 0.25;
 end
 xlabel('Time [s]')
 ylabel('Deviation [km]')
@@ -275,7 +277,8 @@ hold on
 grid on
 title({'Deviations in Z-axis','from Chaser Average Trajectory'})
 for chaserIter = 1:MCsampleNum
-    plot(1:length(MC_1_HPOP_ECI_Z_Trajectories),chaserTrajNormDevZ(chaserIter,:));
+    h = plot(1:length(MC_1_HPOP_ECI_Z_Trajectories),chaserTrajNormDevZ(chaserIter,:));
+    h.Color(4) = 0.25;
 end
 xlabel('Time [s]')
 ylabel('Deviation [km]')
