@@ -1,0 +1,23 @@
+% T = 90; % 
+% i = 24.5; % 
+% O = 0;
+% w = 0;
+% rSat_a = rEarth + 309
+% rSat_p = rEarth + 605
+r0ECI_target = [0;6216.79350911990;2833.15602733049];
+v0ECI_target = [-7.63830719553694;-0.150499323013302;-0.0685864929370411];
+period_target = 5623.82474323939;
+
+
+% T = 10; % 
+% i = 24.5; % 
+% O = 0;
+% w = 0;
+% rSat_a = rEarth + 339
+% rSat_p = rEarth + 635
+r0ECI_chaser = [0;6244.10509023239;2845.60263192356];
+v0ECI_chaser = [-7.62158399322606;-0.149513593942488;-0.0681372703186293];
+period_chaser = [5660.89051299178];
+maneuverStartDelay = 0; %0.0133 start dV
+orbitType = "prograde";
+maneuverTime = 3960; % Seconds

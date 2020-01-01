@@ -122,7 +122,7 @@ estimatedPDFVec = mvnpdf(x1,mean1,cov1);
 
 %%
 
-%abs(sum(sum(sum(binVectorNormalized))) - 1)
+abs(sum(sum(sum(binVectorNormalized))) - 1)
 
 
 %%
@@ -144,13 +144,12 @@ coeffLarge = coeff*800;
 plotHandles = zeros(6,1);
 
 figure(80)
-set(gca,'FontSize',30)
-%set(gcf,'renderer','Painters','Position', [10 10 1300 300])
-set(gcf,'renderer','Painters','Position', [10 10 800 600])
+set(gca,'FontSize',20)
+set(gcf,'renderer','Painters','Position', [10 10 1000 700])
 hold on
 axis equal
 grid on
-title({'Experiment 2 Part 2:','Chaser final position in target LVLH frame'})
+title({'Experiment 2 Part 1:','Chaser final position in target LVLH frame'})
 
 a = scatter3(x1(:,1), x1(:,2), x1(:,3), 1,'*');
 a.MarkerEdgeAlpha = 0.2;
@@ -158,13 +157,13 @@ a.MarkerFaceAlpha = 0.2;
 plotHandles(1) = plot3([mean1(1), mean1(1)+coeffLarge(1,1)], [mean1(2), mean1(2)+coeffLarge(2,1)], [mean1(3), mean1(3)+coeffLarge(3,1)],'LineWidth',2);
 plotHandles(2) = plot3([mean1(1), mean1(1)+coeffLarge(1,2)], [mean1(2), mean1(2)+coeffLarge(2,2)], [mean1(3), mean1(3)+coeffLarge(3,2)],'LineWidth',2);
 plotHandles(3) = plot3([mean1(1), mean1(1)+coeffLarge(1,3)], [mean1(2), mean1(2)+coeffLarge(2,3)], [mean1(3), mean1(3)+coeffLarge(3,3)],'LineWidth',2);
-b = plot_gaussian_ellipsoid(mean1, cov1, 3);
+%plotHandles(4) = plot_gaussian_ellipsoid(mean1, cov1, 3);
 %b = plot_gaussian_ellipsoid(mean1(1:2), cov1(1:2,1:2), 3);
-%b = plot_gaussian_2d_xy(mean1, cov1, 3);
-%c = plot_gaussian_2d_xz(mean1, cov1, 3);
-%d = plot_gaussian_2d_yz(mean1, cov1, 3);
-%legend([plotHandles(1:3); b; c; d],'PC1','PC2','PC3','3\sigma_{xy}', '3\sigma_{xz}', '3\sigma_{yz}','Location','eastoutside')
-legend([plotHandles(1:3); b],'PC1','PC2','PC3','3\sigma','Location','eastoutside')
+b = plot_gaussian_2d_xy(mean1, cov1, 3);
+c = plot_gaussian_2d_xz(mean1, cov1, 3);
+d = plot_gaussian_2d_yz(mean1, cov1, 3);
+legend([plotHandles(1:3); b; c; d],'PC1','PC2','PC3','3\sigma_{xy}', '3\sigma_{xz}', '3\sigma_{yz}','Location','eastoutside')
+%legend([plotHandles(1:3); b],'PC1','PC2','PC3','3\sigma_{xy}')
 %legend([plotHandles(1:3); c],'PC1','PC2','PC3','3\sigma_{xz}')
 %legend([plotHandles(1:3); d],'PC1','PC2','PC3','3\sigma_{yz}')
 xlabel('X [m]')
@@ -172,18 +171,13 @@ ylabel('Y [m]')
 zlabel('Z [m]')
 %a.MarkerFaceAlpha = 0.2;
 
-%view([-90 0])
-view([-10 15])
-% ylim([9000 14000])
-% xlim([0 500])
-% zlim([-2100 -1650])
-% ylim([-6200 6200])
-% xlim([-1000 1000])
-% zlim([-700 700])
- ylim([-23500 -9500])
- xlim([0 1800])
- zlim([4000 5400])
-
+view([-45 13])
+%ylim([9000 14000])
+%xlim([0 500])
+%zlim([-2100 -1650])
+ylim([-6000 6000])
+xlim([-1000 1000])
+zlim([-600 600])
 
 hold off
 
@@ -255,7 +249,7 @@ end
 %%
 
 figure(81)
-set(gca,'FontSize',30)
+set(gca,'FontSize',20)
 set(gcf,'renderer','Painters')
 hold on
 grid on
@@ -269,7 +263,7 @@ ylabel('Deviation [km]')
 hold off
 
 figure(82)
-set(gca,'FontSize',30)
+set(gca,'FontSize',20)
 set(gcf,'renderer','Painters')
 hold on
 grid on
@@ -283,11 +277,11 @@ ylabel('Deviation [km]')
 hold off
 
 figure(83)
-set(gca,'FontSize',30)
+set(gca,'FontSize',20)
 set(gcf,'renderer','Painters')
 hold on
 grid on
-title({'Deviations in Z-axis'})
+title({'Experiment 2 Part 1:','Deviations in Z-axis from Average Trajectory'})
 for chaserIter = 1:MCsampleNum
     h = plot(1:length(MC_1_HPOP_ECI_Z_Trajectories),chaserTrajNormDevZ(chaserIter,:));
     h.Color(4) = 0.25;

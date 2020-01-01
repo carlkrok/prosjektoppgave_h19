@@ -1,7 +1,7 @@
 
 run earthParametersHPOP;
 
-T = 90; % 
+T = -0.025; % 
 i = 24.5; % 
 O = 0;
 w = 0;

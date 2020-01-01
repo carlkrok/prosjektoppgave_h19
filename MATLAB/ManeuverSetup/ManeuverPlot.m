@@ -1,5 +1,5 @@
 
-run SatelliteInitialPositions2;
+run SatelliteInitialPositions3;
 
 run earthParametersHPOP;
 
@@ -160,10 +160,10 @@ legend([h1,h2,h3],'Initial Trajectory', 'Maneuver Trajectory', 'Unactuated Traje
 %text(rLVLH_chaserX0(1), rLVLH_chaserY0(1), rLVLH_chaserZ0(1)+20, 'Chaser Initial Position','FontSize', 15)
 %text(rLVLH_chaserX1( end ), rLVLH_chaserY1( end ), rLVLH_chaserZ1( end )-40, 'Chaser Final Position','FontSize', 15)
 %text(rLVLH_chaserX1(1), rLVLH_chaserY1(1)+20, rLVLH_chaserZ1(1), 'Chaser Maneuver Start','FontSize', 15)
-view([-65 10])
- ylim([-700 100])
- xlim([-250 100])
- zlim([-300 300])
+%view([-65 10])
+% ylim([-700 100])
+% xlim([-250 100])
+% zlim([-300 300])
 hold off
 
 
