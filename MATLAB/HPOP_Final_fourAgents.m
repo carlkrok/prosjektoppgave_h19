@@ -150,7 +150,7 @@ orbitType_chaser = orbitType;
 
 %% Monte Carlo Experiment Setup
 
-MCsampleNum = 20;
+MCsampleNum = 100;
 
 meanDeviationTimeSetup = 0;
 %maxDeviationTimeSetup = 0.1;
@@ -911,7 +911,9 @@ end
 
 
 
-a = figure(22);
+figure(22);
+set(gca,'FontSize',30)
+set(gcf,'renderer','Painters','Position', [10 10 1500 900])
 hold on
 grid on
 %axis equal
@@ -921,33 +923,50 @@ plot3( relEndPosLVLHHPOP_chaser1( :, 1 ).*10^3, relEndPosLVLHHPOP_chaser1( :, 2 
 plot3( relEndPosLVLHHPOP_chaser2( :, 1 ).*10^3, relEndPosLVLHHPOP_chaser2( :, 2 ).*10^3, relEndPosLVLHHPOP_chaser2( :, 3 ).*10^3, '*' )
 plot3( relEndPosLVLHHPOP_chaser3( :, 1 ).*10^3, relEndPosLVLHHPOP_chaser3( :, 2 ).*10^3, relEndPosLVLHHPOP_chaser3( :, 3 ).*10^3, '*' )
 plot3( relEndPosLVLHHPOP_chaser4( :, 1 ).*10^3, relEndPosLVLHHPOP_chaser4( :, 2 ).*10^3, relEndPosLVLHHPOP_chaser4( :, 3 ).*10^3, '*' )
-%legend('Thrust', 'Goal Position')
+legend('Target Satellite', 'Chaser 1', 'Chaser 2', 'Chaser 3', 'Chaser 4','Location','northeast')
 xlabel('X [m]')
 ylabel('Y [m]')
 zlabel('Z [m]')
+view([90 0])
+% ylim([-23500 -9500])
+% xlim([0 1800])
+% zlim([4000 5400])
 hold off
+
+%%
 
 figure(5)
 hold on
+set(gca,'FontSize',30)
+set(gcf,'renderer','Painters','Position', [10 10 1200 600])
 grid on
 title('Target LVLH Trajectories')
-%axis equal
+axis equal
 xlabel('X [km]')
 ylabel('Y [km]')
 zlabel('Z [km]')
-plot3(0,0,0,'c+', 'linewidth',8)
+h0 = plot3(0,0,0,'c+', 'linewidth',8)
 for plotIndex = 1 : MCsampleNum
-    plot3( relXTrajectoryHPOP_chaser1(plotIndex, :), relYTrajectoryHPOP_chaser1(plotIndex, :), relZTrajectoryHPOP_chaser1(plotIndex, :), 'r')
+    h1 = plot3( relXTrajectoryHPOP_chaser1(plotIndex, :), relYTrajectoryHPOP_chaser1(plotIndex, :), relZTrajectoryHPOP_chaser1(plotIndex, :), 'r');
+    h1.Color(4) = 0.25;
 end
 for plotIndex = 1 : MCsampleNum
-    plot3( relXTrajectoryHPOP_chaser2(plotIndex, :), relYTrajectoryHPOP_chaser2(plotIndex, :), relZTrajectoryHPOP_chaser2(plotIndex, :), 'g')
+    h2 = plot3( relXTrajectoryHPOP_chaser2(plotIndex, :), relYTrajectoryHPOP_chaser2(plotIndex, :), relZTrajectoryHPOP_chaser2(plotIndex, :), 'g');
+    h1.Color(4) = 0.25;
 end
 for plotIndex = 1 : MCsampleNum
-    plot3( relXTrajectoryHPOP_chaser3(plotIndex, :), relYTrajectoryHPOP_chaser3(plotIndex, :), relZTrajectoryHPOP_chaser3(plotIndex, :), 'b')
+    h3 = plot3( relXTrajectoryHPOP_chaser3(plotIndex, :), relYTrajectoryHPOP_chaser3(plotIndex, :), relZTrajectoryHPOP_chaser3(plotIndex, :), 'b');
+    h1.Color(4) = 0.25;
 end
 for plotIndex = 1 : MCsampleNum
-    plot3( relXTrajectoryHPOP_chaser4(plotIndex, :), relYTrajectoryHPOP_chaser4(plotIndex, :), relZTrajectoryHPOP_chaser4(plotIndex, :), 'c')
+    h4 = plot3( relXTrajectoryHPOP_chaser4(plotIndex, :), relYTrajectoryHPOP_chaser4(plotIndex, :), relZTrajectoryHPOP_chaser4(plotIndex, :), 'c');
+    h1.Color(4) = 0.25;
 end
+legend([h0,h1,h2,h3,h4],'Target Satellite', 'Chaser 1', 'Chaser 2', 'Chaser 3', 'Chaser 4','Location','eastoutside')
+view([30 5])
+ ylim([-0.05 0.05])
+ xlim([-0.05 0.05])
+ zlim([-0.05 0.05])
 hold off
 
 
