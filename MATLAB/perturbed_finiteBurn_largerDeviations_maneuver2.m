@@ -795,6 +795,7 @@ end
 
 % figure(71)
 % set(gca,'FontSize',30);
+%set(gcf,'renderer','Painters')
 % hold on
 % grid on
 % title('Chaser X-axis Deviation Target LVLH')
@@ -814,6 +815,7 @@ end
 % 
 % figure(72)
 % set(gca,'FontSize',30);
+%set(gcf,'renderer','Painters')
 % hold on
 % grid on
 % title('Chaser Y-axis Deviation Target LVLH')
@@ -833,6 +835,7 @@ end
 % 
 % figure(73)
 % set(gca,'FontSize',30);
+%set(gcf,'renderer','Painters')
 % hold on
 % grid on
 % title('Chaser Z-axis Deviation Target LVLH')
@@ -855,6 +858,7 @@ end
 
 figure(71)
 set(gca,'FontSize',30);
+set(gcf,'renderer','Painters')
 hold on
 grid on
 title('Chaser X-axis Deviation Target LVLH')
@@ -871,6 +875,7 @@ hold off
 
 figure(72)
 set(gca,'FontSize',30);
+set(gcf,'renderer','Painters')
 hold on
 grid on
 title('Chaser Y-axis Deviation Target LVLH')
@@ -887,6 +892,7 @@ hold off
 
 figure(73)
 set(gca,'FontSize',30);
+set(gcf,'renderer','Painters')
 hold on
 grid on
 title('Chaser Z-axis Deviation Target LVLH')

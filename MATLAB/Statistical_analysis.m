@@ -138,24 +138,24 @@ explained
 
 %%
 
-coeffLarge = coeff*150;
+coeffLarge = coeff*800;
 
 plotHandles = zeros(6,1);
 
 figure(80)
 set(gca,'FontSize',20)
-set(gcf,'renderer','Painters')
+set(gcf,'renderer','Painters','Position', [10 10 1000 700])
 hold on
-%axis equal
+axis equal
 grid on
-title({'Experiment 2 Part 4:','Chaser final position in target LVLH frame'})
+title({'Experiment 2 Part 1:','Chaser final position in target LVLH frame'})
 
-a = scatter3(x1(:,1), x1(:,2), x1(:,3), '*');
-a.MarkerEdgeAlpha = 0.1;
-a.MarkerFaceAlpha = 0.1;
-plotHandles(1) = plot3([mean1(1), mean1(1)+coeffLarge(1,1)], [mean1(2), mean1(2)+coeffLarge(2,1)], [mean1(3), mean1(3)+coeffLarge(3,1)],'LineWidth',1.5);
-plotHandles(2) = plot3([mean1(1), mean1(1)+coeffLarge(1,2)], [mean1(2), mean1(2)+coeffLarge(2,2)], [mean1(3), mean1(3)+coeffLarge(3,2)],'LineWidth',1.5);
-plotHandles(3) = plot3([mean1(1), mean1(1)+coeffLarge(1,3)], [mean1(2), mean1(2)+coeffLarge(2,3)], [mean1(3), mean1(3)+coeffLarge(3,3)],'LineWidth',1.5);
+a = scatter3(x1(:,1), x1(:,2), x1(:,3), 1,'*');
+a.MarkerEdgeAlpha = 0.2;
+a.MarkerFaceAlpha = 0.2;
+plotHandles(1) = plot3([mean1(1), mean1(1)+coeffLarge(1,1)], [mean1(2), mean1(2)+coeffLarge(2,1)], [mean1(3), mean1(3)+coeffLarge(3,1)],'LineWidth',2);
+plotHandles(2) = plot3([mean1(1), mean1(1)+coeffLarge(1,2)], [mean1(2), mean1(2)+coeffLarge(2,2)], [mean1(3), mean1(3)+coeffLarge(3,2)],'LineWidth',2);
+plotHandles(3) = plot3([mean1(1), mean1(1)+coeffLarge(1,3)], [mean1(2), mean1(2)+coeffLarge(2,3)], [mean1(3), mean1(3)+coeffLarge(3,3)],'LineWidth',2);
 %plotHandles(4) = plot_gaussian_ellipsoid(mean1, cov1, 3);
 %b = plot_gaussian_ellipsoid(mean1(1:2), cov1(1:2,1:2), 3);
 b = plot_gaussian_2d_xy(mean1, cov1, 3);
@@ -170,10 +170,13 @@ ylabel('Y [m]')
 zlabel('Z [m]')
 %a.MarkerFaceAlpha = 0.2;
 
-view([-15 10])
+view([-45 13])
 %ylim([9000 14000])
 %xlim([0 500])
 %zlim([-2100 -1650])
+ylim([-6000 6000])
+xlim([-1000 1000])
+zlim([-600 600])
 
 hold off
 
@@ -197,9 +200,11 @@ for timeIter = 1:length(MC_1_HPOP_ECI_X_Trajectories)
 end
 
 
-figure(81)
+figure(91)
 hold on
 grid on
+set(gca,'FontSize',20)
+set(gcf,'renderer','Painters')
 title('Deviations from Chaser Average Trajectory')
 for chaserIter = 1:MCsampleNum
     plot(1:length(MC_1_HPOP_ECI_X_Trajectories),chaserTrajNormDev(chaserIter,:));
@@ -247,7 +252,7 @@ set(gca,'FontSize',20)
 set(gcf,'renderer','Painters')
 hold on
 grid on
-title({'Deviations in X-axis','from Chaser Average Trajectory'})
+title({'Experiment 2 Part 1:','Deviations in X-axis from Average Trajectory'})
 for chaserIter = 1:MCsampleNum
     h = plot(1:length(MC_1_HPOP_ECI_X_Trajectories),chaserTrajNormDevX(chaserIter,:));
     h.Color(4) = 0.25;
@@ -261,7 +266,7 @@ set(gca,'FontSize',20)
 set(gcf,'renderer','Painters')
 hold on
 grid on
-title({'Deviations in Y-axis','from Chaser Average Trajectory'})
+title({'Experiment 2 Part 1:','Deviations in Y-axis from Average Trajectory'})
 for chaserIter = 1:MCsampleNum
     h = plot(1:length(MC_1_HPOP_ECI_Y_Trajectories),chaserTrajNormDevY(chaserIter,:));
     h.Color(4) = 0.25;
@@ -275,7 +280,7 @@ set(gca,'FontSize',20)
 set(gcf,'renderer','Painters')
 hold on
 grid on
-title({'Deviations in Z-axis','from Chaser Average Trajectory'})
+title({'Experiment 2 Part 1:','Deviations in Z-axis from Average Trajectory'})
 for chaserIter = 1:MCsampleNum
     h = plot(1:length(MC_1_HPOP_ECI_Z_Trajectories),chaserTrajNormDevZ(chaserIter,:));
     h.Color(4) = 0.25;
@@ -283,3 +288,6 @@ end
 xlabel('Time [s]')
 ylabel('Deviation [km]')
 hold off
+
+%%
+
